@@ -22,7 +22,8 @@
     <ul>
       <li><a href="#tabs-1">What is it?</a></li>
       <li><a href="#tabs-2">How do I use it?</a></li>
-      <li><a href="#tabs-3">Where do I find out more?</a></li>
+      <li><a href="#tabs-3">Why use it?</a></li>
+      <li><a href="#tabs-4">Where do I find out more?</a></li>
     </ul>
 
     <div id="tabs-1">
@@ -47,7 +48,7 @@
 }
 </code></pre> 
  
-<p>We can ask NSubstitute to create a substitute instance for this type (you could call it a stub, mock, or fake, but why bother when we just want to substitute in an instance we have some control over?).</p> 
+<p>We can ask NSubstitute to create a <em>substitute</em> instance for this type (you could call it a <em>stub</em>, <em>mock</em>, or <em>fake</em>, but why bother when we just want to substitute in an instance we have some control over?).</p> 
  
 <pre><code>[Test]
 public void Use_a_shiny_new_substitute()
@@ -81,7 +82,19 @@ public void Return_different_values_for_different_arguments()
 }
 </code></pre> 
     </div>
+
     <div id="tabs-3">
+      <p>The .NET space is already well populated with mocking frameworks. Why create another? We found that none of the existing frameworks were succinct enough and the code written to use one of these frameworks quickly turns C# in to PERL.</p>
+
+	  <p>We've attempted to make the most frequently required operations obvious and easy to use, keeping less usual scenarios discoverable and accessible, and all the while maintaining as much natural language as possible.</p>
+
+	  <p>Perfect for those dipping their toe into the testing space, or for others who would just like to use less lambdas.</p>
+
+      <p><pre><code>NSubstitute.MakesProgramming(Easier).Returns(true);</code></pre></p>
+    </div>
+	
+	
+    <div id="tabs-4">
       <p>For more information, have a look at the <a href="http://github.com/nsubstitute/NSubstitute">NSubstitute project on GitHub</a>.</p>
     </div>
 
