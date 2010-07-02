@@ -16,7 +16,7 @@ h3{font-size:1.5em}
 .download {
   <!--background-color:#95b7ce;-->
   padding: 25px;
-  
+
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
@@ -29,11 +29,11 @@ h3{font-size:1.5em}
 }
 pre {
   border: 1px solid #AAAAAA;
+  padding: 5px;
 }
 
 pre,code {
   background-color:#E3E5EA;
-  padding:3px;
   
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
