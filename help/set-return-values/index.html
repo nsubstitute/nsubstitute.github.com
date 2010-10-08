@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>NSubstitute: Setting return values</title>
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
+  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
+</head>
+<body>
+  <div id="header">
+    <a href="/" alt="NSubstitute">
+      <img src="/images/NSubstitute.png" style="float: left; margin-right: 15px; width: 100px; height: 100px;" />
+      <h1 style="display: inline"> NSubstitute </h1> <br />
+      <span><i>A friendly substitute for .NET mocking frameworks</i></span>
+    </a>
+  </div>
+  <div id="nav">
+    <a href="/help/getting-started">Getting started</a> |
+    <a href="/help.html">Documentation</a> |
+    <a href="http://groups.google.com/group/nsubstitute">Discussion Group</a> |
+    <a href="http://github.com/nsubstitute/NSubstitute">NSub @ Github</a>
+  </div>
+
+  <div id="content">
+      <div id="post">
+    <div id="post-index">
+        <ul>
+            
+            <li><a href="/help/getting-started">Getting started</a></li>
+            
+            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            
+            <li><a href="/help/set-return-values">Setting return values</a></li>
+            
+        </ul>
+    </div>
+
+    <div id="post-content">
+      <h1>Setting return values</h1>
+      <p>The following examples related to substituting for the following interface:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public interface ICalculator
+{
+	int Add(int a, int b);
+	string Mode { get; set; }
+}</pre>
+</div>
+<h2 id='for_methods'>For methods</h2>
+
+<p>To set a return value for a method call on a substitute, call the method as normal, then follow it with a call to NSubstitute&#8217;s <code>Returns</code> extension method.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var calculator = Substitute.For&lt;ICalculator&gt;();
+calculator.Add(1, 2).Returns(3); //Make this call return 3.</pre>
+</div>
+<p>This will only apply to this combination of arguments, so other calls to this method will return a default value instead.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var calculator = Substitute.For&lt;ICalculator&gt;();
+calculator.Add(1, 2).Returns(3); //Make this call return 3.
+Assert.AreEqual(calculator.Add(1, 2), 3);
+Assert.AreEqual(calculator.Add(1, 2), 3);
+//Call with different arguments does not return 3
+Assert.AreNotEqual(calculator.Add(3, 6), 3);</pre>
+</div>
+      <div id="page-navigation"> 
+        <div class="previous"> 
+         
+            <a href="/help/creating-a-substitute" title="Previous: Creating a substitute">&laquo; Creating a substitute</a> 
+         
+        </div> 
+        <div class="next"> 
+         
+        </div> 
+      </div> 
+    </div>
+</div>
+
+
+  </div>
+
+  <div id="footer">
+  NSubstitute is open source software, licensed under the <a href="http://www.opensource.org/licenses/bsd-license.php">BSD License</a>.<br />
+  NSubstitute logo donated by <a href="http://troyhunt.com">Troy Hunt</a>.
+  </div>
+
+  <script type="text/javascript" src="/scripts/shCore.js"></script>
+  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+      doHighlighting();
+    });
+
+    function doHighlighting() {
+        SyntaxHighlighter.defaults.gutter = false;
+        SyntaxHighlighter.defaults.toolbar = false;
+        SyntaxHighlighter.all();
+    }
+  </script>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17200262-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</body>
+</html>

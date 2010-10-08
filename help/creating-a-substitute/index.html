@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>NSubstitute: Creating a substitute</title>
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
+  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
+</head>
+<body>
+  <div id="header">
+    <a href="/" alt="NSubstitute">
+      <img src="/images/NSubstitute.png" style="float: left; margin-right: 15px; width: 100px; height: 100px;" />
+      <h1 style="display: inline"> NSubstitute </h1> <br />
+      <span><i>A friendly substitute for .NET mocking frameworks</i></span>
+    </a>
+  </div>
+  <div id="nav">
+    <a href="/help/getting-started">Getting started</a> |
+    <a href="/help.html">Documentation</a> |
+    <a href="http://groups.google.com/group/nsubstitute">Discussion Group</a> |
+    <a href="http://github.com/nsubstitute/NSubstitute">NSub @ Github</a>
+  </div>
+
+  <div id="content">
+      <div id="post">
+    <div id="post-index">
+        <ul>
+            
+            <li><a href="/help/getting-started">Getting started</a></li>
+            
+            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            
+            <li><a href="/help/set-return-values">Setting return values</a></li>
+            
+        </ul>
+    </div>
+
+    <div id="post-content">
+      <h1>Creating a substitute</h1>
+      <p>The basic syntax for creating a substitute is:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var substitute = Substitute.For&lt;ISomeInterface&gt;();</pre>
+</div>
+<p>This is how you&#8217;ll normally create substitutes for types. Generally this type will be an interface, but you can also substitute classes in cases of emergency.</p>
+
+<p><em>Warning:</em> Substituting for classes can have some nasty side-effects. For starters, NSubstitute can only work with virtual members of the class, so any non-virtual code in the class will actually execute! If you try to substitute for your class that formats your hard drive in the constructor or in a non-virtual property setter then you&#8217;re asking for trouble. If possible, stick to substituting interfaces.</p>
+
+<p>With the knowledge that we&#8217;re not going to be substituting for classes, here is how you create a substitute for a class that has constructor arguments:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var someClass = Substitute.For&lt;SomeClassWithCtorArgs&gt;(5, &quot;hello world&quot;);</pre>
+</div>
+<p>For classes that have default constructors the syntax is the same as substituting for interfaces.</p>
+
+<h2 id='substituting_for_multiple_interfaces'>Substituting for multiple interfaces</h2>
+
+<p>There are times when you want to substitute for multiple types. The best example of this is when you have code that works with a type, then checks whether it implements <code>IDisposable</code> and disposes of it if it doesn&#8217;t.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var command = Substitute.For&lt;ICommand, IDisposable&gt;();
+var runner = new CommandRunner(command);
+
+runner.RunCommand();
+
+command.Received().Execute();
+((IDisposable)command).Received().Dispose();</pre>
+</div>
+<p>You&#8217;re substitute can implement several types this way, but remember you can only implement a maximum of one class. You can specify as many interfaces as you like, but only one of these can be a class. The most flexible way of creating substitutes for multiple types is using this overload:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var substitute = Substitute.For(
+		new[] { typeof(ICommand), typeof(ISomeInterface), typeof(SomeClassWithCtorArgs) },
+		new object[] { 5, &quot;hello world&quot; }
+	);
+Assert.IsInstanceOf&lt;ICommand&gt;(substitute);
+Assert.IsInstanceOf&lt;ISomeInterface&gt;(substitute);
+Assert.IsInstanceOf&lt;SomeClassWithCtorArgs&gt;(substitute);</pre>
+</div>
+      <div id="page-navigation"> 
+        <div class="previous"> 
+         
+            <a href="/help/getting-started" title="Previous: Getting started">&laquo; Getting started</a> 
+         
+        </div> 
+        <div class="next"> 
+         
+            <a href="/help/set-return-values" title="Next: Setting return values">Setting return values &raquo; </a> 
+         
+        </div> 
+      </div> 
+    </div>
+</div>
+
+
+  </div>
+
+  <div id="footer">
+  NSubstitute is open source software, licensed under the <a href="http://www.opensource.org/licenses/bsd-license.php">BSD License</a>.<br />
+  NSubstitute logo donated by <a href="http://troyhunt.com">Troy Hunt</a>.
+  </div>
+
+  <script type="text/javascript" src="/scripts/shCore.js"></script>
+  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+      doHighlighting();
+    });
+
+    function doHighlighting() {
+        SyntaxHighlighter.defaults.gutter = false;
+        SyntaxHighlighter.defaults.toolbar = false;
+        SyntaxHighlighter.all();
+    }
+  </script>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17200262-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</body>
+</html>

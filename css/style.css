@@ -1,0 +1,159 @@
+﻿html { font-family: "helvetica", Helvetica, Arial }
+body {
+    margin:0;
+    padding:0;
+    border:0;
+    width:100%;
+    min-width:600px;
+}
+
+p{
+  font-size:1.0em;
+  line-height:1.6; 
+  font-family:"Georgia"
+}
+
+h1{font-size:2.5em}
+h2{font-size:2.0em}
+h3{font-size:1.5em}
+
+a:link { color: #365f91; text-decoration: none;}
+a:visited { color: #365f91; text-decoration: none;}
+a:hover { color: #365f91;text-decoration: underline;}
+a:active { color: #000000; text-decoration: underline;}
+
+#header { padding-top: 1.5em; }
+#header h1 {
+    font-size: 3em;
+    color:#365f91;
+}
+
+#header a {
+    text-decoration:none;
+    color:#000000;
+}
+
+#header img {
+    border:0;
+}
+
+#nav { 
+    position:absolute;
+    top:0px;
+    right:0px;
+    margin-top: 0.5em;
+    font-weight: bold;
+}
+
+#nav a {
+    margin: 0.7em;
+}
+
+#footer { font-size: xx-small; text-align: center; padding: 15px; clear: both; }
+#post {
+    position:relative;
+    clear:both;
+    float:left;
+    width:100%;
+}
+
+#content {
+    clear: both;
+}
+#post-index { 
+    float: left;
+    line-height: 1.7em;
+    position: relative;
+    width:21%;
+    top:5em;
+    background-color: #D5E1DD;
+    -webkit-border-top-right-radius: 20px;
+    -webkit-border-bottom-right-radius: 20px;
+    -moz-border-radius-topright: 20px;
+    -moz-border-radius-bottomright: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+#post-content { 
+    float: left;
+    position: relative;
+    width:71%;
+    padding-left: 10px;
+}
+
+#page-navigation {
+    padding-top: 2em;
+    padding-bottom: 2em;
+}
+#page-navigation > .next {
+    float: right;
+}
+
+#page-navigation > .previous {
+    float: left;
+}
+
+#features {
+    float: left;
+    position: relative;
+    width:60%;
+    padding: 2em;
+    padding-top: 0em;
+}
+
+#links {
+    float: right;
+    position: relative;
+    width:25%;
+    padding: 2em;
+    padding-right: 1em;
+
+    background-color: #D5E1DD;
+    -webkit-border-top-left-radius: 20px;
+    -webkit-border-bottom-left-radius: 20px;
+    -moz-border-radius-topleft: 20px;
+    -moz-border-radius-bottomleft: 20px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.download {
+  border: 1px solid black;
+  padding: 15px;
+  background-color: white;
+  background-image: url(/images/NSubstitute-faded.png);
+  background-position: right bottom;
+  background-repeat: no-repeat;
+
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+
+.download a {
+  display: block;
+  font-weight: bold;
+  padding-top: 10px;
+  color: black;
+}
+
+div.highlight {
+  border: 1px solid #AAAAAA;
+  padding: 5px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  overflow: auto;
+}
+
+div.feature-title {
+    font-size: 1.5em;
+}
+
+div.feature-detail { 
+}
+
+div.feature {
+ clear:both;
+}

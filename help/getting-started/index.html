@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>NSubstitute: Getting started</title>
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
+  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
+</head>
+<body>
+  <div id="header">
+    <a href="/" alt="NSubstitute">
+      <img src="/images/NSubstitute.png" style="float: left; margin-right: 15px; width: 100px; height: 100px;" />
+      <h1 style="display: inline"> NSubstitute </h1> <br />
+      <span><i>A friendly substitute for .NET mocking frameworks</i></span>
+    </a>
+  </div>
+  <div id="nav">
+    <a href="/help/getting-started">Getting started</a> |
+    <a href="/help.html">Documentation</a> |
+    <a href="http://groups.google.com/group/nsubstitute">Discussion Group</a> |
+    <a href="http://github.com/nsubstitute/NSubstitute">NSub @ Github</a>
+  </div>
+
+  <div id="content">
+      <div id="post">
+    <div id="post-index">
+        <ul>
+            
+            <li><a href="/help/getting-started">Getting started</a></li>
+            
+            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            
+            <li><a href="/help/set-return-values">Setting return values</a></li>
+            
+        </ul>
+    </div>
+
+    <div id="post-content">
+      <h1>Getting started</h1>
+      <p>So you&#8217;ve <a href='http://github.com/nsubstitute/NSubstitute/downloads'>downloaded NSubstitute</a> and are staring at a blank test fixture you&#8217;ve created to try it out, wondering where to start.</p>
+
+<p>Well, first you need to add a reference to <code>NSubstitute.dll</code> (from the download) into your project, and add <code>using NSubstitute;</code> to your current C# file. This will give you everything you need to start substituting.</p>
+
+<p>Now let&#8217;s say we have a basic calculator interface:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public interface ICalculator
+{
+    int Add(int a, int b);
+    string Mode { get; set; }
+    event Action PoweringUp;
+}</pre>
+</div>
+<p>We can ask NSubstitute to create a substitute instance for this type. We could ask for a stub, mock, fake, spy, test double etc., but why bother when we just want to substitute an instance we have some control over?</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator = Substitute.For&lt;ICalculator&gt;();</pre>
+</div>
+<p>Now we can tell our substitute to return a value for a call:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Add(1, 2).Returns(3);
+Assert.That(calculator.Add(1, 2), Is.EqualTo(3));</pre>
+</div>
+<p>We can check that our substitute received a call, and did not receive others:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Add(1, 2);
+calculator.Received().Add(1, 2);
+calculator.DidNotReceive().Add(5, 7);</pre>
+</div>
+<p>If our <code>Received()</code> assertion fails, NSubstitute tries to give us some help as to what the problem might be:</p>
+
+<pre><code>NSubstitute.Exceptions.CallNotReceivedException : Expected to receive call:
+    Add(1, 2)
+Actually received (non-matching arguments indicated with &#39;*&#39; characters):
+    Add(1, *5*)
+    Add(*4*, *7*)</code></pre>
+
+<p>We can also work with properties using the <code>Returns</code> syntax we use for methods, or just stick with plain old property setters (for read/write properties):</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Mode.Returns(&quot;DEC&quot;);
+Assert.That(calculator.Mode, Is.EqualTo(&quot;DEC&quot;));
+
+calculator.Mode = &quot;HEX&quot;;
+Assert.That(calculator.Mode, Is.EqualTo(&quot;HEX&quot;));</pre>
+</div>
+<p>NSubstitute supports argument matching for setting return values and asserting a call was received:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Add(10, -5);
+calculator.Received().Add(10, Arg.Any&lt;int&gt;());
+calculator.Received().Add(10, Arg.Is&lt;int&gt;(x =&gt; x &lt; 0));</pre>
+</div>
+<p>We can use argument matching as well as passing a function to <code>Returns()</code> to get some more behaviour out of our substitute (possibly too much, but that&#8217;s your call):</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator
+   .Add(Arg.Any&lt;int&gt;(), Arg.Any&lt;int&gt;())
+   .Returns(x =&gt; (int)x[0] + (int)x[1]);
+Assert.That(calculator.Add(5, 10), Is.EqualTo(15));</pre>
+</div>
+<p><code>Returns()</code> can also be called with multiple arguments to set up a sequence of return values.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Mode.Returns(&quot;HEX&quot;, &quot;DEC&quot;, &quot;BIN&quot;);
+Assert.That(calculator.Mode, Is.EqualTo(&quot;HEX&quot;));
+Assert.That(calculator.Mode, Is.EqualTo(&quot;DEC&quot;));
+Assert.That(calculator.Mode, Is.EqualTo(&quot;BIN&quot;));</pre>
+</div>
+<p>Finally, we can raise events on our substitutes (unfortunately C# dramatically restricts the extent to which this syntax can be cleaned up):</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>bool eventWasRaised = false;
+calculator.PoweringUp += () =&gt; eventWasRaised = true;
+
+calculator.PoweringUp += Raise.Action();
+Assert.That(eventWasRaised);</pre>
+</div>
+<p>That&#8217;s pretty much all you need to get started with NSubstitute. Read on for more detailed feature descriptions, as well as for some of the less common requirements that NSubstitute supports.</p>
+      <div id="page-navigation"> 
+        <div class="previous"> 
+         
+        </div> 
+        <div class="next"> 
+         
+            <a href="/help/creating-a-substitute" title="Next: Creating a substitute">Creating a substitute &raquo; </a> 
+         
+        </div> 
+      </div> 
+    </div>
+</div>
+
+
+  </div>
+
+  <div id="footer">
+  NSubstitute is open source software, licensed under the <a href="http://www.opensource.org/licenses/bsd-license.php">BSD License</a>.<br />
+  NSubstitute logo donated by <a href="http://troyhunt.com">Troy Hunt</a>.
+  </div>
+
+  <script type="text/javascript" src="/scripts/shCore.js"></script>
+  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+      doHighlighting();
+    });
+
+    function doHighlighting() {
+        SyntaxHighlighter.defaults.gutter = false;
+        SyntaxHighlighter.defaults.toolbar = false;
+        SyntaxHighlighter.all();
+    }
+  </script>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17200262-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</body>
+</html>
