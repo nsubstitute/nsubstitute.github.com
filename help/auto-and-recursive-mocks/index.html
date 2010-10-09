@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>NSubstitute: Auto and recursive mocks</title>
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
+  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
+</head>
+<body>
+  <div id="header">
+    <a href="/" alt="NSubstitute">
+      <img src="/images/NSubstitute.png" style="float: left; margin-right: 15px; width: 100px; height: 100px;" />
+      <h1 style="display: inline"> NSubstitute </h1> <br />
+      <span><i>A friendly substitute for .NET mocking frameworks</i></span>
+    </a>
+  </div>
+  <div id="nav">
+    <a href="/help/getting-started">Getting started</a> |
+    <a href="/help.html">Documentation</a> |
+    <a href="http://groups.google.com/group/nsubstitute">Discussion Group</a> |
+    <a href="http://github.com/nsubstitute/NSubstitute">NSub @ Github</a>
+  </div>
+
+  <div id="content">
+      <div id="post">
+    <div id="post-index">
+        <ul>
+            
+            <li><a href="/help/getting-started">Getting started</a></li>
+            
+            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            
+            <li><a href="/help/set-return-values">Setting return values</a></li>
+            
+            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            
+        </ul>
+    </div>
+
+    <div id="post-content">
+      <h1>Auto and recursive mocks</h1>
+      <p>Once a substitute has been created some properties and methods will automatically return non-null values. For example, any properties or methods that return an <em>interface</em> or a <em>delegate</em> will automatically return substitutes themselves. This is commonly referred to as <em>recursive mocking</em>, and can be useful because you can avoid explicitly creating each substitute, which means less code. Other types, like <code>String</code> and <code>Array</code>, will default to returning empty values rather than nulls.</p>
+
+<h2 id='recursive_mocks'>Recursive mocks</h2>
+
+<p>Say we have the following types:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public interface INumberParser {
+    IEnumerable&lt;int&gt; Parse(string expression);
+}
+public interface INumberParserFactory {
+    INumberParser Create(char delimiter);
+}</pre>
+</div>
+<p>We want to configure our <code>INumberParserFactory</code> to create a parser that will return a certain set of <code>int</code> for an <code>expresion</code>. We could manually create each substitute:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var factory = Substitute.For&lt;INumberParserFactory&gt;();
+var parser = Substitute.For&lt;INumberParser&gt;();
+factory.Create(',').Returns(parser);
+parser.Parse(&quot;an expression&quot;).Returns(new[] {1,2,3});
+
+Assert.AreEqual(
+    factory.Create(',').Parse(&quot;an expression&quot;),
+    new[] {1,2,3});</pre>
+</div>
+<p>Or we could use the fact that a substitute for type <code>INumberParser</code> will automatically be returned for <code>INumberParserFactory.Create()</code>:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var factory = Substitute.For&lt;INumberParserFactory&gt;();
+factory.Create(',').Parse(&quot;an expression&quot;).Returns(new[] {1,2,3});
+
+Assert.AreEqual(
+    factory.Create(',').Parse(&quot;an expression&quot;),
+    new[] {1,2,3});</pre>
+</div>
+<p>Each time a recursively-subbed property or method is called with the same arguments it will return the same substitute. If a method is called with different arguments a new substitute will be returned.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var firstCall = factory.Create(',');
+var secondCall = factory.Create(',');
+var thirdCallWithDiffArg = factory.Create('x');
+
+Assert.AreSame(firstCall, secondCall);
+Assert.AreNotSame(firstCall, thirdCallWithDiffArg);</pre>
+</div>
+<p><em>Note:</em> Recursive substitutes will not be created for classes, as creating and using classes can have potentially unwanted side-effects. You&#8217;ll therefore need to create and return these explicitly.</p>
+
+<h3 id='substitute_chains'>Substitute chains</h3>
+
+<p>It is not really an ideal practice, but when required we can also use recursive mocks to make it easier to set up chains of substitutes. For example:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public interface IContext {
+    IRequest CurrentRequest { get; }
+}
+public interface IRequest {
+    IIdentity Identity { get; }
+    IIdentity NewIdentity(string name);
+}
+public interface IIdentity { 
+    string Name { get; } 
+    string[] Roles();
+}</pre>
+</div>
+<p>To get the identity of the <code>CurrentRequest</code> to return a certain name, we could manually create substitutes for <code>IContext</code>, <code>IRequest</code>, and <code>IIdentity</code>, and then use <code>Returns()</code> to chain these substitutes together. Instead we can use the substitutes automatically created for each property and method:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var context = Substitute.For&lt;IContext&gt;();
+context.CurrentRequest.Identity.Name.Returns(&quot;My pet fish Eric&quot;);
+Assert.AreEqual(
+    &quot;My pet fish Eric&quot;, 
+    context.CurrentRequest.Identity.Name);</pre>
+</div>
+<p>Here <code>CurrentRequest</code> is automatically going to return a substitute for <code>IRequest</code>, and the <code>IRequest</code> substitute will automatically return a substitute for <code>IIdentity</code>.</p>
+
+<p><em>Note:</em> Setting up long chains of substitutes this way is a code smell: we are breaking the <a href='http://en.wikipedia.org/wiki/Law_of_Demeter'>Law of Demeter</a>, which says objects should only talk to their immediate neighbours, not reach into their neighbours&#8217; neighbours. If you write your tests without recursive mocks this becomes quite obvious as the set up becomes quite complicated, so if you are going to use recursive mocking you&#8217;ll need to be extra vigilant to avoid this type of coupling.</p>
+
+<h2 id='auto_values'>Auto values</h2>
+
+<p>Properties and methods returning types of <code>String</code> or <code>Array</code> will automatically get empty, non-null defaults. This can help avoid null reference exceptions in cases where you just need a reference returned but don&#8217;t care about its specific properties.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var identity = Substitute.For&lt;IIdentity&gt;();
+Assert.AreEqual(String.Empty, identity.Name);
+Assert.AreEqual(0, identity.Roles().Length);</pre>
+</div>
+      <div id="page-navigation"> 
+        <div class="previous"> 
+         
+            <a href="/help/set-return-values" title="Previous: Setting return values">&laquo; Setting return values</a> 
+         
+        </div> 
+        <div class="next"> 
+         
+        </div> 
+      </div> 
+    </div>
+</div>
+
+
+  </div>
+
+  <div id="footer">
+  NSubstitute is open source software, licensed under the <a href="http://www.opensource.org/licenses/bsd-license.php">BSD License</a>.<br />
+  NSubstitute logo donated by <a href="http://troyhunt.com">Troy Hunt</a>.
+  </div>
+
+  <script type="text/javascript" src="/scripts/shCore.js"></script>
+  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+      doHighlighting();
+    });
+
+    function doHighlighting() {
+        SyntaxHighlighter.defaults.gutter = false;
+        SyntaxHighlighter.defaults.toolbar = false;
+        SyntaxHighlighter.all();
+    }
+  </script>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17200262-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</body>
+</html>

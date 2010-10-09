@@ -33,12 +33,14 @@
             
             <li><a href="/help/set-return-values">Setting return values</a></li>
             
+            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Setting return values</h1>
-      <p>The following examples related to substituting for the following interface:</p>
+      <p>The following examples relate to substituting for the following interface:</p>
 <div class='highlight'>
     <pre class='brush: csharp'>public interface ICalculator
 {
@@ -51,17 +53,45 @@
 <p>To set a return value for a method call on a substitute, call the method as normal, then follow it with a call to NSubstitute&#8217;s <code>Returns</code> extension method.</p>
 <div class='highlight'>
     <pre class='brush: csharp'>var calculator = Substitute.For&lt;ICalculator&gt;();
-calculator.Add(1, 2).Returns(3); //Make this call return 3.</pre>
+calculator.Add(1, 2).Returns(3);</pre>
 </div>
-<p>This will only apply to this combination of arguments, so other calls to this method will return a default value instead.</p>
+<p>This value will be returned every time this call is made. <code>Returns()</code> will only apply to this combination of arguments, so other calls to this method will return a default value instead.</p>
 <div class='highlight'>
-    <pre class='brush: csharp'>var calculator = Substitute.For&lt;ICalculator&gt;();
-calculator.Add(1, 2).Returns(3); //Make this call return 3.
+    <pre class='brush: csharp'>//Make a call return 3:
+calculator.Add(1, 2).Returns(3); 
 Assert.AreEqual(calculator.Add(1, 2), 3);
 Assert.AreEqual(calculator.Add(1, 2), 3);
+
 //Call with different arguments does not return 3
 Assert.AreNotEqual(calculator.Add(3, 6), 3);</pre>
 </div>
+<h2 id='for_properties'>For properties</h2>
+
+<p>The return value for a property can be set in the same was as for a method, using <code>Returns()</code>. You can also just use plain old property setters for read/write properties; they&#8217;ll behave just the way you expect them to.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Mode.Returns(&quot;DEC&quot;);
+Assert.AreEqual(calculator.Mode, &quot;DEC&quot;);
+
+calculator.Mode = &quot;HEX&quot;;
+Assert.AreEqual(calculator.Mode, &quot;HEX&quot;);</pre>
+</div>
+<h2 id='multiple_return_values'>Multiple return values</h2>
+
+<p>A call can also be configured to return a different value over multiple calls. The following example shows this for a call to a property, but it works the same way for method calls.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Mode.Returns(&quot;DEC&quot;, &quot;HEX&quot;, &quot;BIN&quot;);
+Assert.AreEqual(&quot;DEC&quot;, calculator.Mode);
+Assert.AreEqual(&quot;HEX&quot;, calculator.Mode);
+Assert.AreEqual(&quot;BIN&quot;, calculator.Mode);</pre>
+</div><!--
+## Calculating the return value with a function
+The return value for a call to a property or method can be set to the result of a function. This allows more complex logic to be put into the substitute. Although this is normally a bad practice, there are some situations in which it is useful.
+
+<div class="highlight">
+    <pre class="brush: csharp"></pre>
+</div>
+
+-->
       <div id="page-navigation"> 
         <div class="previous"> 
          
@@ -69,6 +99,8 @@ Assert.AreNotEqual(calculator.Add(3, 6), 3);</pre>
          
         </div> 
         <div class="next"> 
+         
+            <a href="/help/auto-and-recursive-mocks" title="Next: Auto and recursive mocks">Auto and recursive mocks &raquo; </a> 
          
         </div> 
       </div> 
