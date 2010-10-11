@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Help</title>
+  <title>NSubstitute: Checking received calls</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -56,18 +56,80 @@
     </div>
 
     <div id="post-content">
-      <h1>Help</h1>
-      <p>Read <a href="/help/getting-started">Getting started</a> for a quick tour of NSubstitute.</p>
+      <h1>Checking received calls</h1>
+      <p>In some cases (particularly for <code>void</code> methods) it is useful to check that a specific call has been received by a substitute. This can be checked using the <code>Received()</code> extension method, followed by the call being checked.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public interface ICommand {
+    void Execute();
+}
 
-<p>For more in depth information start with <a href="/help/creating-a-substitute">Creating a substitute</a>.</p>
+public class SomethingThatNeedsACommand {
+    ICommand command;
+    public SomethingThatNeedsACommand(ICommand command) { 
+        this.command = command;
+    }
+    public void DoSomething() { command.Execute(); }
+    public void DontDoAnything() { }
+}
 
-<p>If you can't find the answer you're looking for, head on over to the <a href="http://groups.google.com/group/nsubstitute">NSubstitute discussion group</a>.</p>
+[Test]
+public void Should_execute_command() {
+    //Arrange
+    var command = Substitute.For&lt;ICommand&gt;();
+    var something = new SomethingThatNeedsACommand(command);
+    //Act
+    something.DoSomething();
+    //Assert
+    command.Received().Execute();
+}</pre>
+</div>
+<p>In this case <code>command</code> did receive a call to <code>Execute()</code>, and so will complete successfully. If <code>Execute()</code> has not been received NSubstitute will throw a <code>CallNotReceivedException</code> and let you know what call was expected and with which arguments, as well as listing actual calls to that method and which the arguments differed.</p>
 
+<h2 id='check_a_call_was_not_received'>Check a call was not received</h2>
+
+<p>NSubstitute can also make sure a call was not received using the <code>DidNotReceive()</code> extension method.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var command = Substitute.For&lt;ICommand&gt;();
+var something = new SomethingThatNeedsACommand(command);
+//Act
+something.DontDoAnything();
+//Assert
+command.DidNotReceive().Execute();</pre>
+</div>
+<h2 id='received_or_not_with_specific_arguments'>Received (or not) with specific arguments</h2>
+
+<p>We can also use <a href='/help/argument-matchers'>argument matchers</a> to check calls were received (or not) with particular arguments. This is covered in more detail in the <a href='/help/argument-matchers'>argument matchers</a> topic, but the following examples show the general idea:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Add(1, 2);
+calculator.Add(-100, 100);
+
+//Check received with second arg of 2 and any first arg:
+calculator.Received().Add(Arg.Any&lt;int&gt;(), 2);
+//Check received with first arg less than 0, and second arg of 100:
+calculator.Received().Add(Arg.Is&lt;int&gt;(x =&gt; x &lt; 0), 100);
+//Check did not receive a call where second arg is &gt;= 500 and any first arg:
+calculator
+    .DidNotReceive()
+    .Add(Arg.Any&lt;int&gt;(), Arg.Is&lt;int&gt;(x =&gt; x &gt;= 500));</pre>
+</div>
+<h2 id='ignoring_arguments'>Ignoring arguments</h2>
+
+<p>NSubstitute can also check calls were received or not received but ignore the arguments used, just like we can for <a href='/help/return-for-any-args'>setting returns for any arguments</a>. In this case we need <code>ReceivedWithAnyArgs()</code> and <code>DidNotReceiveWithAnyArgs()</code>.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Add(1, 3);
+
+calculator.ReceivedWithAnyArgs().Add(1,1);
+calculator.DidNotReceiveWithAnyArgs().Subtract(0,0);</pre>
+</div>
       <div id="page-navigation"> 
         <div class="previous"> 
          
+            <a href="/help/multiple-returns" title="Previous: Multiple return values">&laquo; Multiple return values</a> 
+         
         </div> 
         <div class="next"> 
+         
+            <a href="/help/argument-matchers" title="Next: Argument matchers">Argument matchers &raquo; </a> 
          
         </div> 
       </div> 

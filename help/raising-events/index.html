@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Help</title>
+  <title>NSubstitute: Raising events</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -56,18 +56,70 @@
     </div>
 
     <div id="post-content">
-      <h1>Help</h1>
-      <p>Read <a href="/help/getting-started">Getting started</a> for a quick tour of NSubstitute.</p>
+      <h1>Raising events</h1>
+      <p>Sometimes it is necessary to raise events declared on the types being substituted for. Consider the following example:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public interface IEngine {
+    event EventHandler Idling;
+    event EventHandler&lt;LowFuelWarningEventArgs&gt; LowFuelWarning;
+    event Action&lt;int&gt; RevvedAt;
+}
 
-<p>For more in depth information start with <a href="/help/creating-a-substitute">Creating a substitute</a>.</p>
+public class LowFuelWarningEventArgs : EventArgs {
+    public int PercentLeft { get; private set; }
+    public LowFuelWarningEventArgs(int percentLeft) {
+        PercentLeft = percentLeft;
+    }
+}</pre>
+</div>
+<p>Events are &#8220;interesting&#8221; creatures in the .NET world, as you can&#8217;t pass around references to them like you can with other members. Instead, you can only add or remove handlers to events, and it is this add handler syntax that NSubstitute uses to raise events.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var wasCalled = false;
+engine.Idling += (sender, args) =&gt; wasCalled = true;
 
-<p>If you can't find the answer you're looking for, head on over to the <a href="http://groups.google.com/group/nsubstitute">NSubstitute discussion group</a>.</p>
+//Tell the substitute to raise the event with a sender and EventArgs:
+engine.Idling += Raise.Event(new object(), new EventArgs());
 
+Assert.True(wasCalled);</pre>
+</div>
+<p>In the example above we don&#8217;t really mind what sender and <code>EventArgs</code> our event is raised with, just that it was called. In this case NSubstitute can make our life easier by creating the required arguments for our event handler:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>engine.Idling += Raise.Event();
+Assert.True(wasCalled);</pre>
+</div>
+<h2 id='raising_events_when_arguments_do_not_have_a_default_constructor'>Raising events when arguments do not have a default constructor</h2>
+
+<p>NSubstitute will not always be able to create the event arguments for you. If your event args do not have a default constructor you will have to provide them yourself, as is the case for the <code>LowFuelWarning</code> event. NSubstitute will still create the sender for you if you don&#8217;t provide it though.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>engine.LowFuelWarning += (sender, args) =&gt; numberOfEvents++;
+
+//Raise event with specific args, any sender:
+engine.LowFuelWarning += Raise.Event(new LowFuelWarningEventArgs(10));
+//Raise event with specific args and sender:
+engine.LowFuelWarning += Raise.Event(new object(), new LowFuelWarningEventArgs(10));
+
+Assert.AreEqual(2, numberOfEvents);</pre>
+</div>
+<h2 id='raising__events'>Raising <code>Action</code> events</h2>
+
+<p>In the <code>IEngine</code> example the <code>RevvedAt</code> event is declared as an <code>Action&lt;int&gt;</code>. In this case we can use <code>Raise.Action()</code> to fire our event.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>int revvedAt = 0;;
+engine.RevvedAt += rpm =&gt; revvedAt = rpm;
+
+engine.RevvedAt += Raise.Action(123);
+
+Assert.AreEqual(123, revvedAt);</pre>
+</div>
       <div id="page-navigation"> 
         <div class="previous"> 
          
+            <a href="/help/throwing-exceptions" title="Previous: Throwing exceptions">&laquo; Throwing exceptions</a> 
+         
         </div> 
         <div class="next"> 
+         
+            <a href="/help/auto-and-recursive-mocks" title="Next: Auto and recursive mocks">Auto and recursive mocks &raquo; </a> 
          
         </div> 
       </div> 

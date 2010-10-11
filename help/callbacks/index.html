@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Help</title>
+  <title>NSubstitute: Callbacks, void calls and When..Do</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -56,18 +56,68 @@
     </div>
 
     <div id="post-content">
-      <h1>Help</h1>
-      <p>Read <a href="/help/getting-started">Getting started</a> for a quick tour of NSubstitute.</p>
+      <h1>Callbacks, void calls and When..Do</h1>
+      <p>Sometimes it is useful to execute some arbitrary code whenever a particular call is made. We have already seen an example of this when <a href='/help/return-from-function'>passing functions to <code>Returns()</code></a>.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var counter = 0;
+calculator
+    .Add(0,0)
+    .ReturnsForAnyArgs(x =&gt; {
+        counter++; return 0;
+    });
+calculator.Add(7,3);
+calculator.Add(2,2);
+calculator.Add(11,-3);
+Assert.AreEqual(counter, 3);</pre>
+</div>
+<p>The <a href='/help/return-from-function'>Return from a function</a> topic has more information on the arguments passed to the callback.</p>
 
-<p>For more in depth information start with <a href="/help/creating-a-substitute">Creating a substitute</a>.</p>
+<h2 id='callbacks_for__calls'>Callbacks for <code>void</code> calls</h2>
 
-<p>If you can't find the answer you're looking for, head on over to the <a href="http://groups.google.com/group/nsubstitute">NSubstitute discussion group</a>.</p>
+<p><code>Returns()</code> can be used to get callbacks for members that return a value, but for <code>void</code> members we need a different technique, because we can&#8217;t call a method on a <code>void</code> return. For these cases we can use the <code>When..Do</code> syntax.</p>
 
+<h2 id='when_called_do_this'>When called, do this</h2>
+
+<p><code>When..Do</code> uses two calls to configure our callback. First, <code>When()</code> is called on the substitute and passed a function. The argument to the function is the substitute itself, and we can call the member we are interested in here, even if it returns <code>void</code>. We then call <code>Do()</code> and pass in our callback that will be executed when the substitute&#8217;s member is called.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public interface IFoo {
+    void SayHello(string to);
+}
+[Test]
+public void SayHello() {
+    var counter = 0;
+    var foo = Substitute.For&lt;IFoo&gt;();
+    foo.When(x =&gt; x.SayHello(&quot;World&quot;))
+        .Do(x =&gt; counter++);
+
+    foo.SayHello(&quot;World&quot;);
+    foo.SayHello(&quot;World&quot;);
+    Assert.AreEqual(2, counter);
+}</pre>
+</div>
+<p>The argument passed to the <code>Do()</code> method is the same call information passed to the <a href='/help/return-from-function'><code>Returns()</code> callback</a>, which gives us access to the arguments used for the call.</p>
+
+<p>Note that we can also use <code>When..Do</code> syntax for non-void members, but generally the <code>Returns()</code> syntax is preferred for brevity and clarity. You may still find it useful for non-voids when you want to execute a function without changing a previous return value.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var counter = 0;
+calculator.Add(1, 2).Returns(3);
+calculator
+    .When(x =&gt; x.Add(Arg.Any&lt;int&gt;(), Arg.Any&lt;int&gt;()))
+    .Do(x =&gt; counter++);
+
+var result = calculator.Add(1, 2);
+Assert.AreEqual(3, result);
+Assert.AreEqual(1, counter);</pre>
+</div>
       <div id="page-navigation"> 
         <div class="previous"> 
          
+            <a href="/help/argument-matchers" title="Previous: Argument matchers">&laquo; Argument matchers</a> 
+         
         </div> 
         <div class="next"> 
+         
+            <a href="/help/throwing-exceptions" title="Next: Throwing exceptions">Throwing exceptions &raquo; </a> 
          
         </div> 
       </div> 

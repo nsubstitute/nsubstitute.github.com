@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Help</title>
+  <title>NSubstitute: Return from a function</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -56,18 +56,59 @@
     </div>
 
     <div id="post-content">
-      <h1>Help</h1>
-      <p>Read <a href="/help/getting-started">Getting started</a> for a quick tour of NSubstitute.</p>
+      <h1>Return from a function</h1>
+      <p>The return value for a call to a property or method can be set to the result of a function. This allows more complex logic to be put into the substitute. Although this is normally a bad practice, there are some situations in which it is useful.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator
+    .Add(Arg.Any&lt;int&gt;(), Arg.Any&lt;int&gt;())
+    .Returns(x =&gt; (int)x[0] + (int)x[1]);
 
-<p>For more in depth information start with <a href="/help/creating-a-substitute">Creating a substitute</a>.</p>
+Assert.That(calculator.Add(1, 1), Is.EqualTo(2));
+Assert.That(calculator.Add(20, 30), Is.EqualTo(50));
+Assert.That(calculator.Add(-73, 9348), Is.EqualTo(9275));</pre>
+</div>
+<p>In this example <a href='/help/argument-matchers'>argument matchers</a> are used to match all calls to <code>Add()</code>, and a lambda function is used to return the sum of the first and second arguments passed to the call.</p>
 
-<p>If you can't find the answer you're looking for, head on over to the <a href="http://groups.google.com/group/nsubstitute">NSubstitute discussion group</a>.</p>
+<h3 id='call_information'>Call information</h3>
 
+<p>The function we provide to <code>Returns()</code> and <code>ReturnsForAnyArgs()</code> is of type <code>Func&lt;CallInfo,T&gt;</code>, where <code>T</code> is the type the call is returning, and <code>CallInfo</code> is a type which provides access to the arguments used for the call. In the previous example we accessed these arguments using an indexer (<code>x[1]</code> for the second argument). <code>CallInfo</code> also has a convenience method to pick arguments in a strongly typed way:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public interface IFoo {
+    string Bar(int a, string b);
+}</pre>
+</div><div class='highlight'>
+    <pre class='brush: csharp'>var foo = Substitute.For&lt;IFoo&gt;();
+foo.Bar(0, &quot;&quot;).ReturnsForAnyArgs(x =&gt; &quot;Hello &quot; + x.Arg&lt;string&gt;());
+Assert.That(foo.Bar(1, &quot;World&quot;), Is.EqualTo(&quot;Hello World&quot;));</pre>
+</div>
+<p>Here <code>x.Arg&lt;string&gt;()</code> will return the <code>string</code> argument passed to the call, rather than having to use <code>(string) x[1]</code>. If there are two <code>string</code> arguments to a call, NSubstitute will throw an exception and let you know that it can&#8217;t work out which argument you mean.</p>
+
+<h3 id='callbacks'>Callbacks</h3>
+
+<p>This technique can also be used to get a callback whenever a call is made:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var counter = 0;
+calculator
+    .Add(0, 0)
+    .ReturnsForAnyArgs(x =&gt; {
+        counter++;
+        return 0;
+    });
+
+calculator.Add(7,3);
+calculator.Add(2,2);
+calculator.Add(11,-3);
+Assert.AreEqual(counter, 3);</pre>
+</div>
       <div id="page-navigation"> 
         <div class="previous"> 
          
+            <a href="/help/return-for-any-args" title="Previous: Return for any args">&laquo; Return for any args</a> 
+         
         </div> 
         <div class="next"> 
+         
+            <a href="/help/multiple-returns" title="Next: Multiple return values">Multiple return values &raquo; </a> 
          
         </div> 
       </div> 

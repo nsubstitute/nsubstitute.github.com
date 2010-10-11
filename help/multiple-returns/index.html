@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Help</title>
+  <title>NSubstitute: Multiple return values</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -56,18 +56,24 @@
     </div>
 
     <div id="post-content">
-      <h1>Help</h1>
-      <p>Read <a href="/help/getting-started">Getting started</a> for a quick tour of NSubstitute.</p>
-
-<p>For more in depth information start with <a href="/help/creating-a-substitute">Creating a substitute</a>.</p>
-
-<p>If you can't find the answer you're looking for, head on over to the <a href="http://groups.google.com/group/nsubstitute">NSubstitute discussion group</a>.</p>
-
+      <h1>Multiple return values</h1>
+      <p>A call can also be configured to return a different value over multiple calls. The following example shows this for a call to a property, but it works the same way for method calls.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Mode.Returns(&quot;DEC&quot;, &quot;HEX&quot;, &quot;BIN&quot;);
+Assert.AreEqual(&quot;DEC&quot;, calculator.Mode);
+Assert.AreEqual(&quot;HEX&quot;, calculator.Mode);
+Assert.AreEqual(&quot;BIN&quot;, calculator.Mode);</pre>
+</div>
+<p>This can also be achieved by <a href='/help/return-from-function'>returning from a function</a>, but passing multiple values to <code>Returns()</code> is simpler and reads better.</p>
       <div id="page-navigation"> 
         <div class="previous"> 
          
+            <a href="/help/return-from-function" title="Previous: Return from a function">&laquo; Return from a function</a> 
+         
         </div> 
         <div class="next"> 
+         
+            <a href="/help/received-calls" title="Next: Checking received calls">Checking received calls &raquo; </a> 
          
         </div> 
       </div> 

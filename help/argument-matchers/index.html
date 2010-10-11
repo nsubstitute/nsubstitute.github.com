@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Help</title>
+  <title>NSubstitute: Argument matchers</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -56,18 +56,57 @@
     </div>
 
     <div id="post-content">
-      <h1>Help</h1>
-      <p>Read <a href="/help/getting-started">Getting started</a> for a quick tour of NSubstitute.</p>
+      <h1>Argument matchers</h1>
+      <p>Argument matchers can be used when <a href='/help/return-for-args'>setting return values</a> and when <a href='/help/received-calls'>checking received calls</a>. They provide a way to <em>specify</em> a call or group of calls, so that a return value can be set for all matching calls, or to check a matching call has been received.</p>
 
-<p>For more in depth information start with <a href="/help/creating-a-substitute">Creating a substitute</a>.</p>
+<h2 id='ignoring_arguments'>Ignoring arguments</h2>
 
-<p>If you can't find the answer you're looking for, head on over to the <a href="http://groups.google.com/group/nsubstitute">NSubstitute discussion group</a>.</p>
+<p>An argument of type <code>T</code> can be ignored using <code>Arg.Any&lt;T&gt;()</code>.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Add(Arg.Any&lt;int&gt;(), 5).Returns(7);
 
+Assert.AreEqual(7, calculator.Add(42, 5));
+Assert.AreEqual(7, calculator.Add(123, 5));
+Assert.AreNotEqual(7, calculator.Add(1, 7));</pre>
+</div>
+<p>In this example we return <code>7</code> when adding any number to <code>5</code>. We use <code>Arg.Any&lt;int&gt;()</code> to tell NSubstitute to ignore the first argument.</p>
+
+<h2 id='conditionally_matching_an_argument'>Conditionally matching an argument</h2>
+
+<p>An argument of type <code>T</code> can be conditionally matched using <code>Arg.Is&lt;T&gt;(Predicate&lt;T&gt; condition)</code>.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Add(1, -10);
+
+//Received call with first arg 1 and second arg less than 0:
+calculator.Received().Add(1, Arg.Is&lt;int&gt;(x =&gt; x &lt; 0));
+//Received call with first arg 1 and second arg of -2, -5, or -10:
+calculator
+    .Received()
+    .Add(1, Arg.Is&lt;int&gt;(x =&gt; new[] {-2,-5,-10}.Contains(x)));
+//Did not receive call with first arg greater than 10:
+calculator.DidNotReceive().Add(Arg.Is&lt;int&gt;(x =&gt; x &gt; 10), -10);</pre>
+</div>
+<h2 id='matching_a_specific_argument'>Matching a specific argument</h2>
+
+<p>An argument of type <code>T</code> can be matched using <code>Arg.Is&lt;T&gt;(T value)</code>.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Add(0, 42);
+
+//This won't work; NSubstitute isn't sure which arg the matcher applies to:
+//calculator.Received().Add(0, Arg.Any&lt;int&gt;());
+
+calculator.Received().Add(Arg.Is(0), Arg.Any&lt;int&gt;());</pre>
+</div>
+<p>This matcher normally isn&#8217;t required; most of the time we can just use <code>0</code> instead of <code>Arg.Is(0)</code>. In some cases though, NSubstitute can&#8217;t work out which matcher applies to which argument (arg matchers are actually fuzzily matched; not passed directly to the function call). In these cases it will throw an <code>AmbiguousArgumentsException</code> and ask you to specify one or more additional argument matchers. In some cases you may have to explicitly use argument matchers for every argument.</p>
       <div id="page-navigation"> 
         <div class="previous"> 
          
+            <a href="/help/received-calls" title="Previous: Checking received calls">&laquo; Checking received calls</a> 
+         
         </div> 
         <div class="next"> 
+         
+            <a href="/help/callbacks" title="Next: Callbacks, void calls and When..Do">Callbacks, void calls and When..Do &raquo; </a> 
          
         </div> 
       </div> 

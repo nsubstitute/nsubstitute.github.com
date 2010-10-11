@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Help</title>
+  <title>NSubstitute: Throwing exceptions</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -56,18 +56,30 @@
     </div>
 
     <div id="post-content">
-      <h1>Help</h1>
-      <p>Read <a href="/help/getting-started">Getting started</a> for a quick tour of NSubstitute.</p>
+      <h1>Throwing exceptions</h1>
+      <p><a href='/help/callbacks'>Callbacks</a> can be used to throw exceptions when a member is called.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>//For non-voids:
+calculator.Add(-1, -1).Returns(x =&gt; { throw new Exception(); });
 
-<p>For more in depth information start with <a href="/help/creating-a-substitute">Creating a substitute</a>.</p>
+//For voids and non-voids:
+calculator
+    .When(x =&gt; x.Add(-2, -2))
+    .Do(x =&gt; { throw new Exception(); });
 
-<p>If you can't find the answer you're looking for, head on over to the <a href="http://groups.google.com/group/nsubstitute">NSubstitute discussion group</a>.</p>
-
+//Both calls will now throw.
+Assert.Throws&lt;Exception&gt;(() =&gt; calculator.Add(-1, -1));
+Assert.Throws&lt;Exception&gt;(() =&gt; calculator.Add(-2, -2));</pre>
+</div>
       <div id="page-navigation"> 
         <div class="previous"> 
          
+            <a href="/help/callbacks" title="Previous: Callbacks, void calls and When..Do">&laquo; Callbacks, void calls and When..Do</a> 
+         
         </div> 
         <div class="next"> 
+         
+            <a href="/help/raising-events" title="Next: Raising events">Raising events &raquo; </a> 
          
         </div> 
       </div> 

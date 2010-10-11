@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Help</title>
+  <title>NSubstitute: Return for any args</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -56,18 +56,25 @@
     </div>
 
     <div id="post-content">
-      <h1>Help</h1>
-      <p>Read <a href="/help/getting-started">Getting started</a> for a quick tour of NSubstitute.</p>
+      <h1>Return for any args</h1>
+      <p>A call can be configured to return a value regardless of the arguments passed using the <code>ReturnsForAnyArgs()</code> extension method.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Add(1, 2).ReturnsForAnyArgs(100); 
+Assert.AreEqual(calculator.Add(1, 2), 100);
+Assert.AreEqual(calculator.Add(-7, 15), 100);</pre>
+</div>
+<p>The same behaviour can also be achieved using <a href='/help/argument-matchers'>argument matchers</a>: it is simply a shortcut for replacing each argument with <code>Arg.Any&lt;T&gt;()</code>.</p>
 
-<p>For more in depth information start with <a href="/help/creating-a-substitute">Creating a substitute</a>.</p>
-
-<p>If you can't find the answer you're looking for, head on over to the <a href="http://groups.google.com/group/nsubstitute">NSubstitute discussion group</a>.</p>
-
+<p><code>ReturnsForAnyArgs()</code> has the same overloads as <code>Returns()</code>, so you can also specify multiple return values or calculated return values using this approach.</p>
       <div id="page-navigation"> 
         <div class="previous"> 
          
+            <a href="/help/return-for-args" title="Previous: Return for specific args">&laquo; Return for specific args</a> 
+         
         </div> 
         <div class="next"> 
+         
+            <a href="/help/return-from-function" title="Next: Return from a function">Return from a function &raquo; </a> 
          
         </div> 
       </div> 
