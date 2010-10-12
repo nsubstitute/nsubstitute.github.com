@@ -121,6 +121,31 @@ calculator
 calculator.ReceivedWithAnyArgs().Add(1,1);
 calculator.DidNotReceiveWithAnyArgs().Subtract(0,0);</pre>
 </div>
+<h2 id='checking_calls_to_properties'>Checking calls to properties</h2>
+
+<p>The same syntax can be used to check calls on properties. Normally we&#8217;d want to avoid this, as we&#8217;re really more interested in testing the required behaviour rather than the precise implementation details (i.e. we would set the property to return a value and check that was used properly, rather than assert that the property getter was called). Still, there are probably times when checking getters and setters were called can come in handy, so here&#8217;s how you do it:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var mode = calculator.Mode;
+calculator.Mode = &quot;TEST&quot;;
+
+//Check received call to property getter
+//We need to assign the result to a variable to keep
+//the compiler happy.
+var temp = calculator.Received().Mode;
+
+//Check received call to property setter with arg of &quot;TEST&quot;
+calculator.Received().Mode = &quot;TEST&quot;;</pre>
+</div>
+<h2 id='checking_calls_to_indexers'>Checking calls to indexers</h2>
+
+<p>An indexer is really just another property, so we can use the same syntax to check calls to indexers.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var dictionary = Substitute.For&lt;IDictionary&lt;string, int&gt;&gt;();
+dictionary[&quot;test&quot;] = 1;
+
+dictionary.Received()[&quot;test&quot;] = 1;
+dictionary.Received()[&quot;test&quot;] = Arg.Is&lt;int&gt;(x =&gt; x &lt; 5);</pre>
+</div>
       <div id="page-navigation"> 
         <div class="previous"> 
          
