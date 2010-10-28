@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Return for any args</title>
+  <title>NSubstitute: Clearing received calls</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -60,25 +60,53 @@
     </div>
 
     <div id="post-content">
-      <h1>Return for any args</h1>
-      <p>A call can be configured to return a value regardless of the arguments passed using the <code>ReturnsForAnyArgs()</code> extension method.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(1, 2).ReturnsForAnyArgs(100); 
-Assert.AreEqual(calculator.Add(1, 2), 100);
-Assert.AreEqual(calculator.Add(-7, 15), 100);</pre>
-</div>
-<p>The same behaviour can also be achieved using <a href='/help/argument-matchers'>argument matchers</a>: it is simply a shortcut for replacing each argument with <code>Arg.Any&lt;T&gt;()</code>.</p>
+      <h1>Clearing received calls</h1>
+      <p>A substitute can forget all the calls previously made to it using the <code>ClearReceivedCalls()</code> extension method.</p>
 
-<p><code>ReturnsForAnyArgs()</code> has the same overloads as <code>Returns()</code>, so you can also specify multiple return values or calculated return values using this approach.</p>
+<p>Say we have an <code>ICommand</code> interface, and we want a <code>OnceOffCommandRunner</code> that will take an <code>ICommand</code> and only run it once.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public interface ICommand {
+    void Execute();
+}
+
+public class OnceOffCommandRunner {
+    ICommand command;
+    public OnceOffCommandRunner(ICommand command) {
+        this.command = command;
+    }
+    public void Run() {
+        if (command == null) return;
+        command.Execute();
+        command = null;
+    }
+}</pre>
+</div>
+<p>If we substitute for <code>ICommand</code> we can test it is called on the first run, then forget any previous calls made to it, and make sure it is not called again.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var command = Substitute.For&lt;ICommand&gt;();
+var runner = new OnceOffCommandRunner(command);
+
+//First run
+runner.Run();
+command.Received().Execute();
+
+//Forget previous calls to command
+command.ClearReceivedCalls();
+
+//Second run
+runner.Run();
+command.DidNotReceive().Execute();</pre>
+</div>
+<p><code>ClearReceivedCalls()</code> will not clear any results set up for the substitute using <code>Returns()</code>. If we need to this, we can <a href='/help/replacing-return-values'>replace previously specified results</a> by calling <code>Returns()</code> again.</p>
       <div id="page-navigation"> 
         <div class="previous"> 
          
-            <a href="/help/return-for-args" title="Previous: Return for specific args">&laquo; Return for specific args</a> 
+            <a href="/help/received-calls" title="Previous: Checking received calls">&laquo; Checking received calls</a> 
          
         </div> 
         <div class="next"> 
          
-            <a href="/help/return-from-function" title="Next: Return from a function">Return from a function &raquo; </a> 
+            <a href="/help/argument-matchers" title="Next: Argument matchers">Argument matchers &raquo; </a> 
          
         </div> 
       </div> 

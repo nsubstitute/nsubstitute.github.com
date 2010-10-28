@@ -40,7 +40,11 @@
             
             <li><a href="/help/multiple-returns">Multiple return values</a></li>
             
+            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            
             <li><a href="/help/received-calls">Checking received calls</a></li>
+            
+            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
             
             <li><a href="/help/argument-matchers">Argument matchers</a></li>
             
@@ -83,7 +87,7 @@ runner.RunCommand();
 command.Received().Execute();
 ((IDisposable)command).Received().Dispose();</pre>
 </div>
-<p>You&#8217;re substitute can implement several types this way, but remember you can only implement a maximum of one class. You can specify as many interfaces as you like, but only one of these can be a class. The most flexible way of creating substitutes for multiple types is using this overload:</p>
+<p>Your substitute can implement several types this way, but remember you can only implement a maximum of one class. You can specify as many interfaces as you like, but only one of these can be a class. The most flexible way of creating substitutes for multiple types is using this overload:</p>
 <div class='highlight'>
     <pre class='brush: csharp'>var substitute = Substitute.For(
 		new[] { typeof(ICommand), typeof(ISomeInterface), typeof(SomeClassWithCtorArgs) },
@@ -92,6 +96,15 @@ command.Received().Execute();
 Assert.IsInstanceOf&lt;ICommand&gt;(substitute);
 Assert.IsInstanceOf&lt;ISomeInterface&gt;(substitute);
 Assert.IsInstanceOf&lt;SomeClassWithCtorArgs&gt;(substitute);</pre>
+</div>
+<h2 id='substituting_for_delegates'>Substituting for delegates</h2>
+
+<p>NSubstitute can also substitute for delegate types by using <code>Substiute.For&lt;T&gt;()</code>. When substituting for delegate types you will not be able to get the substitute to implement additional interfaces or classes.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var func = Substitute.For&lt;Func&lt;string&gt;&gt;();
+
+func().Returns(&quot;hello&quot;);
+Assert.AreEqual(&quot;hello&quot;, func());</pre>
 </div>
       <div id="page-navigation"> 
         <div class="previous"> 

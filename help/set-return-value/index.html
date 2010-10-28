@@ -40,7 +40,11 @@
             
             <li><a href="/help/multiple-returns">Multiple return values</a></li>
             
+            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            
             <li><a href="/help/received-calls">Checking received calls</a></li>
+            
+            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
             
             <li><a href="/help/argument-matchers">Argument matchers</a></li>
             
@@ -74,7 +78,7 @@ calculator.Add(1, 2).Returns(3);</pre>
 <p>This value will be returned every time this call is made. <code>Returns()</code> will only apply to this combination of arguments, so other calls to this method will return a default value instead.</p>
 <div class='highlight'>
     <pre class='brush: csharp'>//Make a call return 3:
-calculator.Add(1, 2).Returns(3); 
+calculator.Add(1, 2).Returns(3);
 Assert.AreEqual(calculator.Add(1, 2), 3);
 Assert.AreEqual(calculator.Add(1, 2), 3);
 
