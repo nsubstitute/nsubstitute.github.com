@@ -71,7 +71,7 @@
 {
     int Add(int a, int b);
     string Mode { get; set; }
-    event Action PoweringUp;
+    event EventHandler PoweringUp;
 }</pre>
 </div>
 <p>We can ask NSubstitute to create a substitute instance for this type. We could ask for a stub, mock, fake, spy, test double etc., but why bother when we just want to substitute an instance we have some control over?</p>
@@ -128,9 +128,9 @@ Assert.That(calculator.Mode, Is.EqualTo(&quot;BIN&quot;));</pre>
 <p>Finally, we can raise events on our substitutes (unfortunately C# dramatically restricts the extent to which this syntax can be cleaned up):</p>
 <div class='highlight'>
     <pre class='brush: csharp'>bool eventWasRaised = false;
-calculator.PoweringUp += () =&gt; eventWasRaised = true;
+calculator.PoweringUp += (sender, args) =&gt; eventWasRaised = true;
 
-calculator.PoweringUp += Raise.Action();
+calculator.PoweringUp += Raise.Event();
 Assert.That(eventWasRaised);</pre>
 </div>
 <p>That&#8217;s pretty much all you need to get started with NSubstitute. Read on for more detailed feature descriptions, as well as for some of the less common requirements that NSubstitute supports.</p>
