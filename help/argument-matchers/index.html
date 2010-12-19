@@ -10,7 +10,7 @@
 <body>
   <div id="header">
     <a href="/" alt="NSubstitute">
-      <img src="/images/NSubstitute.png" style="float: left; margin-right: 15px; width: 100px; height: 100px;" />
+      <img src="/images/nsubstitute-100x100.png" style="float: left; margin-right: 15px; width: 100px; height: 100px;" />
       <h1 style="display: inline"> NSubstitute </h1> <br />
       <span><i>A friendly substitute for .NET mocking frameworks</i></span>
     </a>
@@ -102,18 +102,18 @@ calculator.DidNotReceive().Add(Arg.Is&lt;int&gt;(x =&gt; x &gt; 10), -10);</pre>
 calculator.Received().Add(Arg.Is(0), Arg.Any&lt;int&gt;());</pre>
 </div>
 <p>This matcher normally isn&#8217;t required; most of the time we can just use <code>0</code> instead of <code>Arg.Is(0)</code>. In some cases though, NSubstitute can&#8217;t work out which matcher applies to which argument (arg matchers are actually fuzzily matched; not passed directly to the function call). In these cases it will throw an <code>AmbiguousArgumentsException</code> and ask you to specify one or more additional argument matchers. In some cases you may have to explicitly use argument matchers for every argument.</p>
-      <div id="page-navigation"> 
-        <div class="previous"> 
-         
-            <a href="/help/clear-received-calls" title="Previous: Clearing received calls">&laquo; Clearing received calls</a> 
-         
-        </div> 
-        <div class="next"> 
-         
-            <a href="/help/callbacks" title="Next: Callbacks, void calls and When..Do">Callbacks, void calls and When..Do &raquo; </a> 
-         
-        </div> 
-      </div> 
+      <div id="page-navigation">
+        <div class="previous">
+        
+            <a href="/help/clear-received-calls" title="Previous: Clearing received calls">&laquo; Clearing received calls</a>
+        
+        </div>
+        <div class="next">
+        
+            <a href="/help/callbacks" title="Next: Callbacks, void calls and When..Do">Callbacks, void calls and When..Do &raquo; </a>
+        
+        </div>
+      </div>
     </div>
 </div>
 
