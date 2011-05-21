@@ -17,8 +17,8 @@
   </div>
   <div id="nav">
     <a href="/help/getting-started">Getting started</a> |
-    <a href="/help.html">Help</a> |
-    <a href="http://github.com/nsubstitute/NSubstitute">Project</a>
+    <a href="/help.html">Help and docs</a> |
+    <a href="http://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
   <div id="content">
@@ -61,9 +61,11 @@
 
     <div id="post-content">
       <h1>Getting started</h1>
-      <p>So you&#8217;ve <a href='http://github.com/nsubstitute/NSubstitute/downloads'>downloaded NSubstitute</a>, created a new project with a reference to your favourite unit testing framework (for these examples we&#8217;re using <a href='http://www.nunit.org/'>NUnit</a>), and are staring at a blank test fixture you&#8217;ve created to try it out, wondering where to start.</p>
+      <p>The easiest way to get started is to reference NSubstitute from your test project using the <a href='http://nuget.org/List/Packages/NSubstitute'>NSubstitute NuGet package</a> via <a href='http://nuget.codeplex.com/wikipage?title=Getting%20Started'>NuGet</a> or <a href='https://github.com/openrasta/openwrap/wiki/Nuget'>OpenWrap</a>. Alternatively you can <a href='http://github.com/nsubstitute/NSubstitute/downloads'>download NSubstitute</a> and add a reference to the <code>NSubstitute.dll</code> file included in the download into your test project.</p>
 
-<p>Well, first you need to add a reference to <code>NSubstitute.dll</code> (from the download) into your project, and add <code>using NSubstitute;</code> to your current C# file. This will give you everything you need to start substituting.</p>
+<p>So now you are staring at a blank test fixture (created with your favourite unit testing framework; for these examples we&#8217;re using <a href='http://www.nunit.org/'>NUnit</a>), and are wondering where to start.</p>
+
+<p>First, add <code>using NSubstitute;</code> to your current C# file. This will give you everything you need to start substituting.</p>
 
 <p>Now let&#8217;s say we have a basic calculator interface:</p>
 <div class='highlight'>
