@@ -16,8 +16,9 @@
     </a>
   </div>
   <div id="nav">
-    <a href="/help/getting-started">Getting started</a> |
-    <a href="/help.html">Help and docs</a> |
+    <a href="/help/getting-started">Get started</a> |
+    <a href="/help.html">Docs</a> |
+    <a href="http://groups.google.com/group/nsubstitute">Discussion group</a> |
     <a href="http://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
@@ -56,12 +57,18 @@
             
             <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
             
+            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            
+            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Auto and recursive mocks</h1>
-      <p>Once a substitute has been created some properties and methods will automatically return non-null values. For example, any properties or methods that return an <em>interface</em> or a <em>delegate</em> will automatically return substitutes themselves. This is commonly referred to as <em>recursive mocking</em>, and can be useful because you can avoid explicitly creating each substitute, which means less code. Other types, like <code>String</code> and <code>Array</code>, will default to returning empty values rather than nulls.</p>
+      <p>Once a substitute has been created some properties and methods will automatically return non-null values. For example, any properties or methods that return an <em>interface</em>, <em>delegate</em>, or <em>purely virtual class</em>* will automatically return substitutes themselves. This is commonly referred to as <em>recursive mocking</em>, and can be useful because you can avoid explicitly creating each substitute, which means less code. Other types, like <code>String</code> and <code>Array</code>, will default to returning empty values rather than nulls.</p>
+
+<p><em>* Note:</em> A pure virtual class is defined as one with all its public methods and properties defined as <em>virtual</em> or <em>abstract</em> and with a default, parameterless constructor defined as <em>public</em> or <em>protected</em>.</p>
 
 <h2 id='recursive_mocks'>Recursive mocks</h2>
 
@@ -149,6 +156,8 @@ Assert.AreEqual(0, identity.Roles().Length);</pre>
         </div>
         <div class="next">
         
+            <a href="/help/setting-out-and-ref-arguments" title="Next: Setting out and ref args">Setting out and ref args &raquo; </a>
+        
         </div>
       </div>
     </div>
@@ -160,6 +169,7 @@ Assert.AreEqual(0, identity.Roles().Length);</pre>
   <div id="footer">
   NSubstitute is open source software, licensed under the <a href="http://www.opensource.org/licenses/bsd-license.php">BSD License</a>.<br />
 The NSubstitute project is possible <a href="http://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.markdown">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
+NSubstitute CI builds are run using <a href="http://www.jetbrains.com/teamcity/">TeamCity</a> kindly <a href="http://codebetter.com/codebetter-ci/">hosted by Codebetter</a>.<br />
   NSubstitute logo donated by <a href="http://troyhunt.com">Troy Hunt</a>.
   </div>
 

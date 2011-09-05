@@ -16,8 +16,9 @@
     </a>
   </div>
   <div id="nav">
-    <a href="/help/getting-started">Getting started</a> |
-    <a href="/help.html">Help and docs</a> |
+    <a href="/help/getting-started">Get started</a> |
+    <a href="/help.html">Docs</a> |
+    <a href="http://groups.google.com/group/nsubstitute">Discussion group</a> |
     <a href="http://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
@@ -55,6 +56,10 @@
             <li><a href="/help/raising-events">Raising events</a></li>
             
             <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            
+            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            
+            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
             
         </ul>
     </div>
@@ -113,6 +118,11 @@ var result = calculator.Add(1, 2);
 Assert.AreEqual(3, result);
 Assert.AreEqual(1, counter);</pre>
 </div>
+<h2 id='per_argument_callbacks'>Per argument callbacks</h2>
+
+<p>In cases where we only need callbacks for a particular argument we may be able to use <a href='/help/actions-with-arguments'>per argument callbacks like <code>Arg.Do()</code> and <code>Arg.Invoke()</code></a> instead of <code>When..Do</code>.</p>
+
+<p>Argument callbacks give us slightly more concise code in a style that is more in keeping with the rest of the NSubstitute API. See <a href='/help/actions-with-arguments'>Actions with arguments</a> for more information and examples.</p>
       <div id="page-navigation">
         <div class="previous">
         
@@ -134,6 +144,7 @@ Assert.AreEqual(1, counter);</pre>
   <div id="footer">
   NSubstitute is open source software, licensed under the <a href="http://www.opensource.org/licenses/bsd-license.php">BSD License</a>.<br />
 The NSubstitute project is possible <a href="http://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.markdown">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
+NSubstitute CI builds are run using <a href="http://www.jetbrains.com/teamcity/">TeamCity</a> kindly <a href="http://codebetter.com/codebetter-ci/">hosted by Codebetter</a>.<br />
   NSubstitute logo donated by <a href="http://troyhunt.com">Troy Hunt</a>.
   </div>
 

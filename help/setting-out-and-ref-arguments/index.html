@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Argument matchers</title>
+  <title>NSubstitute: Setting out and ref args</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -65,76 +65,41 @@
     </div>
 
     <div id="post-content">
-      <h1>Argument matchers</h1>
-      <p>Argument matchers can be used when <a href='/help/return-for-args'>setting return values</a> and when <a href='/help/received-calls'>checking received calls</a>. They provide a way to <em>specify</em> a call or group of calls, so that a return value can be set for all matching calls, or to check a matching call has been received.</p>
-
-<h2 id='ignoring_arguments'>Ignoring arguments</h2>
-
-<p>An argument of type <code>T</code> can be ignored using <code>Arg.Any&lt;T&gt;()</code>.</p>
+      <h1>Setting out and ref args</h1>
+      <p><code>Out</code> and <code>ref</code> arguments can be set using a <a href='/help/return-from-function'><code>Returns()</code> callback</a>, or using <a href='/help/callbacks'><code>When..Do</code></a>.</p>
 <div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(Arg.Any&lt;int&gt;(), 5).Returns(7);
-
-Assert.AreEqual(7, calculator.Add(42, 5));
-Assert.AreEqual(7, calculator.Add(123, 5));
-Assert.AreNotEqual(7, calculator.Add(1, 7));</pre>
+    <pre class='brush: csharp'>public interface ILookup {
+    bool TryLookup(string key, out string value);
+}</pre>
 </div>
-<p>In this example we return <code>7</code> when adding any number to <code>5</code>. We use <code>Arg.Any&lt;int&gt;()</code> to tell NSubstitute to ignore the first argument.</p>
-
-<p>We can also use this to match any argument of a specific sub-type.</p>
+<p>For the interface above we can configure the return value and set the output of the second argument like this:</p>
 <div class='highlight'>
-    <pre class='brush: csharp'>formatter.Format(new object());
-formatter.Format(&quot;some string&quot;);
+    <pre class='brush: csharp'>//Arrange
+var value = &quot;&quot;;
+var lookup = Substitute.For&lt;ILookup&gt;();
+lookup
+    .TryLookup(&quot;hello&quot;, out value)
+    .Returns(x =&gt; { 
+        x[1] = &quot;world!&quot;;
+        return true;
+    });
 
-formatter.Received().Format(Arg.Any&lt;object&gt;());
-formatter.Received().Format(Arg.Any&lt;string&gt;());
-formatter.DidNotReceive().Format(Arg.Any&lt;int&gt;());</pre>
+//Act
+var result = lookup.TryLookup(&quot;hello&quot;, out value);
+
+//Assert
+Assert.True(result);
+Assert.AreEqual(value, &quot;world!&quot;);</pre>
 </div>
-<h2 id='conditionally_matching_an_argument'>Conditionally matching an argument</h2>
-
-<p>An argument of type <code>T</code> can be conditionally matched using <code>Arg.Is&lt;T&gt;(Predicate&lt;T&gt; condition)</code>.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(1, -10);
-
-//Received call with first arg 1 and second arg less than 0:
-calculator.Received().Add(1, Arg.Is&lt;int&gt;(x =&gt; x &lt; 0));
-//Received call with first arg 1 and second arg of -2, -5, or -10:
-calculator
-    .Received()
-    .Add(1, Arg.Is&lt;int&gt;(x =&gt; new[] {-2,-5,-10}.Contains(x)));
-//Did not receive call with first arg greater than 10:
-calculator.DidNotReceive().Add(Arg.Is&lt;int&gt;(x =&gt; x &gt; 10), -10);</pre>
-</div>
-<p>If the condition throws an exception for an argument, then it will be assumed that the argument does not match. The exception itself will be swallowed.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>formatter.Format(Arg.Is&lt;string&gt;(x =&gt; x.Length &lt;= 10)).Returns(&quot;matched&quot;);
-
-Assert.AreEqual(&quot;matched&quot;, formatter.Format(&quot;short&quot;));
-Assert.AreNotEqual(&quot;matched&quot;, formatter.Format(&quot;not matched, too long&quot;));
-// Will not match because trying to access .Length on null will throw an exception when testing
-// our condition. NSubstitute will assume it does not match and swallow the exception.
-Assert.AreNotEqual(&quot;matched&quot;, formatter.Format(null));</pre>
-</div>
-<h2 id='matching_a_specific_argument'>Matching a specific argument</h2>
-
-<p>An argument of type <code>T</code> can be matched using <code>Arg.Is&lt;T&gt;(T value)</code>.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(0, 42);
-
-//This won't work; NSubstitute isn't sure which arg the matcher applies to:
-//calculator.Received().Add(0, Arg.Any&lt;int&gt;());
-
-calculator.Received().Add(Arg.Is(0), Arg.Any&lt;int&gt;());</pre>
-</div>
-<p>This matcher normally isn&#8217;t required; most of the time we can just use <code>0</code> instead of <code>Arg.Is(0)</code>. In some cases though, NSubstitute can&#8217;t work out which matcher applies to which argument (arg matchers are actually fuzzily matched; not passed directly to the function call). In these cases it will throw an <code>AmbiguousArgumentsException</code> and ask you to specify one or more additional argument matchers. In some cases you may have to explicitly use argument matchers for every argument.</p>
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/clear-received-calls" title="Previous: Clearing received calls">&laquo; Clearing received calls</a>
+            <a href="/help/auto-and-recursive-mocks" title="Previous: Auto and recursive mocks">&laquo; Auto and recursive mocks</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/callbacks" title="Next: Callbacks, void calls and When..Do">Callbacks, void calls and When..Do &raquo; </a>
+            <a href="/help/actions-with-arguments" title="Next: Actions with argument matchers">Actions with argument matchers &raquo; </a>
         
         </div>
       </div>
