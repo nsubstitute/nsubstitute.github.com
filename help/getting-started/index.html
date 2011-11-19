@@ -98,11 +98,12 @@ calculator.DidNotReceive().Add(5, 7);</pre>
 </div>
 <p>If our <code>Received()</code> assertion fails, NSubstitute tries to give us some help as to what the problem might be:</p>
 
-<pre><code>NSubstitute.Exceptions.CallNotReceivedException : Expected to receive call:
+<pre><code>NSubstitute.Exceptions.ReceivedCallsException : Expected to receive a call matching:
     Add(1, 2)
-Actually received (non-matching arguments indicated with &#39;*&#39; characters):
-    Add(1, *5*)
-    Add(*4*, *7*)</code></pre>
+Actually received no matching calls.
+Received 2 non-matching calls (non-matching arguments indicated with &#39;*&#39; characters):
+    Add(*4*, *7*)
+    Add(1, *5*)</code></pre>
 
 <p>We can also work with properties using the <code>Returns</code> syntax we use for methods, or just stick with plain old property setters (for read/write properties):</p>
 <div class='highlight'>

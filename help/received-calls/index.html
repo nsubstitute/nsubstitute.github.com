@@ -92,7 +92,7 @@ public void Should_execute_command() {
     command.Received().Execute();
 }</pre>
 </div>
-<p>In this case <code>command</code> did receive a call to <code>Execute()</code>, and so will complete successfully. If <code>Execute()</code> has not been received NSubstitute will throw a <code>CallNotReceivedException</code> and let you know what call was expected and with which arguments, as well as listing actual calls to that method and which the arguments differed.</p>
+<p>In this case <code>command</code> did receive a call to <code>Execute()</code>, and so will complete successfully. If <code>Execute()</code> has not been received NSubstitute will throw a <code>ReceivedCallsException</code> and let you know what call was expected and with which arguments, as well as listing actual calls to that method and which the arguments differed.</p>
 
 <h2 id='check_a_call_was_not_received'>Check a call was not received</h2>
 
@@ -105,6 +105,35 @@ something.DontDoAnything();
 //Assert
 command.DidNotReceive().Execute();</pre>
 </div>
+<h2 id='check_a_call_was_received_a_specific_number_of_times'>Check a call was received a specific number of times</h2>
+
+<p>The <code>Received()</code> extension method will assert that at least one call was made to a member, and <code>DidNotReceive()</code> asserts that zero calls were made. NSubstitute also gives you the option of asserting a specific number of calls were received by passing an integer to <code>Received()</code>. This will throw if the substitute does not receive <em>exactly</em> that many matching calls. Too few, or too many, and the assertion will fail.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public class CommandRepeater {
+    ICommand command;
+    int numberOfTimesToCall;
+    public CommandRepeater(ICommand command, int numberOfTimesToCall) {
+      this.command = command;
+      this.numberOfTimesToCall = numberOfTimesToCall;
+    }
+
+    public void Execute() { 
+      for (var i=0; i&lt;numberOfTimesToCall; i++) command.Execute();
+    }
+}
+
+[Test]
+public void Should_execute_command_the_number_of_times_specified() {
+  var command = Substitute.For&lt;ICommand&gt;();
+  var repeater = new CommandRepeater(command, 3);
+  //Act
+  repeater.Execute();
+  //Assert
+  command.Received(3).Execute(); // &lt;&lt; This will fail if 2 or 4 calls were received
+}</pre>
+</div>
+<p>We can also use <code>Received(1)</code> to check a call was received once and only once. This differs from the standard <code>Received()</code> call, which checks a call was received <em>at least</em> once. <code>Received(0)</code> behaves the same as <code>DidNotReceive()</code>.</p>
+
 <h2 id='received_or_not_with_specific_arguments'>Received (or not) with specific arguments</h2>
 
 <p>We can also use <a href='/help/argument-matchers'>argument matchers</a> to check calls were received (or not) with particular arguments. This is covered in more detail in the <a href='/help/argument-matchers'>argument matchers</a> topic, but the following examples show the general idea:</p>

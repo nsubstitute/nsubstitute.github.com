@@ -51,9 +51,10 @@ calculator.PoweringUp += Raise.Event();</pre>
         <h2>Helpful exceptions</h2>
         <div class="highlight">
             <pre>
-CallNotReceivedException : Expected to receive call:
+ReceivedCallsException : Expected to receive a call matching:
     Add(1, 2)
-Actually received (non-matching arguments indicated with '*' characters):
+Actually received no matching calls.
+Received 2 non-matching calls (non-matching arguments indicated with '*' characters):
     Add(*4*, *7*)
     Add(1, *5*)</pre>
         </div>
@@ -70,7 +71,7 @@ Actually received (non-matching arguments indicated with '*' characters):
   <div id="downloads" class="sidebar download">
       <ul>
           <li class="nsubstitute" style="font-weight: bold; font-size: 130%">
-          <a href="http://github.com/downloads/nsubstitute/NSubstitute/NSubstitute-1.2.1.0.zip">Download</a>
+          <a href="http://github.com/downloads/nsubstitute/NSubstitute/NSubstitute-1.3.0.0.zip">Download</a>
           </li>
           <li class="nuget">
           <a href="http://nuget.org/List/Packages/NSubstitute">Install via NuGet:</a> <code>Install-Package NSubstitute</code>
