@@ -61,6 +61,8 @@
             
             <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
             
+            <li><a href="/help/received-in-order">Checking call order</a></li>
+            
         </ul>
     </div>
 
@@ -74,6 +76,16 @@ Assert.AreEqual(&quot;HEX&quot;, calculator.Mode);
 Assert.AreEqual(&quot;BIN&quot;, calculator.Mode);</pre>
 </div>
 <p>This can also be achieved by <a href='/help/return-from-function'>returning from a function</a>, but passing multiple values to <code>Returns()</code> is simpler and reads better.</p>
+
+<h2 id='multiple_returns_using_callbacks'>Multiple returns using callbacks</h2>
+
+<p><code>Returns()</code> also supports passing multiple <a href='/help/return-from-function'>functions to return from</a>, which allows one call in a sequence to throw an exception or perform some other action.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator.Mode.Returns(x =&gt; &quot;DEC&quot;, x =&gt; &quot;HEX&quot;, x =&gt; { throw new Exception(); });
+Assert.AreEqual(&quot;DEC&quot;, calculator.Mode);
+Assert.AreEqual(&quot;HEX&quot;, calculator.Mode);
+Assert.Throws&lt;Exception&gt;(() =&gt; { var result = calculator.Mode; });</pre>
+</div>
       <div id="page-navigation">
         <div class="previous">
         

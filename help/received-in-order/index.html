@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Setting out and ref args</title>
+  <title>NSubstitute: Checking call order</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -67,41 +67,49 @@
     </div>
 
     <div id="post-content">
-      <h1>Setting out and ref args</h1>
-      <p><code>Out</code> and <code>ref</code> arguments can be set using a <a href='/help/return-from-function'><code>Returns()</code> callback</a>, or using <a href='/help/callbacks'><code>When..Do</code></a>.</p>
+      <h1>Checking call order</h1>
+      <p><strong>NOTE: This feature is currently in the <code>NSubstitute.Experimental</code> namespace while we experiment with its API and behaviour. You are welcome to try it out, but be aware that it may change in later releases. Please leave feedback on the <a href='https://groups.google.com/group/nsubstitute'>discussion group</a>.</strong></p>
+
+<p>Sometimes calls need to be made in a specific order. Depending on the timing of calls like this is known as <em>temporal coupling</em>. Ideally we&#8217;d change our design to remove this coupling, but for times when we can&#8217;t NSubstitute lets us resort to asserting the order of calls.</p>
 <div class='highlight'>
-    <pre class='brush: csharp'>public interface ILookup {
-    bool TryLookup(string key, out string value);
+    <pre class='brush: csharp'>[Test]
+public void TestCommandRunWhileConnectionIsOpen() {
+  var connection = Substitute.For&lt;IConnection&gt;();
+  var command = Substitute.For&lt;ICommand&gt;();
+  var subject = new Controller(connection, command);
+
+  subject.DoStuff();
+
+  Received.InOrder(() =&gt; {
+    connection.Open();
+    command.Run(connection);
+    connection.Close();
+  });
 }</pre>
 </div>
-<p>For the interface above we can configure the return value and set the output of the second argument like this:</p>
+<p>If the calls were received in a different order then <code>Received.InOrder</code> will throw an exception and show the expected and actual calls.</p>
+
+<p>We can use standard <a href='/help/argument-matchers/'>argument matchers</a> to match calls, just as we would when <a href='/help/received-calls/'>checking for a single received call</a>.</p>
 <div class='highlight'>
-    <pre class='brush: csharp'>//Arrange
-var value = &quot;&quot;;
-var lookup = Substitute.For&lt;ILookup&gt;();
-lookup
-    .TryLookup(&quot;hello&quot;, out value)
-    .Returns(x =&gt; { 
-        x[1] = &quot;world!&quot;;
-        return true;
-    });
+    <pre class='brush: csharp'>[Test]
+public void SubscribeToEventBeforeOpeningConnection() {
+  var connection = Substitute.For&lt;IConnection&gt;();
+  connection.SomethingHappened += () =&gt; { /* some event handler */ };
+  connection.Open();
 
-//Act
-var result = lookup.TryLookup(&quot;hello&quot;, out value);
-
-//Assert
-Assert.True(result);
-Assert.AreEqual(value, &quot;world!&quot;);</pre>
+  Received.InOrder(() =&gt; {
+    connection.SomethingHappened += Arg.Any&lt;Action&gt;();
+    connection.Open();
+  });
+}</pre>
 </div>
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/auto-and-recursive-mocks" title="Previous: Auto and recursive mocks">&laquo; Auto and recursive mocks</a>
+            <a href="/help/actions-with-arguments" title="Previous: Actions with argument matchers">&laquo; Actions with argument matchers</a>
         
         </div>
         <div class="next">
-        
-            <a href="/help/actions-with-arguments" title="Next: Actions with argument matchers">Actions with argument matchers &raquo; </a>
         
         </div>
       </div>
