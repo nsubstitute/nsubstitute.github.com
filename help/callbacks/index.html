@@ -73,9 +73,9 @@
     <pre class='brush: csharp'>var counter = 0;
 calculator
     .Add(0,0)
-    .ReturnsForAnyArgs(x =&gt; {
-        counter++; return 0;
-    });
+    .ReturnsForAnyArgs(x =&gt; 0)
+    .AndDoes(x =&gt; counter++);
+
 calculator.Add(7,3);
 calculator.Add(2,2);
 calculator.Add(11,-3);

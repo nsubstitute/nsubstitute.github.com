@@ -111,6 +111,18 @@ calculator.Add(2,2);
 calculator.Add(11,-3);
 Assert.AreEqual(counter, 3);</pre>
 </div>
+<p>Alternatively the callback can be specified after the <code>Returns</code> using <code>AndDoes</code>:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var counter = 0;
+calculator
+    .Add(0, 0)
+    .ReturnsForAnyArgs(x =&gt; 0)
+    .AndDoes(x =&gt; counter++);
+
+calculator.Add(7,3);
+calculator.Add(2,2);
+Assert.AreEqual(counter, 2);</pre>
+</div>
       <div id="page-navigation">
         <div class="previous">
         
