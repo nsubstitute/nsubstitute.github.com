@@ -63,14 +63,14 @@
             
             <li><a href="/help/received-in-order">Checking call order</a></li>
             
+            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Checking call order</h1>
-      <p><strong>NOTE: This feature is currently in the <code>NSubstitute.Experimental</code> namespace while we experiment with its API and behaviour. You are welcome to try it out, but be aware that it may change in later releases. Please leave feedback on the <a href='https://groups.google.com/group/nsubstitute'>discussion group</a>.</strong></p>
-
-<p>Sometimes calls need to be made in a specific order. Depending on the timing of calls like this is known as <em>temporal coupling</em>. Ideally we&#8217;d change our design to remove this coupling, but for times when we can&#8217;t NSubstitute lets us resort to asserting the order of calls.</p>
+      <p>Sometimes calls need to be made in a specific order. Depending on the timing of calls like this is known as <em>temporal coupling</em>. Ideally we&#8217;d change our design to remove this coupling, but for times when we can&#8217;t NSubstitute lets us resort to asserting the order of calls.</p>
 <div class='highlight'>
     <pre class='brush: csharp'>[Test]
 public void TestCommandRunWhileConnectionIsOpen() {
@@ -110,6 +110,8 @@ public void SubscribeToEventBeforeOpeningConnection() {
         
         </div>
         <div class="next">
+        
+            <a href="/help/partial-subs" title="Next: Partial subs and test spies">Partial subs and test spies &raquo; </a>
         
         </div>
       </div>

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Argument matchers</title>
+  <title>NSubstitute: Partial subs and test spies</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -69,76 +69,64 @@
     </div>
 
     <div id="post-content">
-      <h1>Argument matchers</h1>
-      <p>Argument matchers can be used when <a href='/help/return-for-args'>setting return values</a> and when <a href='/help/received-calls'>checking received calls</a>. They provide a way to <em>specify</em> a call or group of calls, so that a return value can be set for all matching calls, or to check a matching call has been received.</p>
+      <h1>Partial subs and test spies</h1>
+      <p>Partial substitutes allow us to create an object that acts like a real instance of a class, and selectively substitute for specific parts of that object. This is useful for when we need a substitute to have real behaviour except for a single method that we want to replace, or when we just want to spy on what calls are being made.</p>
 
-<h2 id='ignoring_arguments'>Ignoring arguments</h2>
+<p><strong>WARNING:</strong> Partial substitutes will be calling your class&#8217; <strong>real code by default</strong>, so if you are not careful it is possible for this code to run <strong>even while you are configuring specific methods to be substituted</strong>! For this reason partial substitutes are not generally recommended, so avoid them where possible (especially if your code deletes files, contacts payment gateways, or initiates underground lair self-destruct routines). In some cases they can be quite handy though; just be sure to handle with care.</p>
 
-<p>An argument of type <code>T</code> can be ignored using <code>Arg.Any&lt;T&gt;()</code>.</p>
+<h2 id='replacing_a_single_method'>Replacing a single method</h2>
+
+<p>In this example we want to test the <code>Read()</code> method logic without running <code>ReadFile()</code>.</p>
 <div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(Arg.Any&lt;int&gt;(), 5).Returns(7);
-
-Assert.AreEqual(7, calculator.Add(42, 5));
-Assert.AreEqual(7, calculator.Add(123, 5));
-Assert.AreNotEqual(7, calculator.Add(1, 7));</pre>
+    <pre class='brush: csharp'>public class SummingReader {
+  public virtual int Read(string path) {
+    var s = ReadFile(path);
+    return s.Split(',').Select(int.Parse).Sum();
+  }
+  public virtual string ReadFile(string path) { return &quot;the result of reading the file here&quot;; }
+}</pre>
 </div>
-<p>In this example we return <code>7</code> when adding any number to <code>5</code>. We use <code>Arg.Any&lt;int&gt;()</code> to tell NSubstitute to ignore the first argument.</p>
-
-<p>We can also use this to match any argument of a specific sub-type.</p>
+<p>By default <code>ReadFile</code> may access a file on the file system, but we can <code>Substitute.ForPartsOf&lt;SummingReader&gt;()</code> and override <code>ReadFile</code> to return a substitute value, rather than loading data from a real file, using <code>Returns</code>:</p>
 <div class='highlight'>
-    <pre class='brush: csharp'>formatter.Format(new object());
-formatter.Format(&quot;some string&quot;);
+    <pre class='brush: csharp'>[Test]
+public void ShouldSumAllNumbersInFile() {
+  var reader = Substitute.ForPartsOf&lt;SummingReader&gt;();
+  reader.ReadFile(Arg.Is(&quot;foo.txt&quot;)).Returns(&quot;1,2,3,4,5&quot;); // CAUTION: real code warning!
 
-formatter.Received().Format(Arg.Any&lt;object&gt;());
-formatter.Received().Format(Arg.Any&lt;string&gt;());
-formatter.DidNotReceive().Format(Arg.Any&lt;int&gt;());</pre>
+  var result = reader.Read(&quot;foo.txt&quot;);
+
+  Assert.That(result, Is.EqualTo(15));
+}</pre>
 </div>
-<h2 id='conditionally_matching_an_argument'>Conditionally matching an argument</h2>
+<p>Now the real <code>Read</code> method will execute, but <code>ReadFile</code> will return our substituted value instead of calling the original method, so we can run the test without having to worry about a real file system.</p>
 
-<p>An argument of type <code>T</code> can be conditionally matched using <code>Arg.Is&lt;T&gt;(Predicate&lt;T&gt; condition)</code>.</p>
+<p>Note the <strong>CAUTION</strong> comment. If we had not used an <a href='/help/argument-matchers/'>argument matcher</a> here the real <code>ReadFile</code> method would have executed before we had a chance to override the behaviour. This is because <code>reader.ReadFile(&quot;foo.txt&quot;)</code> would run before <code>.Returns(...)</code>. In some cases this may not be a problem, but if in doubt make sure you specify an argument matcher (<code>Arg.Is</code>, <code>Arg.Any</code> etc) so NSubstitute knows you are configuring a call and don&#8217;t want to run any real code. To play it extra safe, use <code>When .. DoNotCallBase</code> as described below.</p>
+
+<h2 id='void_methods_and_the_playitself_approach_to_partial_subs'>Void methods, and the play-it-self approach to partial subs</h2>
+
+<p>We can&#8217;t use <code>.Returns()</code> with void methods, but we can stop a void method from calling the real method using <code>When .. DoNotCallBase</code>. This also works with non-void methods and can be handy when we want to have a little more confidence we&#8217;re not going to run real code (a <em>little</em> more confidence &#8211; remember, NSubstitute will not prevent non-virtual calls from executing). The previous example can be rewritten to use this approach:</p>
 <div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(1, -10);
+    <pre class='brush: csharp'>[Test]
+public void ShouldSumAllNumbersInFileATadMoreSafely() {
+  var reader = Substitute.ForPartsOf&lt;SummingReader&gt;();
+  reader.When(x =&gt; x.ReadFile(&quot;foo.txt&quot;)).DoNotCallBase(); //Make sure the ReadFile call won't call real implementation
+  reader.ReadFile(&quot;foo.txt&quot;).Returns(&quot;1,2,3,4,5&quot;); // This won't run the real ReadFile now
 
-//Received call with first arg 1 and second arg less than 0:
-calculator.Received().Add(1, Arg.Is&lt;int&gt;(x =&gt; x &lt; 0));
-//Received call with first arg 1 and second arg of -2, -5, or -10:
-calculator
-    .Received()
-    .Add(1, Arg.Is&lt;int&gt;(x =&gt; new[] {-2,-5,-10}.Contains(x)));
-//Did not receive call with first arg greater than 10:
-calculator.DidNotReceive().Add(Arg.Is&lt;int&gt;(x =&gt; x &gt; 10), -10);</pre>
+  var result = reader.Read(&quot;foo.txt&quot;);
+
+  Assert.That(result, Is.EqualTo(15));
+}</pre>
 </div>
-<p>If the condition throws an exception for an argument, then it will be assumed that the argument does not match. The exception itself will be swallowed.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>formatter.Format(Arg.Is&lt;string&gt;(x =&gt; x.Length &lt;= 10)).Returns(&quot;matched&quot;);
+<h2 id='test_spies'>Test spies</h2>
 
-Assert.AreEqual(&quot;matched&quot;, formatter.Format(&quot;short&quot;));
-Assert.AreNotEqual(&quot;matched&quot;, formatter.Format(&quot;not matched, too long&quot;));
-// Will not match because trying to access .Length on null will throw an exception when testing
-// our condition. NSubstitute will assume it does not match and swallow the exception.
-Assert.AreNotEqual(&quot;matched&quot;, formatter.Format(null));</pre>
-</div>
-<h2 id='matching_a_specific_argument'>Matching a specific argument</h2>
-
-<p>An argument of type <code>T</code> can be matched using <code>Arg.Is&lt;T&gt;(T value)</code>.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(0, 42);
-
-//This won't work; NSubstitute isn't sure which arg the matcher applies to:
-//calculator.Received().Add(0, Arg.Any&lt;int&gt;());
-
-calculator.Received().Add(Arg.Is(0), Arg.Any&lt;int&gt;());</pre>
-</div>
-<p>This matcher normally isn&#8217;t required; most of the time we can just use <code>0</code> instead of <code>Arg.Is(0)</code>. In some cases though, NSubstitute can&#8217;t work out which matcher applies to which argument (arg matchers are actually fuzzily matched; not passed directly to the function call). In these cases it will throw an <code>AmbiguousArgumentsException</code> and ask you to specify one or more additional argument matchers. In some cases you may have to explicitly use argument matchers for every argument.</p>
+<p>Even without substituting for specific parts of a class, the instance returned by <code>Substitute.ForPartsOf&lt;T&gt;</code> records all calls made to virtual members, so we can <a href='/help/received-calls/'>check <code>Received()</code> calls</a> made to any partial substitute.</p>
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/clear-received-calls" title="Previous: Clearing received calls">&laquo; Clearing received calls</a>
+            <a href="/help/received-in-order" title="Previous: Checking call order">&laquo; Checking call order</a>
         
         </div>
         <div class="next">
-        
-            <a href="/help/callbacks" title="Next: Callbacks, void calls and When..Do">Callbacks, void calls and When..Do &raquo; </a>
         
         </div>
       </div>
