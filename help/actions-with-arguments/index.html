@@ -134,7 +134,7 @@ calculator.Multiply(123, 42);
 
 Assert.AreEqual(42, argumentUsed);</pre>
 </div>
-<p>Here we specify that a call to <code>Multiple</code> with any first argument should pass the second argument and put it in the <code>argumentUsed</code> variable. This can be quite useful when we want to assert several properties on an argument (for types more complex than <code>int</code> that is).</p>
+<p>Here we specify that a call to <code>Multiply</code> with any first argument should pass the second argument and put it in the <code>argumentUsed</code> variable. This can be quite useful when we want to assert several properties on an argument (for types more complex than <code>int</code> that is).</p>
 <div class='highlight'>
     <pre class='brush: csharp'>var firstArgsBeingMultiplied = new List&lt;int&gt;();
 calculator.Multiply(Arg.Do&lt;int&gt;(x =&gt; firstArgsBeingMultiplied.Add(x)), 10);
