@@ -102,7 +102,7 @@ public void ShouldSumAllNumbersInFile() {
 
 <p>Note the <strong>CAUTION</strong> comment. If we had not used an <a href='/help/argument-matchers/'>argument matcher</a> here the real <code>ReadFile</code> method would have executed before we had a chance to override the behaviour. This is because <code>reader.ReadFile(&quot;foo.txt&quot;)</code> would run before <code>.Returns(...)</code>. In some cases this may not be a problem, but if in doubt make sure you specify an argument matcher (<code>Arg.Is</code>, <code>Arg.Any</code> etc) so NSubstitute knows you are configuring a call and don&#8217;t want to run any real code. To play it extra safe, use <code>When .. DoNotCallBase</code> as described below.</p>
 
-<h2 id='void_methods_and_the_playitself_approach_to_partial_subs'>Void methods, and the play-it-self approach to partial subs</h2>
+<h2 id='void_methods_and_the_playitsafe_approach_to_partial_subs'>Void methods, and the play-it-safe approach to partial subs</h2>
 
 <p>We can&#8217;t use <code>.Returns()</code> with void methods, but we can stop a void method from calling the real method using <code>When .. DoNotCallBase</code>. This also works with non-void methods and can be handy when we want to have a little more confidence we&#8217;re not going to run real code (a <em>little</em> more confidence &#8211; remember, NSubstitute will not prevent non-virtual calls from executing). The previous example can be rewritten to use this approach:</p>
 <div class='highlight'>
