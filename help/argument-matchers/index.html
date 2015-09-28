@@ -65,6 +65,8 @@
             
             <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
             
+            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            
         </ul>
     </div>
 
@@ -124,7 +126,7 @@ Assert.AreNotEqual(&quot;matched&quot;, formatter.Format(null));</pre>
 <div class='highlight'>
     <pre class='brush: csharp'>calculator.Add(0, 42);
 
-//This won't work; NSubstitute isn't sure which arg the matcher applies to:
+//This won&#39;t work; NSubstitute isn&#39;t sure which arg the matcher applies to:
 //calculator.Received().Add(0, Arg.Any&lt;int&gt;());
 
 calculator.Received().Add(Arg.Is(0), Arg.Any&lt;int&gt;());</pre>

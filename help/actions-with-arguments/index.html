@@ -65,6 +65,8 @@
             
             <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
             
+            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            
         </ul>
     </div>
 
@@ -153,8 +155,8 @@ Assert.AreEqual(firstArgsBeingMultiplied, new[] { 2, 5 });</pre>
 <div class='highlight'>
     <pre class='brush: csharp'>var numberOfCallsWhereFirstArgIsLessThan0 = 0;
 //Specify a call where the first arg is less than 0, and the second is any int.
-//When this specification is met we'll increment a counter in the Arg.Do action for 
-//the second argument that was used for the call, and we'll also make it return 123.
+//When this specification is met we&#39;ll increment a counter in the Arg.Do action for 
+//the second argument that was used for the call, and we&#39;ll also make it return 123.
 calculator
     .Multiply(
         Arg.Is&lt;int&gt;(x =&gt; x &lt; 0), 
@@ -165,7 +167,7 @@ var results = new[] {
     calculator.Multiply(-4, 3),
     calculator.Multiply(-27, 88),
     calculator.Multiply(-7, 8),
-    calculator.Multiply(123, 2) //First arg greater than 0, so spec won't be met.
+    calculator.Multiply(123, 2) //First arg greater than 0, so spec won&#39;t be met.
 };
 
 Assert.AreEqual(3, numberOfCallsWhereFirstArgIsLessThan0); //3 of 4 calls have first arg &lt; 0

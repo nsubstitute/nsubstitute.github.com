@@ -65,6 +65,8 @@
             
             <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
             
+            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            
         </ul>
     </div>
 
@@ -81,7 +83,7 @@
     <pre class='brush: csharp'>public class SummingReader {
   public virtual int Read(string path) {
     var s = ReadFile(path);
-    return s.Split(',').Select(int.Parse).Sum();
+    return s.Split(&#39;,&#39;).Select(int.Parse).Sum();
   }
   public virtual string ReadFile(string path) { return &quot;the result of reading the file here&quot;; }
 }</pre>
@@ -109,8 +111,8 @@ public void ShouldSumAllNumbersInFile() {
     <pre class='brush: csharp'>[Test]
 public void ShouldSumAllNumbersInFileATadMoreSafely() {
   var reader = Substitute.ForPartsOf&lt;SummingReader&gt;();
-  reader.When(x =&gt; x.ReadFile(&quot;foo.txt&quot;)).DoNotCallBase(); //Make sure the ReadFile call won't call real implementation
-  reader.ReadFile(&quot;foo.txt&quot;).Returns(&quot;1,2,3,4,5&quot;); // This won't run the real ReadFile now
+  reader.When(x =&gt; x.ReadFile(&quot;foo.txt&quot;)).DoNotCallBase(); //Make sure the ReadFile call won&#39;t call real implementation
+  reader.ReadFile(&quot;foo.txt&quot;).Returns(&quot;1,2,3,4,5&quot;); // This won&#39;t run the real ReadFile now
 
   var result = reader.Read(&quot;foo.txt&quot;);
 
@@ -127,6 +129,8 @@ public void ShouldSumAllNumbersInFileATadMoreSafely() {
         
         </div>
         <div class="next">
+        
+            <a href="/help/return-for-all" title="Next: Return for all calls of a type">Return for all calls of a type &raquo; </a>
         
         </div>
       </div>

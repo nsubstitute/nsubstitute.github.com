@@ -65,6 +65,8 @@
             
             <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
             
+            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            
         </ul>
     </div>
 
@@ -89,27 +91,27 @@ public interface INumberParserFactory {
 <div class='highlight'>
     <pre class='brush: csharp'>var factory = Substitute.For&lt;INumberParserFactory&gt;();
 var parser = Substitute.For&lt;INumberParser&gt;();
-factory.Create(',').Returns(parser);
+factory.Create(&#39;,&#39;).Returns(parser);
 parser.Parse(&quot;an expression&quot;).Returns(new[] {1,2,3});
 
 Assert.AreEqual(
-    factory.Create(',').Parse(&quot;an expression&quot;),
+    factory.Create(&#39;,&#39;).Parse(&quot;an expression&quot;),
     new[] {1,2,3});</pre>
 </div>
 <p>Or we could use the fact that a substitute for type <code>INumberParser</code> will automatically be returned for <code>INumberParserFactory.Create()</code>:</p>
 <div class='highlight'>
     <pre class='brush: csharp'>var factory = Substitute.For&lt;INumberParserFactory&gt;();
-factory.Create(',').Parse(&quot;an expression&quot;).Returns(new[] {1,2,3});
+factory.Create(&#39;,&#39;).Parse(&quot;an expression&quot;).Returns(new[] {1,2,3});
 
 Assert.AreEqual(
-    factory.Create(',').Parse(&quot;an expression&quot;),
+    factory.Create(&#39;,&#39;).Parse(&quot;an expression&quot;),
     new[] {1,2,3});</pre>
 </div>
 <p>Each time a recursively-subbed property or method is called with the same arguments it will return the same substitute. If a method is called with different arguments a new substitute will be returned.</p>
 <div class='highlight'>
-    <pre class='brush: csharp'>var firstCall = factory.Create(',');
-var secondCall = factory.Create(',');
-var thirdCallWithDiffArg = factory.Create('x');
+    <pre class='brush: csharp'>var firstCall = factory.Create(&#39;,&#39;);
+var secondCall = factory.Create(&#39;,&#39;);
+var thirdCallWithDiffArg = factory.Create(&#39;x&#39;);
 
 Assert.AreSame(firstCall, secondCall);
 Assert.AreNotSame(firstCall, thirdCallWithDiffArg);</pre>
