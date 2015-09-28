@@ -72,7 +72,7 @@
 
     <div id="post-content">
       <h1>Return for all calls of a type</h1>
-      <p>We can return a specific value for all calls to a substitute using <code>sub.ReturnsForAll&lt;T&gt;(T value)</code>. This will cause <code>sub</code> to return <code>value</code> for all calls that return something of type <code>T</code>.</p>
+      <p>We can return a specific value for all calls to a substitute using <code>sub.ReturnsForAll&lt;T&gt;(T value)</code>. This will cause <code>sub</code> to return <code>value</code> for all calls that return something of type <code>T</code> and are <a href='#returns_vs_returnsforall'>not already stubbed</a>.</p>
 
 <p><strong>Note: we need <code>using NSubstitute.Extensions</code> to import the <code>.ReturnsForAll&lt;T&gt;()</code> extension method.</strong></p>
 
@@ -119,6 +119,23 @@ public void ShouldReturnWidgetsFromBuilder() {
 }</pre>
 </div>
 <p>In this test <code>builder</code> will return a reference to itself whenever a call returns a value of type <code>IWidgetBuilder</code>, so the chained calls will all work on the same <code>builder</code> instance.</p>
+
+<h2 id='returns_vs_returnsforall'>Returns vs. ReturnsForAll</h2>
+
+<p>Calls will only use <code>.ReturnsForAll</code> values when NSubstitute can&#8217;t find an explicitly stubbed value for the call. So if we set <code>sub.GetWidget().Returns(widget)</code>, that will take precendence over any values stubbed by <code>sub.ReturnsForAll&lt;Widget&gt;(otherWidget)</code>.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>[Test]
+public void ReturnsTakesPrecedence() {
+  var widget = new Widget();
+  var otherWidget = new Widget();
+  var sub = Substitute.For&lt;IWidgetExample&gt;();
+  sub.GetWidget(1).Returns(widget);
+  sub.ReturnsForAll&lt;Widget&gt;(otherWidget);
+
+  Assert.That(sub.GetWidget(1), Is.SameAs(widget));
+  Assert.That(sub.GetWidget(42), Is.SameAs(otherWidget));
+}</pre>
+</div>
       <div id="page-navigation">
         <div class="previous">
         
