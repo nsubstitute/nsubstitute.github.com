@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Return for all calls of a type</title>
+  <title>NSubstitute: Threading</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -73,80 +73,17 @@
     </div>
 
     <div id="post-content">
-      <h1>Return for all calls of a type</h1>
-      <p>We can return a specific value for all calls to a substitute using <code>sub.ReturnsForAll&lt;T&gt;(T value)</code>. This will cause <code>sub</code> to return <code>value</code> for all calls that return something of type <code>T</code> and are <a href='#returns_vs_returnsforall'>not already stubbed</a>.</p>
+      <h1>Threading</h1>
+      <p>It is fairly standard for production code to call a substitute from multiple threads, but we should avoid having our test code configure or assert on a substitute while it is also be used from other threads in production code. See <a href='https://github.com/nsubstitute/NSubstitute/issues/256'>Issue #256</a> for an example of how doing this can result in problems.</p>
 
-<p><strong>Note: we need <code>using NSubstitute.Extensions</code> to import the <code>.ReturnsForAll&lt;T&gt;()</code> extension method.</strong></p>
-
-<p>The type must match exactly: <code>.ReturnsForAll&lt;Cat&gt;(cat)</code> will not set a return value for a call that returns <code>Animal</code>, even if <code>Cat</code> inherits from <code>Animal</code>. To return for the super-type, use <code>.ReturnsForAll&lt;Animal&gt;(cat)</code>. (If you&#8217;d like a change in this behaviour, please <a href='https://groups.google.com/forum/#!forum/nsubstitute'>let us know</a>).</p>
-
-<p>There is also an overload that takes a <code>Func&lt;CallInfo,T&gt;</code> so the value to return will be calculated each time.</p>
-
-<h2 id='fluent_interface_example'>Fluent interface example</h2>
-
-<p>One example of where this can be useful is a builder-style interface where each call returns a reference to itself.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>// using NSubstitute.Extensions;
-
-public interface IWidgetBuilder {
-  IWidgetBuilder Quantity(int i); 
-  IWidgetBuilder AddLineItem(string s); 
-  IWidgetContainer GetWidgets();
-}
-
-public class ProductionLine {
-  IWidgetBuilder builder;
-  public ProductionLine(IWidgetBuilder builder) {
-    this.builder = builder;
-  }
-
-  public IWidgetContainer Run() {
-    return builder
-              .Quantity(2)
-              .AddLineItem(&quot;Thingoe&quot;)
-              .AddLineItem(&quot;Other thingoe&quot;)
-              .GetWidgets();
-  }
-}
-
-[Test]
-public void ShouldReturnWidgetsFromBuilder() {
-  var builder = Substitute.For&lt;IWidgetBuilder&gt;();
-  builder.ReturnsForAll&lt;IWidgetBuilder&gt;(builder);
-  var line = new ProductionLine(builder);
-
-  var result = line.Run();
-
-  Assert.That(result, Is.EqualTo(builder.GetWidgets()));
-}</pre>
-</div>
-<p>In this test <code>builder</code> will return a reference to itself whenever a call returns a value of type <code>IWidgetBuilder</code>, so the chained calls will all work on the same <code>builder</code> instance.</p>
-
-<h2 id='returns_vs_returnsforall'>Returns vs. ReturnsForAll</h2>
-
-<p>Calls will only use <code>.ReturnsForAll</code> values when NSubstitute can&#8217;t find an explicitly stubbed value for the call. So if we set <code>sub.GetWidget().Returns(widget)</code>, that will take precendence over any values stubbed by <code>sub.ReturnsForAll&lt;Widget&gt;(otherWidget)</code>.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>[Test]
-public void ReturnsTakesPrecedence() {
-  var widget = new Widget();
-  var otherWidget = new Widget();
-  var sub = Substitute.For&lt;IWidgetExample&gt;();
-  sub.GetWidget(1).Returns(widget);
-  sub.ReturnsForAll&lt;Widget&gt;(otherWidget);
-
-  Assert.That(sub.GetWidget(1), Is.SameAs(widget));
-  Assert.That(sub.GetWidget(42), Is.SameAs(otherWidget));
-}</pre>
-</div>
+<p>To avoid this sort of problem, make sure your test has finished configuring its substitutes before exercising the production code, then make sure the production code has completed before your test asserts on <code>Received()</code> calls.</p>
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/partial-subs" title="Previous: Partial subs and test spies">&laquo; Partial subs and test spies</a>
+            <a href="/help/return-for-all" title="Previous: Return for all calls of a type">&laquo; Return for all calls of a type</a>
         
         </div>
         <div class="next">
-        
-            <a href="/help/threading" title="Next: Threading">Threading &raquo; </a>
         
         </div>
       </div>

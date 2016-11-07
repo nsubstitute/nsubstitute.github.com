@@ -67,12 +67,16 @@
             
             <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
             
+            <li><a href="/help/threading">Threading</a></li>
+            
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Argument matchers</h1>
       <p>Argument matchers can be used when <a href='/help/return-for-args'>setting return values</a> and when <a href='/help/received-calls'>checking received calls</a>. They provide a way to <em>specify</em> a call or group of calls, so that a return value can be set for all matching calls, or to check a matching call has been received.</p>
+
+<p><strong>Note:</strong> Argument matchers should only be used when setting return values or checking received calls. Using <code>Arg.Is</code> or <code>Arg.Any</code> without a call to <code>.Returns</code> or <code>Received()</code> can cause your tests to behave in unexpected ways. See <a href='#how_not_to_use_argument_matchers'>How NOT to use argument matchers</a> for more information.</p>
 
 <h2 id='ignoring_arguments'>Ignoring arguments</h2>
 
@@ -132,6 +136,39 @@ Assert.AreNotEqual(&quot;matched&quot;, formatter.Format(null));</pre>
 calculator.Received().Add(Arg.Is(0), Arg.Any&lt;int&gt;());</pre>
 </div>
 <p>This matcher normally isn&#8217;t required; most of the time we can just use <code>0</code> instead of <code>Arg.Is(0)</code>. In some cases though, NSubstitute can&#8217;t work out which matcher applies to which argument (arg matchers are actually fuzzily matched; not passed directly to the function call). In these cases it will throw an <code>AmbiguousArgumentsException</code> and ask you to specify one or more additional argument matchers. In some cases you may have to explicitly use argument matchers for every argument.</p>
+
+<h2 id='how_not_to_use_argument_matchers'>How NOT to use argument matchers</h2>
+
+<p>Argument matchers should only be used when setting return values or checking received calls. Using <code>Arg.Is</code> or <code>Arg.Any</code> without a call to <code>.Returns</code> or <code>Received()</code> can cause your tests to behave in unexpected ways.</p>
+
+<p>For example:</p>
+<div>
+  <pre>
+    <code class='csharp'>/* ARRANGE */
+
+var widgetFactory = Substitute.For&lt;IWidgetFactory&gt;();
+var subject = new Sprocket(widgetFactory);
+
+// OK: Use arg matcher for a return value:
+widgetFactory.Make(Arg.Is&lt;int&gt;(x =&gt; x &gt; 10)).Returns(TestWidget);
+
+/* ACT */
+
+// NOT OK: arg matcher used with a real call:
+//   subject.StartWithWidget(Arg.Any&lt;int&gt;());
+
+// Use a real argument instead:
+subject.StartWithWidget(4);
+
+/* ASSERT */
+
+// OK: Use arg matcher to check a call was received:
+widgetFactory.Received().Make(4);</code>
+  </pre>
+</div>
+<p>In this example it would be an error to use an argument matcher in the <code>ACT</code> part of this test. Even if we don&#8217;t mind what specific argument we pass to our subject, <code>Arg.Any</code> is only for substitutes, and only for setting return values or checking received calls; not for real calls.</p>
+
+<p>(If you do want to indicate to readers that the precise argument used for a real call doesn&#8217;t matter you could use a variable such as <code>var someInt = 4; subject.StartWithWidget(someInt);</code> or similar. Just stay clear of argument matchers for this!)</p>
       <div id="page-navigation">
         <div class="previous">
         

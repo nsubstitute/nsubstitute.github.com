@@ -67,6 +67,8 @@
             
             <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
             
+            <li><a href="/help/threading">Threading</a></li>
+            
         </ul>
     </div>
 
@@ -119,7 +121,7 @@ Assert.That(calculator.Mode, Is.EqualTo(&quot;DEC&quot;));
 calculator.Mode = &quot;HEX&quot;;
 Assert.That(calculator.Mode, Is.EqualTo(&quot;HEX&quot;));</pre>
 </div>
-<p>NSubstitute supports argument matching for setting return values and asserting a call was received:</p>
+<p>NSubstitute supports <a href='/help/argument-matchers/'>argument matching</a> for setting return values and asserting a call was received:</p>
 <div class='highlight'>
     <pre class='brush: csharp'>calculator.Add(10, -5);
 calculator.Received().Add(10, Arg.Any&lt;int&gt;());
