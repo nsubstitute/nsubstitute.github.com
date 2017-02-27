@@ -134,7 +134,7 @@ Assert.AreEqual(1, counter);</pre>
 
 <h2 id='callback_builder_for_more_complex_callbacks'>Callback builder for more complex callbacks</h2>
 
-<p>The <code>Callback</code> builder lets us create more complex <code>Do()</code> secenarios. We can use <code>Callback.First()</code> followed by <code>Then()</code>, <code>ThenThrow()</code> and <code>ThenKeepDoing()</code> to build chains of callbacks. We can also use <code>Always()</code> and <code>AlwaysThrow()</code> to specify callbacks called every time. Note that a callback set by an <code>Always()</code> method will be called even if other callbacks will throw an exception.</p>
+<p>The <code>Callback</code> builder lets us create more complex <code>Do()</code> scenarios. We can use <code>Callback.First()</code> followed by <code>Then()</code>, <code>ThenThrow()</code> and <code>ThenKeepDoing()</code> to build chains of callbacks. We can also use <code>Always()</code> and <code>AlwaysThrow()</code> to specify callbacks called every time. Note that a callback set by an <code>Always()</code> method will be called even if other callbacks will throw an exception.</p>
 <div class='highlight'>
     <pre class='brush: csharp'>var sub = Substitute.For&lt;ISomething&gt;();
 
