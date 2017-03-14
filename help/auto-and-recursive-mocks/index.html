@@ -118,7 +118,7 @@ var thirdCallWithDiffArg = factory.Create(&#39;x&#39;);
 Assert.AreSame(firstCall, secondCall);
 Assert.AreNotSame(firstCall, thirdCallWithDiffArg);</pre>
 </div>
-<p><em>Note:</em> Recursive substitutes will not be created for classes, as creating and using classes can have potentially unwanted side-effects. You&#8217;ll therefore need to create and return these explicitly.</p>
+<p><em>Note:</em> Recursive substitutes will not be created for non-purely virtual classes, as creating and using classes can have potentially unwanted side-effects. You&#8217;ll therefore need to create and return these explicitly.</p>
 
 <h3 id='substitute_chains'>Substitute chains</h3>
 
