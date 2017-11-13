@@ -230,6 +230,56 @@ public void MakeSureWatcherSubscribesToCommandExecuted() {
   command.Received().Executed += Arg.Any&lt;EventHandler&gt;();
 }</pre>
 </div>
+<h2 id='checking_event_invocation'>Checking event invocation</h2>
+
+<p>We can also use substitutes for event handlers to confirm that a particular event was raised correctly. Often a simple lambda function will suffice, but if we want to use argument matchers we can use a substitute and <code>Received</code>. Both options are shown below:</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public class LowFuelWarningEventArgs : EventArgs {
+	public int PercentLeft { get; }
+	public LowFuelWarningEventArgs(int percentLeft){
+		PercentLeft = percentLeft;
+	}
+}
+
+public class FuelManagement{
+	public event EventHandler&lt;LowFuelWarningEventArgs&gt; LowFuelDetected;
+	public void DoSomething(){
+		LowFuelDetected?.Invoke(this, new LowFuelWarningEventArgs(15));
+	}
+}
+
+// Often it is easiest to use a lambda for this, as shown in the following test:
+[Test]
+public void ShouldRaiseLowFuel_WithoutNSub(){
+	var fuelManagement = new FuelManagement();
+	var eventWasRaised = false;
+	fuelManagement.LowFuelDetected += (o,e) =&gt; eventWasRaised = true;
+
+	fuelManagement.DoSomething();
+
+	Assert.That(eventWasRaised);
+}
+
+// We can also use NSubstitute for this if we want more involved argument matching logic.
+// NSubstitute also gives us a descriptive message if the assertion fails which may be helpful in some cases.
+// (For example, if the call was not received with the expected arguments, we&#39;ll get a list of the non-matching
+// calls made to that member.)
+//
+// Note we could still use lambdas and standard assertions for this, but a substitute may be worth considering
+// in some of these cases.
+[Test]
+public void ShouldRaiseLowFuel(){
+	var fuelManagement = new FuelManagement();
+	var handler = Substitute.For&lt;EventHandler&lt;LowFuelWarningEventArgs&gt;&gt;();
+	fuelManagement.LowFuelDetected += handler;
+
+	fuelManagement.DoSomething();
+
+	handler
+	    .Received()
+	    .Invoke(fuelManagement, Arg.Is&lt;LowFuelWarningEventArgs&gt;(x =&gt; x.PercentLeft &lt; 20));
+}</pre>
+</div>
       <div id="page-navigation">
         <div class="previous">
         
