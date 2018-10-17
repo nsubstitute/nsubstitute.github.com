@@ -53,6 +53,8 @@
             
             <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
             
+            <li><a href="/help/configure">Safe configuration and overlapping calls</a></li>
+            
             <li><a href="/help/raising-events">Raising events</a></li>
             
             <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
@@ -69,6 +71,10 @@
             
             <li><a href="/help/threading">Threading</a></li>
             
+            <li><a href="/help/compat-args">Compatibility argument matchers</a></li>
+            
+            <li><a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a></li>
+            
         </ul>
     </div>
 
@@ -83,21 +89,46 @@
 <p>For the interface above we can configure the return value and set the output of the second argument like this:</p>
 <div class='highlight'>
     <pre class='brush: csharp'>//Arrange
-var value = &quot;&quot;;
 var lookup = Substitute.For&lt;ILookup&gt;();
 lookup
-    .TryLookup(&quot;hello&quot;, out value)
+    .TryLookup(&quot;hello&quot;, out Arg.Is(&quot;&quot;))
     .Returns(x =&gt; { 
         x[1] = &quot;world!&quot;;
         return true;
     });
 
 //Act
+var value = &quot;&quot;;
 var result = lookup.TryLookup(&quot;hello&quot;, out value);
 
 //Assert
 Assert.True(result);
 Assert.AreEqual(value, &quot;world!&quot;);</pre>
+</div>
+<h2 id='matching_after_assignments'>Matching after assignments</h2>
+
+<p>Be careful when using an argument matcher with a reference we also assign to. The assignment can cause previously matching arguments to stop matching.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>var counter = 0;
+var value = &quot;&quot;;
+var lookup = Substitute.For&lt;ILookup&gt;();
+lookup
+    .TryLookup(&quot;hello&quot;, out Arg.Is(value)) // value is &quot;&quot;, matcher will check for &quot;&quot;
+    .Returns(x =&gt; { 
+        x[1] = &quot;assigned&quot;; // Assign to 2nd arg
+        counter++;         // Count this matching call
+        return true;
+    });
+
+// value is &quot;&quot;, this will match!
+lookup.TryLookup(&quot;hello&quot;, out value);
+// Call matches, counter is now 1:
+Assert.AreEqual(1, counter);
+
+// value is now &quot;assigned&quot; but arg matcher is still looking for &quot;&quot;, will NOT match anymore!
+lookup.TryLookup(&quot;hello&quot;, out value);
+// Call does NOT match anymore, counter is still 1:
+Assert.AreEqual(1, counter);</pre>
 </div>
       <div id="page-navigation">
         <div class="previous">

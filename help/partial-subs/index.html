@@ -53,6 +53,8 @@
             
             <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
             
+            <li><a href="/help/configure">Safe configuration and overlapping calls</a></li>
+            
             <li><a href="/help/raising-events">Raising events</a></li>
             
             <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
@@ -68,6 +70,10 @@
             <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
             
             <li><a href="/help/threading">Threading</a></li>
+            
+            <li><a href="/help/compat-args">Compatibility argument matchers</a></li>
+            
+            <li><a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
@@ -95,7 +101,7 @@
     <pre class='brush: csharp'>[Test]
 public void ShouldSumAllNumbersInFile() {
   var reader = Substitute.ForPartsOf&lt;SummingReader&gt;();
-  reader.ReadFile(Arg.Is(&quot;foo.txt&quot;)).Returns(&quot;1,2,3,4,5&quot;); // CAUTION: real code warning!
+  reader.Configure().ReadFile(&quot;foo.txt&quot;).Returns(&quot;1,2,3,4,5&quot;); // CAUTION: real code warning!
 
   var result = reader.Read(&quot;foo.txt&quot;);
 
@@ -104,21 +110,38 @@ public void ShouldSumAllNumbersInFile() {
 </div>
 <p>Now the real <code>Read</code> method will execute, but <code>ReadFile</code> will return our substituted value instead of calling the original method, so we can run the test without having to worry about a real file system.</p>
 
-<p>Note the <strong>CAUTION</strong> comment. If we had not used an <a href='/help/argument-matchers/'>argument matcher</a> here the real <code>ReadFile</code> method would have executed before we had a chance to override the behaviour. This is because <code>reader.ReadFile(&quot;foo.txt&quot;)</code> would run before <code>.Returns(...)</code>. In some cases this may not be a problem, but if in doubt make sure you specify an argument matcher (<code>Arg.Is</code>, <code>Arg.Any</code> etc) so NSubstitute knows you are configuring a call and don&#8217;t want to run any real code. To play it extra safe, use <code>When .. DoNotCallBase</code> as described below.</p>
+<p>Note the <strong>CAUTION</strong> comment. If we had not used <a href='/help/configure/'><code>Configure()</code></a> here before <code>.ReadFile()</code> then the real <code>ReadFile</code> method would have executed before we had a chance to override the behaviour (<code>reader.ReadFile(&quot;foo.txt&quot;)</code> returns first before <code>.Returns(...)</code> executes). In some cases this may not be a problem, but if in doubt make sure you call <code>Configure()</code> first so NSubstitute knows you are configuring a call and don&#8217;t want to run any real code. (This still does not guarantee real code will not run &#8211; remember, NSubstitute will not prevent non-virtual calls from executing.)</p>
 
-<h2 id='void_methods_and_the_playitsafe_approach_to_partial_subs'>Void methods, and the play-it-safe approach to partial subs</h2>
+<h2 id='void_methods_and_'>Void methods and <code>DoNotCallBase</code></h2>
 
-<p>We can&#8217;t use <code>.Returns()</code> with void methods, but we can stop a void method from calling the real method using <code>When .. DoNotCallBase</code>. This also works with non-void methods and can be handy when we want to have a little more confidence we&#8217;re not going to run real code (a <em>little</em> more confidence &#8211; remember, NSubstitute will not prevent non-virtual calls from executing). The previous example can be rewritten to use this approach:</p>
+<p>We can&#8217;t use <code>.Returns()</code> with void methods, but we can stop a void method on a partial substitute from calling the real method using <code>When .. DoNotCallBase</code>. (This also works for non-void methods, although generally we use <code>Configure()</code> and <code>Returns()</code> to override the base behaviour in these cases.)</p>
 <div class='highlight'>
-    <pre class='brush: csharp'>[Test]
-public void ShouldSumAllNumbersInFileATadMoreSafely() {
-  var reader = Substitute.ForPartsOf&lt;SummingReader&gt;();
-  reader.When(x =&gt; x.ReadFile(&quot;foo.txt&quot;)).DoNotCallBase(); //Make sure the ReadFile call won&#39;t call real implementation
-  reader.ReadFile(&quot;foo.txt&quot;).Returns(&quot;1,2,3,4,5&quot;); // This won&#39;t run the real ReadFile now
+    <pre class='brush: csharp'>public class EmailServer {
+  public virtual void Send(string to, string from, string message) {
+    // Insert real email sending code here
+    throw new NotImplementedException();
+  }
 
-  var result = reader.Read(&quot;foo.txt&quot;);
+  public virtual void SendMultiple(IEnumerable&lt;string&gt; recipients, string from, string message) {
+    foreach (var recipient in recipients) {
+        Send(recipient, from, message);
+    }
+  }
+}
 
-  Assert.That(result, Is.EqualTo(15));
+[Test]
+public void ShouldSendMultipleEmails() {
+  var server = Substitute.ForPartsOf&lt;EmailServer&gt;();
+  server.WhenForAnyArgs(x =&gt; x.Send(&quot;&quot;, &quot;&quot;, &quot;&quot;)).DoNotCallBase(); // Make sure Send won&#39;t call real implementation
+
+  server.SendMultiple(
+    new [] { &quot;alice&quot;, &quot;bob&quot;, &quot;charlie&quot; },
+    &quot;nsubstitute&quot;,
+    &quot;Partial subs should be used with caution.&quot;); // This won&#39;t run the real Send now, thanks to DoNotCallBase().
+
+  server.Received().Send(&quot;alice&quot;, &quot;nsubstitute&quot;, Arg.Any&lt;string&gt;());
+  server.Received().Send(&quot;bob&quot;, &quot;nsubstitute&quot;, Arg.Any&lt;string&gt;());
+  server.Received().Send(&quot;charlie&quot;, &quot;nsubstitute&quot;, Arg.Any&lt;string&gt;());
 }</pre>
 </div>
 <h2 id='test_spies'>Test spies</h2>

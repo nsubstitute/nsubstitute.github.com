@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Return from a function</title>
+  <title>NSubstitute: Compatibility argument matchers</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -79,77 +79,50 @@
     </div>
 
     <div id="post-content">
-      <h1>Return from a function</h1>
-      <p>The return value for a call to a property or method can be set to the result of a function. This allows more complex logic to be put into the substitute. Although this is normally a bad practice, there are some situations in which it is useful.</p>
+      <h1>Compatibility argument matchers</h1>
+      <p>NSubstitute <a href='/help/argument-matchers'>argument matchers</a> depend on having C# 7.0 or later (as of NSubstitute 4.0). If you are stuck on an earlier version of C# you may get an error like the following when trying to use a matcher like <code>Arg.Is(123)</code>:</p>
+
+<blockquote>
+<p><code>CS7085: By-reference return type &#39;ref T&#39; is not supported.</code></p>
+</blockquote>
+
+<p>If you have C# 7.0-compatible tooling installed you can <a href='https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/configure-language-version'>set <code>&lt;LangVersion /&gt;</code> in your test csproj file</a> to <code>7</code> or higher, or to <code>latest</code> or <code>default</code>.</p>
+
+<p>Stuck with pre-7.0 tooling? Then use <code>CompatArg</code> from the <code>NSubstitute.Compatibility</code> namespace instead of <code>Arg</code>. <code>CompatArg</code> will work everywhere <code>Arg</code> does, with the exception of matching <code>out</code> and <code>ref</code> args (which require C# 7.0 features). For example, if the documentation mentions <code>Arg.Is(42)</code>, you can instead use <code>CompatArg.Is(42)</code>.</p>
+
+<h2 id='using_'>Using <code>CompatArg</code></h2>
+
+<p>First, add <code>NSubstitute.Compatibility</code> to the list of imports:</p>
+
+<pre><code>using NSubstitute;
+using NSubstitute.Compatibility;</code></pre>
+
+<p>Then use <code>CompatArg</code> in place of <code>Arg</code>:</p>
 <div class='highlight'>
-    <pre class='brush: csharp'>calculator
-    .Add(Arg.Any&lt;int&gt;(), Arg.Any&lt;int&gt;())
-    .Returns(x =&gt; (int)x[0] + (int)x[1]);
+    <pre class='brush: csharp'>calculator.Add(1, -10);
 
-Assert.That(calculator.Add(1, 1), Is.EqualTo(2));
-Assert.That(calculator.Add(20, 30), Is.EqualTo(50));
-Assert.That(calculator.Add(-73, 9348), Is.EqualTo(9275));</pre>
-</div>
-<p>In this example <a href='/help/argument-matchers'>argument matchers</a> are used to match all calls to <code>Add()</code>, and a lambda function is used to return the sum of the first and second arguments passed to the call.</p>
+// Instead of `Arg.Is&lt;int&gt;(x =&gt; x &lt; 0)`, use:
+calculator.Received().Add(1, CompatArg.Is&lt;int&gt;(x =&gt; x &lt; 0));
 
-<h3 id='call_information'>Call information</h3>
-
-<p>The function we provide to <code>Returns()</code> and <code>ReturnsForAnyArgs()</code> is of type <code>Func&lt;CallInfo,T&gt;</code>, where <code>T</code> is the type the call is returning, and <code>CallInfo</code> is a type which provides access to the arguments used for the call. In the previous example we accessed these arguments using an indexer (<code>x[1]</code> for the second argument). <code>CallInfo</code> also has a couple of convenience methods to pick arguments in a strongly typed way:</p>
-
-<ul>
-<li><code>T Arg&lt;T&gt;()</code>: Gets the argument of type <code>T</code> passed to this call.</li>
-
-<li><code>T ArgAt&lt;T&gt;(int position)</code>: Gets the argument passed to this call at the specified zero-based position, converted to type <code>T</code>.</li>
-</ul>
-<div class='highlight'>
-    <pre class='brush: csharp'>public interface IFoo {
-    string Bar(int a, string b);
-}</pre>
-</div><div class='highlight'>
-    <pre class='brush: csharp'>var foo = Substitute.For&lt;IFoo&gt;();
-foo.Bar(0, &quot;&quot;).ReturnsForAnyArgs(x =&gt; &quot;Hello &quot; + x.Arg&lt;string&gt;());
-Assert.That(foo.Bar(1, &quot;World&quot;), Is.EqualTo(&quot;Hello World&quot;));</pre>
-</div>
-<p>Here <code>x.Arg&lt;string&gt;()</code> will return the <code>string</code> argument passed to the call, rather than having to use <code>(string) x[1]</code>. If there are two <code>string</code> arguments to a call, NSubstitute will throw an exception and let you know that it can&#8217;t work out which argument you mean.</p>
-
-<h3 id='callbacks'>Callbacks</h3>
-
-<p>This technique can also be used to get a callback whenever a call is made:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var counter = 0;
+// Instead of `Arg.Any&lt;int&gt;()`, use:
 calculator
-    .Add(0, 0)
-    .ReturnsForAnyArgs(x =&gt; {
-        counter++;
-        return 0;
-    });
+    .Received()
+    .Add(1, CompatArg.Any&lt;int&gt;());
 
-calculator.Add(7,3);
-calculator.Add(2,2);
-calculator.Add(11,-3);
-Assert.AreEqual(counter, 3);</pre>
+// Same for Returns and DidNotReceive:
+calculator.Add(CompatArg.Any&lt;int&gt;(), CompatArg.Is(42)).Returns(123);
+calculator.DidNotReceive().Add(CompatArg.Is&lt;int&gt;(x =&gt; x &gt; 10), -10);</pre>
 </div>
-<p>Alternatively the callback can be specified after the <code>Returns</code> using <code>AndDoes</code>:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var counter = 0;
-calculator
-    .Add(0, 0)
-    .ReturnsForAnyArgs(x =&gt; 0)
-    .AndDoes(x =&gt; counter++);
-
-calculator.Add(7,3);
-calculator.Add(2,2);
-Assert.AreEqual(counter, 2);</pre>
-</div>
+<p>To make this a bit less verbose you may want to create a wrapper within the root of your test project with a shorter name (e.g. <code>ArgC</code>) that delegates to <code>CompatArg</code>. This will also avoid needing the extra using import, and make it easier to switch to the standard <code>Arg</code> class once you&#8217;re able to update to C# 7.0 and beyond.</p>
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/return-for-any-args" title="Previous: Return for any args">&laquo; Return for any args</a>
+            <a href="/help/threading" title="Previous: Threading">&laquo; Threading</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/multiple-returns" title="Next: Multiple return values">Multiple return values &raquo; </a>
+            <a href="/help/nsubstitute-analysers" title="Next: NSubstitute.Analyzers">NSubstitute.Analyzers &raquo; </a>
         
         </div>
       </div>

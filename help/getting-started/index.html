@@ -53,6 +53,8 @@
             
             <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
             
+            <li><a href="/help/configure">Safe configuration and overlapping calls</a></li>
+            
             <li><a href="/help/raising-events">Raising events</a></li>
             
             <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
@@ -69,12 +71,28 @@
             
             <li><a href="/help/threading">Threading</a></li>
             
+            <li><a href="/help/compat-args">Compatibility argument matchers</a></li>
+            
+            <li><a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a></li>
+            
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Getting started</h1>
-      <p>The easiest way to get started is to reference NSubstitute from your test project using the <a href='http://nuget.org/List/Packages/NSubstitute'>NSubstitute NuGet package</a> via <a href='http://nuget.codeplex.com/wikipage?title=Getting%20Started'>NuGet</a> or <a href='https://github.com/openrasta/openwrap/wiki/Nuget'>OpenWrap</a>. Alternatively you can <a href='http://github.com/nsubstitute/NSubstitute/downloads'>download NSubstitute</a> and add a reference to the <code>NSubstitute.dll</code> file included in the download into your test project.</p>
+      <h2 id='adding_nsubstitute_to_your_test_project'>Adding NSubstitute to your test project</h2>
+
+<p>First add the <a href='http://nuget.org/List/Packages/NSubstitute'>NSubstitute NuGet package</a> to your test project using <a href='https://docs.microsoft.com/en-us/nuget/quickstart/use-a-package'>NuGet</a> (either the command line executable, or via the package manager in your IDE).</p>
+
+<pre><code>&gt; Install-Package NSubstitute</code></pre>
+
+<p>It is optional but recommended to also install <a href='https://www.nuget.org/packages/NSubstitute.Analyzers.CSharp/'>NSubstitute.Analyzers.CSharp</a> for C# projects, or <a href='https://www.nuget.org/packages/NSubstitute.Analyzers.VisualBasic/'>NSubstitute.Analyzers.VisualBasic</a> for VB projects. NSubstitute will work without the analysers installed, but these packages will <a href='/help/nsubstitute-analysers/'>help detect potential misuses of the NSubstitute API</a>.</p>
+
+<pre><code>&gt; Install-Package NSubstitute.Analyzers.CSharp
+// or
+&gt; Install-Package NSubstitute.Analyzers.VisualBasic</code></pre>
+
+<h2 id='using_nsubstitute_in_a_test_fixture'>Using NSubstitute in a test fixture</h2>
 
 <p>So now you are staring at a blank test fixture (created with your favourite unit testing framework; for these examples we&#8217;re using <a href='http://www.nunit.org/'>NUnit</a>), and are wondering where to start.</p>
 
@@ -93,6 +111,8 @@
 <div class='highlight'>
     <pre class='brush: csharp'>calculator = Substitute.For&lt;ICalculator&gt;();</pre>
 </div>
+<p>⚠️ <strong>Note</strong>: NSubstitute will only work properly with interfaces or with <code>virtual</code> members of classes. Be careful substituting for classes with non-virtual members. See <a href='/help/creating-a-substitute/#substituting_infrequently_and_carefully_for_classes'>Creating a substitute</a> for more information.</p>
+
 <p>Now we can tell our substitute to return a value for a call:</p>
 <div class='highlight'>
     <pre class='brush: csharp'>calculator.Add(1, 2).Returns(3);

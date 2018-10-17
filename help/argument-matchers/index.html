@@ -53,6 +53,8 @@
             
             <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
             
+            <li><a href="/help/configure">Safe configuration and overlapping calls</a></li>
+            
             <li><a href="/help/raising-events">Raising events</a></li>
             
             <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
@@ -69,6 +71,10 @@
             
             <li><a href="/help/threading">Threading</a></li>
             
+            <li><a href="/help/compat-args">Compatibility argument matchers</a></li>
+            
+            <li><a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a></li>
+            
         </ul>
     </div>
 
@@ -76,7 +82,9 @@
       <h1>Argument matchers</h1>
       <p>Argument matchers can be used when <a href='/help/return-for-args'>setting return values</a> and when <a href='/help/received-calls'>checking received calls</a>. They provide a way to <em>specify</em> a call or group of calls, so that a return value can be set for all matching calls, or to check a matching call has been received.</p>
 
-<p><strong>Note:</strong> Argument matchers should only be used when setting return values or checking received calls. Using <code>Arg.Is</code> or <code>Arg.Any</code> without a call to <code>.Returns</code> or <code>Received()</code> can cause your tests to behave in unexpected ways. See <a href='#how_not_to_use_argument_matchers'>How NOT to use argument matchers</a> for more information.</p>
+<p>The argument matchers syntax shown here depends on having C# 7.0 or later. If you are stuck on an earlier version (getting an error such as <code>CS7085: By-reference return type &#39;ref T&#39; is not supported</code> while trying to use them) please use <a href='/help/compat-args'>compatibility argument matchers</a> instead.</p>
+
+<p>⚠️ <strong>Note:</strong> Argument matchers should only be used when setting return values or checking received calls. Using <code>Arg.Is</code> or <code>Arg.Any</code> without a call to <code>Returns(...)</code> or <code>Received()</code> can cause your tests to behave in unexpected ways. See <a href='#how_not_to_use_argument_matchers'>How NOT to use argument matchers</a> for more information.</p>
 
 <h2 id='ignoring_arguments'>Ignoring arguments</h2>
 
@@ -137,9 +145,30 @@ calculator.Received().Add(Arg.Is(0), Arg.Any&lt;int&gt;());</pre>
 </div>
 <p>This matcher normally isn&#8217;t required; most of the time we can just use <code>0</code> instead of <code>Arg.Is(0)</code>. In some cases though, NSubstitute can&#8217;t work out which matcher applies to which argument (arg matchers are actually fuzzily matched; not passed directly to the function call). In these cases it will throw an <code>AmbiguousArgumentsException</code> and ask you to specify one or more additional argument matchers. In some cases you may have to explicitly use argument matchers for every argument.</p>
 
+<h2 id='matching__and__args'>Matching <code>out</code> and <code>ref</code> args</h2>
+
+<p>Argument matchers can also be used with <code>out</code> and <code>ref</code> (NSubstitute 4.0 and later with C# 7.0 and later).</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>calculator
+    .LoadMemory(1, out Arg.Any&lt;int&gt;())
+    .Returns(x =&gt; {
+        x[1] = 42;
+        return true;
+    });
+
+var hasEntry = calculator.LoadMemory(1, out var memoryValue);
+Assert.AreEqual(true, hasEntry);
+Assert.AreEqual(42, memoryValue);</pre>
+</div>
+<p>See <a href='/help/setting-out-and-ref-arguments/'>Setting out and ref args</a> for more information on working with <code>out</code> and <code>ref</code>.</p>
+
 <h2 id='how_not_to_use_argument_matchers'>How NOT to use argument matchers</h2>
 
-<p>Argument matchers should only be used when setting return values or checking received calls. Using <code>Arg.Is</code> or <code>Arg.Any</code> without a call to <code>.Returns</code> or <code>Received()</code> can cause your tests to behave in unexpected ways.</p>
+<p>Occasionally argument matchers get used in ways that cause unexpected results for people. Here are the most common ones.</p>
+
+<h3 id='using_matchers_outside_of_stubbing_or_checking_received_calls'>Using matchers outside of stubbing or checking received calls</h3>
+
+<p>Argument matchers should only be used when setting return values or checking received calls. Using <code>Arg.Is</code> or <code>Arg.Any</code> without a call to <code>Returns(...)</code> or <code>Received()</code> can cause your tests to behave in unexpected ways.</p>
 
 <p>For example:</p>
 <div class='highlight'>
@@ -167,6 +196,74 @@ widgetFactory.Received().Make(Arg.Is&lt;int&gt;(x =&gt; x &gt; 0));</pre>
 <p>In this example it would be an error to use an argument matcher in the <code>ACT</code> part of this test. Even if we don&#8217;t mind what specific argument we pass to our subject, <code>Arg.Any</code> is only for substitutes, and only for setting return values or checking received calls; not for real calls.</p>
 
 <p>(If you do want to indicate to readers that the precise argument used for a real call doesn&#8217;t matter you could use a variable such as <code>var someInt = 4; subject.StartWithWidget(someInt);</code> or similar. Just stay clear of argument matchers for this!)</p>
+
+<h3 id='modifying_values_being_matched'>Modifying values being matched</h3>
+
+<p>When NSubstitute records calls, it keeps a reference to the arguments passed, not a deep clone of each argument at the time of the call. This means that if the properties of an argument change after the call assertions may not behave as expected.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public class Person {
+    public string Name { get; set; }
+}
+
+[Test]
+public void MutatingAMatchedArgument() {
+    var person = new Person { Name = &quot;Carrot&quot; };
+    var lookup = Substitute.For&lt;IPersonLookup&gt;();
+
+    // Called with a Person that has a .Name property of &quot;Carrot&quot;
+    lookup.Add(person);
+
+    // The Name in that person reference later gets updated ...
+    person.Name = &quot;Vimes&quot;;
+
+    // When the substitute is queried, it will check the fields of the person reference it was called with.
+    // This means the argument it was called with does NOT have a .Name of &quot;Carrot&quot; (it was changed!)
+    lookup.DidNotReceive().Add(Arg.Is&lt;Person&gt;(p =&gt; p.Name == &quot;Carrot&quot;));
+    // Instead, it now has the updated name:
+    lookup.Received().Add(Arg.Is&lt;Person&gt;(p =&gt; p.Name == &quot;Vimes&quot;));
+}</pre>
+</div>
+<p>This looks confusing at first, but if we remember substitutes are pretty much forced to store references to arguments used then it makes sense. The alternative of storing deep-cloned snapshots of every argument to every call received is fairly impractical, especially if we consider objects with very complex hierarchies (e.g. tens of fields, each with an object with tens of fields of its own, etc.). Storing snapshots would also lead to the same confusion in the reverse situation, where we know a substitute was called with a particular reference but the <code>Arg.Is(person)</code> check fails due to a change in one of its fields.</p>
+
+<p>That said, there are times when snapshots like this are useful, and there are a few ways to enable this with NSubstitute.</p>
+
+<p>The first option is to use structs instead of classes for these cases. These are passed by value rather than by reference, so that value will be stored by substitutes and modifications made afterwards will not affect that value.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>public struct PersonStruct {
+    public string Name { get; set; }
+}
+
+[Test]
+public void MutatingAStruct() {
+    var person = new PersonStruct { Name = &quot;Carrot&quot; };
+    var lookup = Substitute.For&lt;IPersonStructLookup&gt;();
+
+    lookup.Add(person);
+
+    person.Name = &quot;Vimes&quot;;
+
+    // `person` was passed by value, and that value still has the original Name
+    lookup.Received().Add(Arg.Is&lt;PersonStruct&gt;(p =&gt; p.Name == &quot;Carrot&quot;));
+}</pre>
+</div>
+<p>For cases where that is not possible or wanted then we can manually snapshot the values we are interested in.</p>
+<div class='highlight'>
+    <pre class='brush: csharp'>[Test]
+public void ManualArgSnapshot() {
+    var person = new Person { Name = &quot;Carrot&quot; };
+    var lookup = Substitute.For&lt;IPersonLookup&gt;();
+    var namesAdded = new List&lt;string&gt;();
+    // Manually snapshot the value or values we care about:
+    lookup.Add(Arg.Do&lt;Person&gt;(p =&gt; namesAdded.Add(p.Name)));
+
+
+    lookup.Add(person);
+    person.Name = &quot;Vimes&quot;;
+
+    Assert.AreEqual(&quot;Carrot&quot;, namesAdded[0]);
+}</pre>
+</div>
+<p>We can then use our standard assertion library for checking the value. This approach can also be helpful for asserting on complex objects, as our assertions can be more detailed and provide more useful information than NSubstitute typically provides in these cases.</p>
       <div id="page-navigation">
         <div class="previous">
         
