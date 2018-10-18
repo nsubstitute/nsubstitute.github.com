@@ -27,79 +27,82 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/configure">Safe configuration and overlapping calls</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/threading/">Threading</a></li>
             
-            <li><a href="/help/compat-args">Compatibility argument matchers</a></li>
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
             
-            <li><a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a></li>
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Compatibility argument matchers</h1>
-      <p>NSubstitute <a href='/help/argument-matchers'>argument matchers</a> depend on having C# 7.0 or later (as of NSubstitute 4.0). If you are stuck on an earlier version of C# you may get an error like the following when trying to use a matcher like <code>Arg.Is(123)</code>:</p>
+      <p>NSubstitute <a href="/help/argument-matchers">argument matchers</a> depend on having C# 7.0 or later (as of NSubstitute 4.0). If you are stuck on an earlier version of C# you may get an error like the following when trying to use a matcher like <code>Arg.Is(123)</code>:</p>
 
 <blockquote>
-<p><code>CS7085: By-reference return type &#39;ref T&#39; is not supported.</code></p>
+  <p><code>CS7085: By-reference return type 'ref T' is not supported.</code></p>
 </blockquote>
 
-<p>If you have C# 7.0-compatible tooling installed you can <a href='https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/configure-language-version'>set <code>&lt;LangVersion /&gt;</code> in your test csproj file</a> to <code>7</code> or higher, or to <code>latest</code> or <code>default</code>.</p>
+<p>If you have C# 7.0-compatible tooling installed you can <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/configure-language-version">set <code>&lt;LangVersion /&gt;</code> in your test csproj file</a> to <code>7</code> or higher, or to <code>latest</code> or <code>default</code>.</p>
 
 <p>Stuck with pre-7.0 tooling? Then use <code>CompatArg</code> from the <code>NSubstitute.Compatibility</code> namespace instead of <code>Arg</code>. <code>CompatArg</code> will work everywhere <code>Arg</code> does, with the exception of matching <code>out</code> and <code>ref</code> args (which require C# 7.0 features). For example, if the documentation mentions <code>Arg.Is(42)</code>, you can instead use <code>CompatArg.Is(42)</code>.</p>
 
-<h2 id='using_'>Using <code>CompatArg</code></h2>
+<a id="using_compatarg"></a>
+<h2 id="using-compatarg">Using <code>CompatArg</code></h2>
 
 <p>First, add <code>NSubstitute.Compatibility</code> to the list of imports:</p>
 
 <pre><code>using NSubstitute;
-using NSubstitute.Compatibility;</code></pre>
+using NSubstitute.Compatibility;
+</code></pre>
 
 <p>Then use <code>CompatArg</code> in place of <code>Arg</code>:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(1, -10);
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator.Add(1, -10);
 
 // Instead of `Arg.Is&lt;int&gt;(x =&gt; x &lt; 0)`, use:
 calculator.Received().Add(1, CompatArg.Is&lt;int&gt;(x =&gt; x &lt; 0));
@@ -113,16 +116,18 @@ calculator
 calculator.Add(CompatArg.Any&lt;int&gt;(), CompatArg.Is(42)).Returns(123);
 calculator.DidNotReceive().Add(CompatArg.Is&lt;int&gt;(x =&gt; x &gt; 10), -10);</pre>
 </div>
-<p>To make this a bit less verbose you may want to create a wrapper within the root of your test project with a shorter name (e.g. <code>ArgC</code>) that delegates to <code>CompatArg</code>. This will also avoid needing the extra using import, and make it easier to switch to the standard <code>Arg</code> class once you&#8217;re able to update to C# 7.0 and beyond.</p>
+
+<p>To make this a bit less verbose you may want to create a wrapper within the root of your test project with a shorter name (e.g. <code>ArgC</code>) that delegates to <code>CompatArg</code>. This will also avoid needing the extra using import, and make it easier to switch to the standard <code>Arg</code> class once you’re able to update to C# 7.0 and beyond.</p>
+
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/threading" title="Previous: Threading">&laquo; Threading</a>
+            <a href="/help/threading/" title="Previous: Threading">&laquo; Threading</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/nsubstitute-analysers" title="Next: NSubstitute.Analyzers">NSubstitute.Analyzers &raquo; </a>
+            <a href="/help/nsubstitute-analysers/" title="Next: NSubstitute.Analyzers">NSubstitute.Analyzers &raquo; </a>
         
         </div>
       </div>

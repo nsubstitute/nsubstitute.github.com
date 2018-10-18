@@ -27,72 +27,74 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/configure">Safe configuration and overlapping calls</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/threading/">Threading</a></li>
             
-            <li><a href="/help/compat-args">Compatibility argument matchers</a></li>
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
             
-            <li><a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a></li>
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Return for all calls of a type</h1>
-      <p>We can return a specific value for all calls to a substitute using <code>sub.ReturnsForAll&lt;T&gt;(T value)</code>. This will cause <code>sub</code> to return <code>value</code> for all calls that return something of type <code>T</code> and are <a href='#returns_vs_returnsforall'>not already stubbed</a>.</p>
+      <p>We can return a specific value for all calls to a substitute using <code>sub.ReturnsForAll&lt;T&gt;(T value)</code>. This will cause <code>sub</code> to return <code>value</code> for all calls that return something of type <code>T</code> and are <a href="#returns_vs_returnsforall">not already stubbed</a>.</p>
 
 <p><strong>Note: we need <code>using NSubstitute.Extensions</code> to import the <code>.ReturnsForAll&lt;T&gt;()</code> extension method.</strong></p>
 
-<p>The type must match exactly: <code>.ReturnsForAll&lt;Cat&gt;(cat)</code> will not set a return value for a call that returns <code>Animal</code>, even if <code>Cat</code> inherits from <code>Animal</code>. To return for the super-type, use <code>.ReturnsForAll&lt;Animal&gt;(cat)</code>. (If you&#8217;d like a change in this behaviour, please <a href='https://groups.google.com/forum/#!forum/nsubstitute'>let us know</a>).</p>
+<p>The type must match exactly: <code>.ReturnsForAll&lt;Cat&gt;(cat)</code> will not set a return value for a call that returns <code>Animal</code>, even if <code>Cat</code> inherits from <code>Animal</code>. To return for the super-type, use <code>.ReturnsForAll&lt;Animal&gt;(cat)</code>. (If you’d like a change in this behaviour, please <a href="https://groups.google.com/forum/#!forum/nsubstitute">let us know</a>).</p>
 
 <p>There is also an overload that takes a <code>Func&lt;CallInfo,T&gt;</code> so the value to return will be calculated each time.</p>
 
-<h2 id='fluent_interface_example'>Fluent interface example</h2>
+<a id="fluent_interface_example"></a>
+<h2 id="fluent-interface-example">Fluent interface example</h2>
 
 <p>One example of where this can be useful is a builder-style interface where each call returns a reference to itself.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>// using NSubstitute.Extensions;
+
+<div class="highlight">
+    <pre class="brush: csharp">// using NSubstitute.Extensions;
 
 public interface IWidgetBuilder {
   IWidgetBuilder Quantity(int i); 
@@ -126,13 +128,16 @@ public void ShouldReturnWidgetsFromBuilder() {
   Assert.That(result, Is.EqualTo(builder.GetWidgets()));
 }</pre>
 </div>
+
 <p>In this test <code>builder</code> will return a reference to itself whenever a call returns a value of type <code>IWidgetBuilder</code>, so the chained calls will all work on the same <code>builder</code> instance.</p>
 
-<h2 id='returns_vs_returnsforall'>Returns vs. ReturnsForAll</h2>
+<a id="returns_vs_returnsforall"></a>
+<h2 id="returns-vs-returnsforall">Returns vs. ReturnsForAll</h2>
 
-<p>Calls will only use <code>.ReturnsForAll</code> values when NSubstitute can&#8217;t find an explicitly stubbed value for the call. So if we set <code>sub.GetWidget().Returns(widget)</code>, that will take precendence over any values stubbed by <code>sub.ReturnsForAll&lt;Widget&gt;(otherWidget)</code>.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>[Test]
+<p>Calls will only use <code>.ReturnsForAll</code> values when NSubstitute can’t find an explicitly stubbed value for the call. So if we set <code>sub.GetWidget().Returns(widget)</code>, that will take precendence over any values stubbed by <code>sub.ReturnsForAll&lt;Widget&gt;(otherWidget)</code>.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">[Test]
 public void ReturnsTakesPrecedence() {
   var widget = new Widget();
   var otherWidget = new Widget();
@@ -144,15 +149,17 @@ public void ReturnsTakesPrecedence() {
   Assert.That(sub.GetWidget(42), Is.SameAs(otherWidget));
 }</pre>
 </div>
+
+
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/partial-subs" title="Previous: Partial subs and test spies">&laquo; Partial subs and test spies</a>
+            <a href="/help/partial-subs/" title="Previous: Partial subs and test spies">&laquo; Partial subs and test spies</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/threading" title="Next: Threading">Threading &raquo; </a>
+            <a href="/help/threading/" title="Next: Threading">Threading &raquo; </a>
         
         </div>
       </div>

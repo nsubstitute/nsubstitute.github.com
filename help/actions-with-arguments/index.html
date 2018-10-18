@@ -27,70 +27,72 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/configure">Safe configuration and overlapping calls</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/threading/">Threading</a></li>
             
-            <li><a href="/help/compat-args">Compatibility argument matchers</a></li>
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
             
-            <li><a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a></li>
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Actions with argument matchers</h1>
-      <p>In addition to <a href='/help/argument-matchers'>specifying calls</a>, matchers can also be used to perform a specific action with an argument whenever a matching call is made to a substitute. This is a fairly rare requirement, but can make test setup a little simpler in some cases.</p>
+      <p>In addition to <a href="/help/argument-matchers">specifying calls</a>, matchers can also be used to perform a specific action with an argument whenever a matching call is made to a substitute. This is a fairly rare requirement, but can make test setup a little simpler in some cases.</p>
 
 <p><em>Warning:</em> Once we start adding non-trivial behaviour to our substitutes we run the risk of over-specifying or tightly coupling our tests and code. It may be better to pick a different abstraction that better encapsulates this behaviour, or even use a real collaborator and switch to coarser grained tests for the class being tested.</p>
 
-<h2 id='invoking_callbacks'>Invoking callbacks</h2>
+<a id="invoking_callbacks"></a>
+<h2 id="invoking-callbacks">Invoking callbacks</h2>
 
 <p>Say our class under test needs to call a method on a dependency, and provide a callback so it can be notified when the dependent object has finished. We can use <code>Arg.Invoke()</code> to immediately invoke the callback argument as soon as the substitute is called.</p>
 
-<p>Let&#8217;s look at a contrived example. Say we are testing an <code>OrderPlacedCommand</code>, which needs to use an <code>IOrderProcessor</code> to process the order, then raise and event using <code>IEvents</code> when this completes successfully.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>public interface IOrderProcessor {
+<p>Let’s look at a contrived example. Say we are testing an <code>OrderPlacedCommand</code>, which needs to use an <code>IOrderProcessor</code> to process the order, then raise and event using <code>IEvents</code> when this completes successfully.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">public interface IOrderProcessor {
     void ProcessOrder(int orderId, Action&lt;bool&gt; orderProcessed);
 }
 
@@ -109,9 +111,11 @@ public class OrderPlacedCommand {
     }
 }</pre>
 </div>
+
 <p>In our test we can use <code>Arg.Invoke</code> to simulate the situation where the <code>IOrderProcessor</code> finishes processing the order and invokes the callback to tell the calling code it is finished.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>[Test]
+
+<div class="highlight">
+    <pre class="brush: csharp">[Test]
 public void Placing_order_should_raise_order_processed_when_processing_is_successful() {
     //Arrange
     var cart = Substitute.For&lt;ICart&gt;();
@@ -129,24 +133,29 @@ public void Placing_order_should_raise_order_processed_when_processing_is_succes
     events.Received().RaiseOrderProcessed(3);
 }</pre>
 </div>
+
 <p>Here we setup the <code>processor</code> to invoke the callback whenever processing an order with id 3. We set it up to pass <code>true</code> to this callback using <code>Arg.Invoke(true)</code>.</p>
 
 <p>There are several overloads to <code>Arg.Invoke</code> that let us invoke callbacks with varying numbers and types of arguments. We can also invoke custom delegate types (those that are not just simple <code>Action</code> delegates) using <code>Arg.InvokeDelegate</code>.</p>
 
-<h2 id='performing_actions_with_arguments'>Performing actions with arguments</h2>
+<a id="performing_actions_with_arguments"></a>
+<h2 id="performing-actions-with-arguments">Performing actions with arguments</h2>
 
 <p>Sometimes we may not want to invoke a callback immediately. Or maybe we want to store all instances of a particular argument passed to a method. Or even just capture a single argument for inspection later. We can use <code>Arg.Do</code> for these purposes. <code>Arg.Do</code> calls the action we give it with the argument used for each matching call.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var argumentUsed = 0;
+
+<div class="highlight">
+    <pre class="brush: csharp">var argumentUsed = 0;
 calculator.Multiply(Arg.Any&lt;int&gt;(), Arg.Do&lt;int&gt;(x =&gt; argumentUsed = x));
 
 calculator.Multiply(123, 42);
 
 Assert.AreEqual(42, argumentUsed);</pre>
 </div>
+
 <p>Here we specify that a call to <code>Multiply</code> with any first argument should pass the second argument and put it in the <code>argumentUsed</code> variable. This can be quite useful when we want to assert several properties on an argument (for types more complex than <code>int</code> that is).</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var firstArgsBeingMultiplied = new List&lt;int&gt;();
+
+<div class="highlight">
+    <pre class="brush: csharp">var firstArgsBeingMultiplied = new List&lt;int&gt;();
 calculator.Multiply(Arg.Do&lt;int&gt;(x =&gt; firstArgsBeingMultiplied.Add(x)), 10);
 
 calculator.Multiply(2, 10);
@@ -155,13 +164,16 @@ calculator.Multiply(7, 4567); //Will not match our Arg.Do as second arg is not 1
 
 Assert.AreEqual(firstArgsBeingMultiplied, new[] { 2, 5 });</pre>
 </div>
+
 <p>Here our <code>Arg.Do</code> takes whatever <code>int</code> is passed as the first argument to <code>Multiply</code> and adds it to a list whenever the second argument is 10.</p>
 
-<h2 id='argument_actions_and_call_specification'>Argument actions and call specification</h2>
+<a id="argument_actions_and_call_specification"></a>
+<h2 id="argument-actions-and-call-specification">Argument actions and call specification</h2>
 
-<p>Argument actions act just like the <a href='/help/argument-matchers'><code>Arg.Any&lt;T&gt;()</code> argument matcher</a> in that they specify a call where that argument is any type compatible with <code>T</code> (and so can be used for <a href='/help/return-for-args'>setting return values</a> and <a href='/help/received-calls'>checking received calls</a>). They just have the added element of interacting with a specific argument of any call that matches that specification.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var numberOfCallsWhereFirstArgIsLessThan0 = 0;
+<p>Argument actions act just like the <a href="/help/argument-matchers"><code>Arg.Any&lt;T&gt;()</code> argument matcher</a> in that they specify a call where that argument is any type compatible with <code>T</code> (and so can be used for <a href="/help/return-for-args">setting return values</a> and <a href="/help/received-calls">checking received calls</a>). They just have the added element of interacting with a specific argument of any call that matches that specification.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">var numberOfCallsWhereFirstArgIsLessThan0 = 0;
 //Specify a call where the first arg is less than 0, and the second is any int.
 //When this specification is met we&#39;ll increment a counter in the Arg.Do action for 
 //the second argument that was used for the call, and we&#39;ll also make it return 123.
@@ -181,15 +193,17 @@ var results = new[] {
 Assert.AreEqual(3, numberOfCallsWhereFirstArgIsLessThan0); //3 of 4 calls have first arg &lt; 0
 Assert.AreEqual(results, new[] {123, 123, 123, 0}); //Last call returns 0, not 123</pre>
 </div>
+
+
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/setting-out-and-ref-arguments" title="Previous: Setting out and ref args">&laquo; Setting out and ref args</a>
+            <a href="/help/setting-out-and-ref-arguments/" title="Previous: Setting out and ref args">&laquo; Setting out and ref args</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/received-in-order" title="Next: Checking call order">Checking call order &raquo; </a>
+            <a href="/help/received-in-order/" title="Next: Checking call order">Checking call order &raquo; </a>
         
         </div>
       </div>

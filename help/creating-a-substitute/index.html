@@ -27,53 +27,53 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/configure">Safe configuration and overlapping calls</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/threading/">Threading</a></li>
             
-            <li><a href="/help/compat-args">Compatibility argument matchers</a></li>
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
             
-            <li><a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a></li>
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
@@ -81,32 +81,39 @@
     <div id="post-content">
       <h1>Creating a substitute</h1>
       <p>The basic syntax for creating a substitute is:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var substitute = Substitute.For&lt;ISomeInterface&gt;();</pre>
-</div>
-<p>This is how you&#8217;ll normally create substitutes for types. Generally this type will be an interface, but you can also substitute classes in cases of emergency.</p>
 
-<h2 id='substituting_infrequently_and_carefully_for_classes'>Substituting (infrequently and carefully) for classes</h2>
+<div class="highlight">
+    <pre class="brush: csharp">var substitute = Substitute.For&lt;ISomeInterface&gt;();</pre>
+</div>
+
+<p>This is how you’ll normally create substitutes for types. Generally this type will be an interface, but you can also substitute classes in cases of emergency.</p>
+
+<a id="substituting_infrequently_and_carefully_for_classes"></a>
+<h2 id="substituting-infrequently-and-carefully-for-classes">Substituting (infrequently and carefully) for classes</h2>
 
 <p>⚠️ <strong>Warning:</strong> Substituting for classes can have some nasty side-effects!</p>
 
-<p>For starters, <strong>NSubstitute can only work with <em>virtual</em> members of the class</strong>, so any non-virtual code in the class will actually execute! If you try to substitute for a class that formats your hard drive in the constructor or in a non-virtual property setter then you&#8217;re asking for trouble.</p>
+<p>For starters, <strong>NSubstitute can only work with <em>virtual</em> members of the class</strong>, so any non-virtual code in the class will actually execute! If you try to substitute for a class that formats your hard drive in the constructor or in a non-virtual property setter then you’re asking for trouble.</p>
 
 <p>It also means features like <code>Received()</code>, <code>Returns()</code>, <code>Arg.Is()</code>, <code>Arg.Any()</code> and <code>When()..Do()</code> <strong>will not work with these non-virtual members</strong>. For example: <code>subClass.Received().NonVirtualCall()</code> will not actually run an assertion (it will always pass, even if there are no calls to <code>NonVirtualCall()</code>), and can even cause confusing problems with later tests. These features will work correctly with virtual members of the class, but we have to be careful to avoid the non-virtual ones.</p>
 
-<p>For these reasons we strongly recommend using <a href='/help/nsubstitute-analysers/'>NSubstitute.Analyzers</a> to detect these cases, and sticking to substituting for interfaces as much as possible. (Interfaces are always safe to substitute and do not suffer from any of the limitations that class substitutes do.)</p>
+<p>For these reasons we strongly recommend using <a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a> to detect these cases, and sticking to substituting for interfaces as much as possible. (Interfaces are always safe to substitute and do not suffer from any of the limitations that class substitutes do.)</p>
 
-<p>With the knowledge that we&#8217;re not going to be substituting for classes, here is how you create a substitute for a class that has constructor arguments:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var someClass = Substitute.For&lt;SomeClassWithCtorArgs&gt;(5, &quot;hello world&quot;);</pre>
+<p>With the knowledge that we’re not going to be substituting for classes, here is how you create a substitute for a class that has constructor arguments:</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">var someClass = Substitute.For&lt;SomeClassWithCtorArgs&gt;(5, &quot;hello world&quot;);</pre>
 </div>
+
 <p>For classes that have default constructors the syntax is the same as substituting for interfaces.</p>
 
-<h2 id='substituting_for_multiple_interfaces'>Substituting for multiple interfaces</h2>
+<a id="substituting_for_multiple_interfaces"></a>
+<h2 id="substituting-for-multiple-interfaces">Substituting for multiple interfaces</h2>
 
-<p>There are times when you want to substitute for multiple types. The best example of this is when you have code that works with a type, then checks whether it implements <code>IDisposable</code> and disposes of it if it doesn&#8217;t.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var command = Substitute.For&lt;ICommand, IDisposable&gt;();
+<p>There are times when you want to substitute for multiple types. The best example of this is when you have code that works with a type, then checks whether it implements <code>IDisposable</code> and disposes of it if it doesn’t.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">var command = Substitute.For&lt;ICommand, IDisposable&gt;();
 var runner = new CommandRunner(command);
 
 runner.RunCommand();
@@ -114,9 +121,11 @@ runner.RunCommand();
 command.Received().Execute();
 ((IDisposable)command).Received().Dispose();</pre>
 </div>
+
 <p>Your substitute can implement several types this way, but remember you can only implement a maximum of one class. You can specify as many interfaces as you like, but only one of these can be a class. The most flexible way of creating substitutes for multiple types is using this overload:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var substitute = Substitute.For(
+
+<div class="highlight">
+    <pre class="brush: csharp">var substitute = Substitute.For(
 		new[] { typeof(ICommand), typeof(ISomeInterface), typeof(SomeClassWithCtorArgs) },
 		new object[] { 5, &quot;hello world&quot; }
 	);
@@ -124,27 +133,34 @@ Assert.IsInstanceOf&lt;ICommand&gt;(substitute);
 Assert.IsInstanceOf&lt;ISomeInterface&gt;(substitute);
 Assert.IsInstanceOf&lt;SomeClassWithCtorArgs&gt;(substitute);</pre>
 </div>
-<h2 id='substituting_for_delegates'>Substituting for delegates</h2>
+
+<a id="substituting_for_delegates"></a>
+<h2 id="substituting-for-delegates">Substituting for delegates</h2>
 
 <p>NSubstitute can also substitute for delegate types by using <code>Substiute.For&lt;T&gt;()</code>. When substituting for delegate types you will not be able to get the substitute to implement additional interfaces or classes.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var func = Substitute.For&lt;Func&lt;string&gt;&gt;();
+
+<div class="highlight">
+    <pre class="brush: csharp">var func = Substitute.For&lt;Func&lt;string&gt;&gt;();
 
 func().Returns(&quot;hello&quot;);
 Assert.AreEqual(&quot;hello&quot;, func());</pre>
 </div>
-<h2 id='partial_substitutes_and_test_spies'>Partial substitutes and test spies</h2>
 
-<p>When required we can also create substitutes that run real code by default, letting us replace <a href='/help/partial-subs/'>specific parts of a class with substitute behaviour</a>.</p>
+<a id="partial_substitutes_and_test_spies"></a>
+<h2 id="partial-substitutes-and-test-spies">Partial substitutes and test spies</h2>
+
+<p>When required we can also create substitutes that run real code by default, letting us replace <a href="/help/partial-subs/">specific parts of a class with substitute behaviour</a>.</p>
+
+
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/getting-started" title="Previous: Getting started">&laquo; Getting started</a>
+            <a href="/help/getting-started/" title="Previous: Getting started">&laquo; Getting started</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/set-return-value" title="Next: Setting a return value">Setting a return value &raquo; </a>
+            <a href="/help/set-return-value/" title="Next: Setting a return value">Setting a return value &raquo; </a>
         
         </div>
       </div>

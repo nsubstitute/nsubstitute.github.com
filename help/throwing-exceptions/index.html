@@ -27,62 +27,63 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/configure">Safe configuration and overlapping calls</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/threading/">Threading</a></li>
             
-            <li><a href="/help/compat-args">Compatibility argument matchers</a></li>
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
             
-            <li><a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a></li>
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Throwing exceptions</h1>
-      <p><a href='/help/callbacks'>Callbacks</a> can be used to throw exceptions when a member is called.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>//For non-voids:
+      <p><a href="/help/callbacks">Callbacks</a> can be used to throw exceptions when a member is called.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">//For non-voids:
 calculator.Add(-1, -1).Returns(x =&gt; { throw new Exception(); });
 
 //For voids and non-voids:
@@ -94,15 +95,17 @@ calculator
 Assert.Throws&lt;Exception&gt;(() =&gt; calculator.Add(-1, -1));
 Assert.Throws&lt;Exception&gt;(() =&gt; calculator.Add(-2, -2));</pre>
 </div>
+
+
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/callbacks" title="Previous: Callbacks, void calls and When..Do">&laquo; Callbacks, void calls and When..Do</a>
+            <a href="/help/callbacks/" title="Previous: Callbacks, void calls and When..Do">&laquo; Callbacks, void calls and When..Do</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/configure" title="Next: Safe configuration and overlapping calls">Safe configuration and overlapping calls &raquo; </a>
+            <a href="/help/configure/" title="Next: Safe configuration and overlapping calls">Safe configuration and overlapping calls &raquo; </a>
         
         </div>
       </div>

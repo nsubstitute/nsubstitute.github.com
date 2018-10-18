@@ -27,53 +27,53 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/configure">Safe configuration and overlapping calls</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/threading/">Threading</a></li>
             
-            <li><a href="/help/compat-args">Compatibility argument matchers</a></li>
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
             
-            <li><a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a></li>
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
@@ -84,20 +84,24 @@
 
 <p><em>* Note:</em> A pure virtual class is defined as one with all its public methods and properties defined as <em>virtual</em> or <em>abstract</em> and with a default, parameterless constructor defined as <em>public</em> or <em>protected</em>.</p>
 
-<h2 id='recursive_mocks'>Recursive mocks</h2>
+<a id="recursive_mocks"></a>
+<h2 id="recursive-mocks">Recursive mocks</h2>
 
 <p>Say we have the following types:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>public interface INumberParser {
+
+<div class="highlight">
+    <pre class="brush: csharp">public interface INumberParser {
     IEnumerable&lt;int&gt; Parse(string expression);
 }
 public interface INumberParserFactory {
     INumberParser Create(char delimiter);
 }</pre>
 </div>
+
 <p>We want to configure our <code>INumberParserFactory</code> to create a parser that will return a certain set of <code>int</code> for an <code>expresion</code>. We could manually create each substitute:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var factory = Substitute.For&lt;INumberParserFactory&gt;();
+
+<div class="highlight">
+    <pre class="brush: csharp">var factory = Substitute.For&lt;INumberParserFactory&gt;();
 var parser = Substitute.For&lt;INumberParser&gt;();
 factory.Create(&#39;,&#39;).Returns(parser);
 parser.Parse(&quot;an expression&quot;).Returns(new[] {1,2,3});
@@ -106,31 +110,38 @@ Assert.AreEqual(
     factory.Create(&#39;,&#39;).Parse(&quot;an expression&quot;),
     new[] {1,2,3});</pre>
 </div>
+
 <p>Or we could use the fact that a substitute for type <code>INumberParser</code> will automatically be returned for <code>INumberParserFactory.Create()</code>:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var factory = Substitute.For&lt;INumberParserFactory&gt;();
+
+<div class="highlight">
+    <pre class="brush: csharp">var factory = Substitute.For&lt;INumberParserFactory&gt;();
 factory.Create(&#39;,&#39;).Parse(&quot;an expression&quot;).Returns(new[] {1,2,3});
 
 Assert.AreEqual(
     factory.Create(&#39;,&#39;).Parse(&quot;an expression&quot;),
     new[] {1,2,3});</pre>
 </div>
+
 <p>Each time a recursively-subbed property or method is called with the same arguments it will return the same substitute. If a method is called with different arguments a new substitute will be returned.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var firstCall = factory.Create(&#39;,&#39;);
+
+<div class="highlight">
+    <pre class="brush: csharp">var firstCall = factory.Create(&#39;,&#39;);
 var secondCall = factory.Create(&#39;,&#39;);
 var thirdCallWithDiffArg = factory.Create(&#39;x&#39;);
 
 Assert.AreSame(firstCall, secondCall);
 Assert.AreNotSame(firstCall, thirdCallWithDiffArg);</pre>
 </div>
-<p><em>Note:</em> Recursive substitutes will not be created for non-purely virtual classes, as creating and using classes can have potentially unwanted side-effects. You&#8217;ll therefore need to create and return these explicitly.</p>
 
-<h3 id='substitute_chains'>Substitute chains</h3>
+<p><em>Note:</em> Recursive substitutes will not be created for  non-purely virtual classes, as creating and using classes can have potentially unwanted side-effects. You’ll therefore need to create and return these explicitly.</p>
+
+<a id="substitute_chains"></a>
+<h3 id="substitute-chains">Substitute chains</h3>
 
 <p>It is not really an ideal practice, but when required we can also use recursive mocks to make it easier to set up chains of substitutes. For example:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>public interface IContext {
+
+<div class="highlight">
+    <pre class="brush: csharp">public interface IContext {
     IRequest CurrentRequest { get; }
 }
 public interface IRequest {
@@ -142,35 +153,41 @@ public interface IIdentity {
     string[] Roles();
 }</pre>
 </div>
+
 <p>To get the identity of the <code>CurrentRequest</code> to return a certain name, we could manually create substitutes for <code>IContext</code>, <code>IRequest</code>, and <code>IIdentity</code>, and then use <code>Returns()</code> to chain these substitutes together. Instead we can use the substitutes automatically created for each property and method:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var context = Substitute.For&lt;IContext&gt;();
+
+<div class="highlight">
+    <pre class="brush: csharp">var context = Substitute.For&lt;IContext&gt;();
 context.CurrentRequest.Identity.Name.Returns(&quot;My pet fish Eric&quot;);
 Assert.AreEqual(
     &quot;My pet fish Eric&quot;, 
     context.CurrentRequest.Identity.Name);</pre>
 </div>
+
 <p>Here <code>CurrentRequest</code> is automatically going to return a substitute for <code>IRequest</code>, and the <code>IRequest</code> substitute will automatically return a substitute for <code>IIdentity</code>.</p>
 
-<p><em>Note:</em> Setting up long chains of substitutes this way is a code smell: we are breaking the <a href='http://en.wikipedia.org/wiki/Law_of_Demeter'>Law of Demeter</a>, which says objects should only talk to their immediate neighbours, not reach into their neighbours&#8217; neighbours. If you write your tests without recursive mocks this becomes quite obvious as the set up becomes quite complicated, so if you are going to use recursive mocking you&#8217;ll need to be extra vigilant to avoid this type of coupling.</p>
+<p><em>Note:</em> Setting up long chains of substitutes this way is a code smell: we are breaking the <a href="http://en.wikipedia.org/wiki/Law_of_Demeter">Law of Demeter</a>, which says objects should only talk to their immediate neighbours, not reach into their neighbours’ neighbours. If you write your tests without recursive mocks this becomes quite obvious as the set up becomes quite complicated, so if you are going to use recursive mocking you’ll need to be extra vigilant to avoid this type of coupling.</p>
 
-<h2 id='auto_values'>Auto values</h2>
+<a id="auto_values"></a>
+<h2 id="auto-values">Auto values</h2>
+<p>Properties and methods returning types of <code>String</code> or <code>Array</code> will automatically get empty, non-null defaults. This can help avoid null reference exceptions in cases where you just need a reference returned but don’t care about its specific properties.</p>
 
-<p>Properties and methods returning types of <code>String</code> or <code>Array</code> will automatically get empty, non-null defaults. This can help avoid null reference exceptions in cases where you just need a reference returned but don&#8217;t care about its specific properties.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var identity = Substitute.For&lt;IIdentity&gt;();
+<div class="highlight">
+    <pre class="brush: csharp">var identity = Substitute.For&lt;IIdentity&gt;();
 Assert.AreEqual(String.Empty, identity.Name);
 Assert.AreEqual(0, identity.Roles().Length);</pre>
 </div>
+
+
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/raising-events" title="Previous: Raising events">&laquo; Raising events</a>
+            <a href="/help/raising-events/" title="Previous: Raising events">&laquo; Raising events</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/setting-out-and-ref-arguments" title="Next: Setting out and ref args">Setting out and ref args &raquo; </a>
+            <a href="/help/setting-out-and-ref-arguments/" title="Next: Setting out and ref args">Setting out and ref args &raquo; </a>
         
         </div>
       </div>

@@ -27,62 +27,63 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/configure">Safe configuration and overlapping calls</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/threading/">Threading</a></li>
             
-            <li><a href="/help/compat-args">Compatibility argument matchers</a></li>
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
             
-            <li><a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a></li>
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Callbacks, void calls and When..Do</h1>
-      <p>Sometimes it is useful to execute some arbitrary code whenever a particular call is made. We have already seen an example of this when <a href='/help/return-from-function/#callbacks'>passing functions to <code>Returns()</code></a>.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var counter = 0;
+      <p>Sometimes it is useful to execute some arbitrary code whenever a particular call is made. We have already seen an example of this when <a href="/help/return-from-function/#callbacks">passing functions to <code>Returns()</code></a>.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">var counter = 0;
 calculator
     .Add(0,0)
     .ReturnsForAnyArgs(x =&gt; 0)
@@ -93,17 +94,21 @@ calculator.Add(2,2);
 calculator.Add(11,-3);
 Assert.AreEqual(counter, 3);</pre>
 </div>
-<p>The <a href='/help/return-from-function'>Return from a function</a> topic has more information on the arguments passed to the callback.</p>
 
-<h2 id='callbacks_for__calls'>Callbacks for <code>void</code> calls</h2>
+<p>The <a href="/help/return-from-function">Return from a function</a> topic has more information on the arguments passed to the callback.</p>
 
-<p><code>Returns()</code> can be used to get callbacks for members that return a value, but for <code>void</code> members we need a different technique, because we can&#8217;t call a method on a <code>void</code> return. For these cases we can use the <code>When..Do</code> syntax.</p>
+<a id="callbacks_for_void_calls"></a>
+<h2 id="callbacks-for-void-calls">Callbacks for <code>void</code> calls</h2>
 
-<h2 id='when_called_do_this'>When called, do this</h2>
+<p><code>Returns()</code> can be used to get callbacks for members that return a value, but for <code>void</code> members we need a different technique, because we can’t call a method on a <code>void</code> return. For these cases we can use the <code>When..Do</code> syntax.</p>
 
-<p><code>When..Do</code> uses two calls to configure our callback. First, <code>When()</code> is called on the substitute and passed a function. The argument to the function is the substitute itself, and we can call the member we are interested in here, even if it returns <code>void</code>. We then call <code>Do()</code> and pass in our callback that will be executed when the substitute&#8217;s member is called.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>public interface IFoo {
+<a id="when_called_do_this"></a>
+<h2 id="when-called-do-this">When called, do this</h2>
+
+<p><code>When..Do</code> uses two calls to configure our callback. First, <code>When()</code> is called on the substitute and passed a function. The argument to the function is the substitute itself, and we can call the member we are interested in here, even if it returns <code>void</code>. We then call <code>Do()</code> and pass in our callback that will be executed when the substitute’s member is called.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">public interface IFoo {
     void SayHello(string to);
 }
 [Test]
@@ -118,11 +123,13 @@ public void SayHello() {
     Assert.AreEqual(2, counter);
 }</pre>
 </div>
-<p>The argument passed to the <code>Do()</code> method is the same call information passed to the <a href='/help/return-from-function'><code>Returns()</code> callback</a>, which gives us access to the arguments used for the call.</p>
+
+<p>The argument passed to the <code>Do()</code> method is the same call information passed to the <a href="/help/return-from-function"><code>Returns()</code> callback</a>, which gives us access to the arguments used for the call.</p>
 
 <p>Note that we can also use <code>When..Do</code> syntax for non-void members, but generally the <code>Returns()</code> syntax is preferred for brevity and clarity. You may still find it useful for non-voids when you want to execute a function without changing a previous return value.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var counter = 0;
+
+<div class="highlight">
+    <pre class="brush: csharp">var counter = 0;
 calculator.Add(1, 2).Returns(3);
 calculator
     .When(x =&gt; x.Add(Arg.Any&lt;int&gt;(), Arg.Any&lt;int&gt;()))
@@ -132,17 +139,21 @@ var result = calculator.Add(1, 2);
 Assert.AreEqual(3, result);
 Assert.AreEqual(1, counter);</pre>
 </div>
-<h2 id='per_argument_callbacks'>Per argument callbacks</h2>
 
-<p>In cases where we only need callbacks for a particular argument we may be able to use <a href='/help/actions-with-arguments'>per argument callbacks like <code>Arg.Do()</code> and <code>Arg.Invoke()</code></a> instead of <code>When..Do</code>.</p>
+<a id="per_argument_callbacks"></a>
+<h2 id="per-argument-callbacks">Per argument callbacks</h2>
 
-<p>Argument callbacks give us slightly more concise code in a style that is more in keeping with the rest of the NSubstitute API. See <a href='/help/actions-with-arguments'>Actions with arguments</a> for more information and examples.</p>
+<p>In cases where we only need callbacks for a particular argument we may be able to use <a href="/help/actions-with-arguments">per argument callbacks like <code>Arg.Do()</code> and <code>Arg.Invoke()</code></a> instead of <code>When..Do</code>.</p>
 
-<h2 id='callback_builder_for_more_complex_callbacks'>Callback builder for more complex callbacks</h2>
+<p>Argument callbacks give us slightly more concise code in a style that is more in keeping with the rest of the NSubstitute API. See <a href="/help/actions-with-arguments">Actions with arguments</a> for more information and examples.</p>
 
-<p>The <code>Callback</code> builder lets us create more complex <code>Do()</code> scenarios. We can use <code>Callback.First()</code> followed by <code>Then()</code>, <code>ThenThrow()</code> and <code>ThenKeepDoing()</code> to build chains of callbacks. We can also use <code>Always()</code> and <code>AlwaysThrow()</code> to specify callbacks called every time. Note that a callback set by an <code>Always()</code> method will be called even if other callbacks will throw an exception.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var sub = Substitute.For&lt;ISomething&gt;();
+<a id="callback_builder_for_more_complex_callbacks"></a>
+<h2 id="callback-builder-for-more-complex-callbacks">Callback builder for more complex callbacks</h2>
+
+<p>The <code>Callback</code> builder lets us create more complex <code>Do()</code> scenarios.  We can use <code>Callback.First()</code> followed by <code>Then()</code>, <code>ThenThrow()</code> and <code>ThenKeepDoing()</code> to build chains of callbacks. We can also use <code>Always()</code> and <code>AlwaysThrow()</code> to specify callbacks called every time. Note that a callback set by an <code>Always()</code> method will be called even if other callbacks will throw an exception.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">var sub = Substitute.For&lt;ISomething&gt;();
 
 var calls = new List&lt;string&gt;();
 var counter = 0;
@@ -164,15 +175,17 @@ for (int i = 0; i &lt; 5; i++)
 Assert.That(String.Concat(calls), Is.EqualTo(&quot;123++&quot;));
 Assert.That(counter, Is.EqualTo(5));</pre>
 </div>
+
+
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/argument-matchers" title="Previous: Argument matchers">&laquo; Argument matchers</a>
+            <a href="/help/argument-matchers/" title="Previous: Argument matchers">&laquo; Argument matchers</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/throwing-exceptions" title="Next: Throwing exceptions">Throwing exceptions &raquo; </a>
+            <a href="/help/throwing-exceptions/" title="Next: Throwing exceptions">Throwing exceptions &raquo; </a>
         
         </div>
       </div>
