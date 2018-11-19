@@ -27,47 +27,53 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
+            
+            <li><a href="/help/threading/">Threading</a></li>
+            
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
+            
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
@@ -75,8 +81,9 @@
     <div id="post-content">
       <h1>Checking received calls</h1>
       <p>In some cases (particularly for <code>void</code> methods) it is useful to check that a specific call has been received by a substitute. This can be checked using the <code>Received()</code> extension method, followed by the call being checked.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>public interface ICommand {
+
+<div class="highlight">
+    <pre class="brush: csharp">public interface ICommand {
     void Execute();
     event EventHandler Executed;
 }
@@ -101,24 +108,29 @@ public void Should_execute_command() {
     command.Received().Execute();
 }</pre>
 </div>
+
 <p>In this case <code>command</code> did receive a call to <code>Execute()</code>, and so will complete successfully. If <code>Execute()</code> has not been received NSubstitute will throw a <code>ReceivedCallsException</code> and let you know what call was expected and with which arguments, as well as listing actual calls to that method and which the arguments differed.</p>
 
-<h2 id='check_a_call_was_not_received'>Check a call was not received</h2>
-
+<a id="check_a_call_was_not_received"></a>
+<h2 id="check-a-call-was-not-received">Check a call was not received</h2>
 <p>NSubstitute can also make sure a call was not received using the <code>DidNotReceive()</code> extension method.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var command = Substitute.For&lt;ICommand&gt;();
+
+<div class="highlight">
+    <pre class="brush: csharp">var command = Substitute.For&lt;ICommand&gt;();
 var something = new SomethingThatNeedsACommand(command);
 //Act
 something.DontDoAnything();
 //Assert
 command.DidNotReceive().Execute();</pre>
 </div>
-<h2 id='check_a_call_was_received_a_specific_number_of_times'>Check a call was received a specific number of times</h2>
+
+<a id="check_a_call_was_received_a_specific_number_of_times"></a>
+<h2 id="check-a-call-was-received-a-specific-number-of-times">Check a call was received a specific number of times</h2>
 
 <p>The <code>Received()</code> extension method will assert that at least one call was made to a member, and <code>DidNotReceive()</code> asserts that zero calls were made. NSubstitute also gives you the option of asserting a specific number of calls were received by passing an integer to <code>Received()</code>. This will throw if the substitute does not receive <em>exactly</em> that many matching calls. Too few, or too many, and the assertion will fail.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>public class CommandRepeater {
+
+<div class="highlight">
+    <pre class="brush: csharp">public class CommandRepeater {
     ICommand command;
     int numberOfTimesToCall;
     public CommandRepeater(ICommand command, int numberOfTimesToCall) {
@@ -141,13 +153,16 @@ public void Should_execute_command_the_number_of_times_specified() {
   command.Received(3).Execute(); // &lt;&lt; This will fail if 2 or 4 calls were received
 }</pre>
 </div>
+
 <p>We can also use <code>Received(1)</code> to check a call was received once and only once. This differs from the standard <code>Received()</code> call, which checks a call was received <em>at least</em> once. <code>Received(0)</code> behaves the same as <code>DidNotReceive()</code>.</p>
 
-<h2 id='received_or_not_with_specific_arguments'>Received (or not) with specific arguments</h2>
+<a id="received_or_not_with_specific_arguments"></a>
+<h2 id="received-or-not-with-specific-arguments">Received (or not) with specific arguments</h2>
 
-<p>We can also use <a href='/help/argument-matchers'>argument matchers</a> to check calls were received (or not) with particular arguments. This is covered in more detail in the <a href='/help/argument-matchers'>argument matchers</a> topic, but the following examples show the general idea:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(1, 2);
+<p>We can also use <a href="/help/argument-matchers">argument matchers</a> to check calls were received (or not) with particular arguments. This is covered in more detail in the <a href="/help/argument-matchers">argument matchers</a> topic, but the following examples show the general idea:</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator.Add(1, 2);
 calculator.Add(-100, 100);
 
 //Check received with second arg of 2 and any first arg:
@@ -159,20 +174,26 @@ calculator
     .DidNotReceive()
     .Add(Arg.Any&lt;int&gt;(), Arg.Is&lt;int&gt;(x =&gt; x &gt;= 500));</pre>
 </div>
-<h2 id='ignoring_arguments'>Ignoring arguments</h2>
 
-<p>NSubstitute can also check calls were received or not received but ignore the arguments used, just like we can for <a href='/help/return-for-any-args'>setting returns for any arguments</a>. In this case we need <code>ReceivedWithAnyArgs()</code> and <code>DidNotReceiveWithAnyArgs()</code>.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(1, 3);
+<a id="ignoring_arguments"></a>
+<h2 id="ignoring-arguments">Ignoring arguments</h2>
+
+<p>NSubstitute can also check calls were received or not received but ignore the arguments used, just like we can for <a href="/help/return-for-any-args">setting returns for any arguments</a>. In this case we need <code>ReceivedWithAnyArgs()</code> and <code>DidNotReceiveWithAnyArgs()</code>.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator.Add(1, 3);
 
 calculator.ReceivedWithAnyArgs().Add(1,1);
 calculator.DidNotReceiveWithAnyArgs().Subtract(0,0);</pre>
 </div>
-<h2 id='checking_calls_to_properties'>Checking calls to properties</h2>
 
-<p>The same syntax can be used to check calls on properties. Normally we&#8217;d want to avoid this, as we&#8217;re really more interested in testing the required behaviour rather than the precise implementation details (i.e. we would set the property to return a value and check that was used properly, rather than assert that the property getter was called). Still, there are probably times when checking getters and setters were called can come in handy, so here&#8217;s how you do it:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var mode = calculator.Mode;
+<a id="checking_calls_to_properties"></a>
+<h2 id="checking-calls-to-properties">Checking calls to properties</h2>
+
+<p>The same syntax can be used to check calls on properties. Normally we’d want to avoid this, as we’re really more interested in testing the required behaviour rather than the precise implementation details (i.e. we would set the property to return a value and check that was used properly, rather than assert that the property getter was called). Still, there are probably times when checking getters and setters were called can come in handy, so here’s how you do it:</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">var mode = calculator.Mode;
 calculator.Mode = &quot;TEST&quot;;
 
 //Check received call to property getter
@@ -183,21 +204,26 @@ var temp = calculator.Received().Mode;
 //Check received call to property setter with arg of &quot;TEST&quot;
 calculator.Received().Mode = &quot;TEST&quot;;</pre>
 </div>
-<h2 id='checking_calls_to_indexers'>Checking calls to indexers</h2>
 
+<a id="checking_calls_to_indexers"></a>
+<h2 id="checking-calls-to-indexers">Checking calls to indexers</h2>
 <p>An indexer is really just another property, so we can use the same syntax to check calls to indexers.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var dictionary = Substitute.For&lt;IDictionary&lt;string, int&gt;&gt;();
+
+<div class="highlight">
+    <pre class="brush: csharp">var dictionary = Substitute.For&lt;IDictionary&lt;string, int&gt;&gt;();
 dictionary[&quot;test&quot;] = 1;
 
 dictionary.Received()[&quot;test&quot;] = 1;
 dictionary.Received()[&quot;test&quot;] = Arg.Is&lt;int&gt;(x =&gt; x &lt; 5);</pre>
 </div>
-<h2 id='checking_event_subscriptions'>Checking event subscriptions</h2>
 
-<p>As with properties, we&#8217;d normally favour testing the required behaviour over checking subscriptions to particular event handlers. We can do that by <a href='/help/raising-events/'>raising an event on the substitute</a> and asserting our class performs the correct behaviour in response:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>public class CommandWatcher {
+<a id="checking_event_subscriptions"></a>
+<h2 id="checking-event-subscriptions">Checking event subscriptions</h2>
+
+<p>As with properties, we’d normally favour testing the required behaviour over checking subscriptions to particular event handlers. We can do that by <a href="/help/raising-events/">raising an event on the substitute</a> and asserting our class performs the correct behaviour in response:</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">public class CommandWatcher {
     ICommand command;
     public CommandWatcher(ICommand command) { 
     	command.Executed += OnExecuted;
@@ -216,9 +242,11 @@ public void ShouldDoStuffWhenCommandExecutes() {
   Assert.That(watcher.DidStuff);
 }</pre>
 </div>
+
 <p>If required though, <code>Received</code> will let us assert that the subscription was received:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>[Test]
+
+<div class="highlight">
+    <pre class="brush: csharp">[Test]
 public void MakeSureWatcherSubscribesToCommandExecuted() {
   var command = Substitute.For&lt;ICommand&gt;();
   var watcher = new CommandWatcher(command);
@@ -230,11 +258,14 @@ public void MakeSureWatcherSubscribesToCommandExecuted() {
   command.Received().Executed += Arg.Any&lt;EventHandler&gt;();
 }</pre>
 </div>
-<h2 id='checking_event_invocation'>Checking event invocation</h2>
+
+<a id="checking_event_invocation"></a>
+<h2 id="checking-event-invocation">Checking event invocation</h2>
 
 <p>We can also use substitutes for event handlers to confirm that a particular event was raised correctly. Often a simple lambda function will suffice, but if we want to use argument matchers we can use a substitute and <code>Received</code>. Both options are shown below:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>public class LowFuelWarningEventArgs : EventArgs {
+
+<div class="highlight">
+    <pre class="brush: csharp">public class LowFuelWarningEventArgs : EventArgs {
 	public int PercentLeft { get; }
 	public LowFuelWarningEventArgs(int percentLeft){
 		PercentLeft = percentLeft;
@@ -280,15 +311,17 @@ public void ShouldRaiseLowFuel(){
 	    .Invoke(fuelManagement, Arg.Is&lt;LowFuelWarningEventArgs&gt;(x =&gt; x.PercentLeft &lt; 20));
 }</pre>
 </div>
+
+
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/replacing-return-values" title="Previous: Replacing return values">&laquo; Replacing return values</a>
+            <a href="/help/replacing-return-values/" title="Previous: Replacing return values">&laquo; Replacing return values</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/clear-received-calls" title="Next: Clearing received calls">Clearing received calls &raquo; </a>
+            <a href="/help/clear-received-calls/" title="Next: Clearing received calls">Clearing received calls &raquo; </a>
         
         </div>
       </div>

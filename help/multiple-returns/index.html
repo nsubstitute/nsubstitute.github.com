@@ -27,80 +27,98 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
+            
+            <li><a href="/help/threading/">Threading</a></li>
+            
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
+            
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Multiple return values</h1>
-      <p>A call can also be configured to return a different value over multiple calls. The following example shows this for a call to a property, but it works the same way for method calls.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Mode.Returns(&quot;DEC&quot;, &quot;HEX&quot;, &quot;BIN&quot;);
+      
+<p>A call can also be configured to return a different value over multiple calls. The following example shows this for a call to a property, but it works the same way for method calls.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator.Mode.Returns(&quot;DEC&quot;, &quot;HEX&quot;, &quot;BIN&quot;);
 Assert.AreEqual(&quot;DEC&quot;, calculator.Mode);
 Assert.AreEqual(&quot;HEX&quot;, calculator.Mode);
 Assert.AreEqual(&quot;BIN&quot;, calculator.Mode);</pre>
 </div>
-<p>This can also be achieved by <a href='/help/return-from-function'>returning from a function</a>, but passing multiple values to <code>Returns()</code> is simpler and reads better.</p>
 
-<h2 id='multiple_returns_using_callbacks'>Multiple returns using callbacks</h2>
+<p>This can also be achieved by <a href="/help/return-from-function">returning from a function</a>, but passing multiple values to <code>Returns()</code> is simpler and reads better.</p>
 
-<p><code>Returns()</code> also supports passing multiple <a href='/help/return-from-function'>functions to return from</a>, which allows one call in a sequence to throw an exception or perform some other action.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Mode.Returns(x =&gt; &quot;DEC&quot;, x =&gt; &quot;HEX&quot;, x =&gt; { throw new Exception(); });
+<a id="multiple_returns_using_callbacks"></a>
+<h2 id="multiple-returns-using-callbacks">Multiple returns using callbacks</h2>
+
+<p><code>Returns()</code> also supports passing multiple <a href="/help/return-from-function">functions to return from</a>, which allows one call in a sequence to throw an exception or perform some other action.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator.Mode.Returns(x =&gt; &quot;DEC&quot;, x =&gt; &quot;HEX&quot;, x =&gt; { throw new Exception(); });
 Assert.AreEqual(&quot;DEC&quot;, calculator.Mode);
 Assert.AreEqual(&quot;HEX&quot;, calculator.Mode);
 Assert.Throws&lt;Exception&gt;(() =&gt; { var result = calculator.Mode; });</pre>
 </div>
+
+<a id="configuring_other_calls_without_using_up_multiple_returns"></a>
+<h2 id="configuring-other-calls-without-using-up-multiple-returns">Configuring other calls without using up multiple returns</h2>
+
+<p>If a call has been configured with multiple returns values, you can configure a more specific call without using up any of these callbacks using <a href="/help/configure/"><code>.Configure()</code></a>.</p>
+
+
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/return-from-function" title="Previous: Return from a function">&laquo; Return from a function</a>
+            <a href="/help/return-from-function/" title="Previous: Return from a function">&laquo; Return from a function</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/replacing-return-values" title="Next: Replacing return values">Replacing return values &raquo; </a>
+            <a href="/help/replacing-return-values/" title="Next: Replacing return values">Replacing return values &raquo; </a>
         
         </div>
       </div>

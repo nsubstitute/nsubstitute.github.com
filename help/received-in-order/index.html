@@ -27,56 +27,63 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
+            
+            <li><a href="/help/threading/">Threading</a></li>
+            
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
+            
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Checking call order</h1>
-      <p>Sometimes calls need to be made in a specific order. Depending on the timing of calls like this is known as <em>temporal coupling</em>. Ideally we&#8217;d change our design to remove this coupling, but for times when we can&#8217;t NSubstitute lets us resort to asserting the order of calls.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>[Test]
+      <p>Sometimes calls need to be made in a specific order. Depending on the timing of calls like this is known as <em>temporal coupling</em>. Ideally we’d change our design to remove this coupling, but for times when we can’t NSubstitute lets us resort to asserting the order of calls.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">[Test]
 public void TestCommandRunWhileConnectionIsOpen() {
   var connection = Substitute.For&lt;IConnection&gt;();
   var command = Substitute.For&lt;ICommand&gt;();
@@ -91,11 +98,13 @@ public void TestCommandRunWhileConnectionIsOpen() {
   });
 }</pre>
 </div>
+
 <p>If the calls were received in a different order then <code>Received.InOrder</code> will throw an exception and show the expected and actual calls.</p>
 
-<p>We can use standard <a href='/help/argument-matchers/'>argument matchers</a> to match calls, just as we would when <a href='/help/received-calls/'>checking for a single received call</a>.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>[Test]
+<p>We can use standard <a href="/help/argument-matchers/">argument matchers</a> to match calls, just as we would when <a href="/help/received-calls/">checking for a single received call</a>.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">[Test]
 public void SubscribeToEventBeforeOpeningConnection() {
   var connection = Substitute.For&lt;IConnection&gt;();
   connection.SomethingHappened += () =&gt; { /* some event handler */ };
@@ -107,15 +116,17 @@ public void SubscribeToEventBeforeOpeningConnection() {
   });
 }</pre>
 </div>
+
+
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/actions-with-arguments" title="Previous: Actions with argument matchers">&laquo; Actions with argument matchers</a>
+            <a href="/help/actions-with-arguments/" title="Previous: Actions with argument matchers">&laquo; Actions with argument matchers</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/partial-subs" title="Next: Partial subs and test spies">Partial subs and test spies &raquo; </a>
+            <a href="/help/partial-subs/" title="Next: Partial subs and test spies">Partial subs and test spies &raquo; </a>
         
         </div>
       </div>

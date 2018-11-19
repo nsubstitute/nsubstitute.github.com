@@ -27,47 +27,53 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
+            
+            <li><a href="/help/threading/">Threading</a></li>
+            
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
+            
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
@@ -75,8 +81,9 @@
     <div id="post-content">
       <h1>Raising events</h1>
       <p>Sometimes it is necessary to raise events declared on the types being substituted for. Consider the following example:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>public interface IEngine {
+
+<div class="highlight">
+    <pre class="brush: csharp">public interface IEngine {
     event EventHandler Idling;
     event EventHandler&lt;LowFuelWarningEventArgs&gt; LowFuelWarning;
     event Action&lt;int&gt; RevvedAt;
@@ -89,9 +96,11 @@ public class LowFuelWarningEventArgs : EventArgs {
     }
 }</pre>
 </div>
-<p>Events are &#8220;interesting&#8221; creatures in the .NET world, as you can&#8217;t pass around references to them like you can with other members. Instead, you can only add or remove handlers to events, and it is this add handler syntax that NSubstitute uses to raise events.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var wasCalled = false;
+
+<p>Events are “interesting” creatures in the .NET world, as you can’t pass around references to them like you can with other members. Instead, you can only add or remove handlers to events, and it is this add handler syntax that NSubstitute uses to raise events.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">var wasCalled = false;
 engine.Idling += (sender, args) =&gt; wasCalled = true;
 
 //Tell the substitute to raise the event with a sender and EventArgs:
@@ -99,16 +108,21 @@ engine.Idling += Raise.EventWith(new object(), new EventArgs());
 
 Assert.True(wasCalled);</pre>
 </div>
-<p>In the example above we don&#8217;t really mind what sender and <code>EventArgs</code> our event is raised with, just that it was called. In this case NSubstitute can make our life easier by creating the required arguments for our event handler:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>engine.Idling += Raise.Event();
+
+<p>In the example above we don’t really mind what sender and <code>EventArgs</code> our event is raised with, just that it was called. In this case NSubstitute can make our life easier by creating the required arguments for our event handler:</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">engine.Idling += Raise.Event();
 Assert.True(wasCalled);</pre>
 </div>
-<h2 id='raising_events_when_arguments_do_not_have_a_default_constructor'>Raising events when arguments do not have a default constructor</h2>
 
-<p>NSubstitute will not always be able to create the event arguments for you. If your event args do not have a default constructor you will have to provide them yourself using <code>Raise.EventWith&lt;TEventArgs&gt;(...)</code>, as is the case for the <code>LowFuelWarning</code> event. NSubstitute will still create the sender for you if you don&#8217;t provide it though.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>engine.LowFuelWarning += (sender, args) =&gt; numberOfEvents++;
+<a id="raising_events_when_arguments_do_not_have_a_default_constructor"></a>
+<h2 id="raising-events-when-arguments-do-not-have-a-default-constructor">Raising events when arguments do not have a default constructor</h2>
+
+<p>NSubstitute will not always be able to create the event arguments for you. If your event args do not have a default constructor you will have to provide them yourself using <code>Raise.EventWith&lt;TEventArgs&gt;(...)</code>, as is the case for the <code>LowFuelWarning</code> event. NSubstitute will still create the sender for you if you don’t provide it though.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">engine.LowFuelWarning += (sender, args) =&gt; numberOfEvents++;
 
 //Raise event with specific args, any sender:
 engine.LowFuelWarning += Raise.EventWith(new LowFuelWarningEventArgs(10));
@@ -117,13 +131,16 @@ engine.LowFuelWarning += Raise.EventWith(new object(), new LowFuelWarningEventAr
 
 Assert.AreEqual(2, numberOfEvents);</pre>
 </div>
-<h2 id='raising__events'>Raising <code>Delegate</code> events</h2>
 
-<p>Sometimes events are declared with a <em>delegate</em> that does not inherit from <code>EventHandler&lt;T&gt;</code> or <code>EventHandler</code>. These events can be raised using <code>Raise.Event&lt;TypeOfEventHandlerDelegate&gt;(arguments)</code>. NSubsitute will try and guess the arguments required for the delegate, but if it can&#8217;t it will tell you what arguments you need to supply.</p>
+<a id="raising_delegate_events"></a>
+<h2 id="raising-delegate-events">Raising <code>Delegate</code> events</h2>
+
+<p>Sometimes events are declared with a <em>delegate</em> that does not inherit from <code>EventHandler&lt;T&gt;</code> or <code>EventHandler</code>. These events can be raised using <code>Raise.Event&lt;TypeOfEventHandlerDelegate&gt;(arguments)</code>. NSubsitute will try and guess the arguments required for the delegate, but if it can’t it will tell you what arguments you need to supply.</p>
 
 <p>The following examples shows raising an <code>INotifyPropertyChanged</code> event, which uses a <code>PropertyChangedEventHandler</code> delegate and requires two parameters.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>var sub = Substitute.For&lt;INotifyPropertyChanged&gt;();
+
+<div class="highlight">
+    <pre class="brush: csharp">var sub = Substitute.For&lt;INotifyPropertyChanged&gt;();
 bool wasCalled = false;
 sub.PropertyChanged += (sender, args) =&gt; wasCalled = true;
 
@@ -131,26 +148,30 @@ sub.PropertyChanged += Raise.Event&lt;PropertyChangedEventHandler&gt;(this, new 
 
 Assert.That(wasCalled);</pre>
 </div>
-<h2 id='raising__events'>Raising <code>Action</code> events</h2>
 
+<a id="raising_action_events"></a>
+<h2 id="raising-action-events">Raising <code>Action</code> events</h2>
 <p>In the <code>IEngine</code> example the <code>RevvedAt</code> event is declared as an <code>Action&lt;int&gt;</code>. This is another example of a delegate event, and we can use <code>Raise.Event&lt;Action&lt;int&gt;&gt;()</code> to raise our event.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>int revvedAt = 0;;
+
+<div class="highlight">
+    <pre class="brush: csharp">int revvedAt = 0;;
 engine.RevvedAt += rpm =&gt; revvedAt = rpm;
 
 engine.RevvedAt += Raise.Event&lt;Action&lt;int&gt;&gt;(123);
 
 Assert.AreEqual(123, revvedAt);</pre>
 </div>
+
+
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/throwing-exceptions" title="Previous: Throwing exceptions">&laquo; Throwing exceptions</a>
+            <a href="/help/configure/" title="Previous: Safe configuration and overlapping calls">&laquo; Safe configuration and overlapping calls</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/auto-and-recursive-mocks" title="Next: Auto and recursive mocks">Auto and recursive mocks &raquo; </a>
+            <a href="/help/auto-and-recursive-mocks/" title="Next: Auto and recursive mocks">Auto and recursive mocks &raquo; </a>
         
         </div>
       </div>

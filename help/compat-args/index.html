@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>NSubstitute: Compatibility argument matchers</title>
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
+  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
+</head>
+<body>
+  <div id="header">
+    <a href="/" alt="NSubstitute">
+      <img src="/images/nsubstitute-100x100.png" style="float: left; margin-right: 15px; width: 100px; height: 100px;" />
+      <h1 style="display: inline"> NSubstitute </h1> <br />
+      <span><i>A friendly substitute for .NET mocking frameworks</i></span>
+    </a>
+  </div>
+  <div id="nav">
+    <a href="/help/getting-started">Get started</a> |
+    <a href="/help.html">Docs</a> |
+    <a href="http://groups.google.com/group/nsubstitute">Discussion group</a> |
+    <a href="http://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
+  </div>
+
+  <div id="content">
+      <div id="post">
+    <div id="post-index">
+        <ul>
+            
+            <li><a href="/help/getting-started/">Getting started</a></li>
+            
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
+            
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
+            
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
+            
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
+            
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
+            
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
+            
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
+            
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
+            
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
+            
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
+            
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
+            
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
+            
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
+            
+            <li><a href="/help/raising-events/">Raising events</a></li>
+            
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
+            
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
+            
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
+            
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
+            
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
+            
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
+            
+            <li><a href="/help/threading/">Threading</a></li>
+            
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
+            
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
+            
+        </ul>
+    </div>
+
+    <div id="post-content">
+      <h1>Compatibility argument matchers</h1>
+      <p>NSubstitute <a href="/help/argument-matchers">argument matchers</a> depend on having C# 7.0 or later (as of NSubstitute 4.0). This lets them be used with <code>out</code> and <code>ref</code> parameters, but it also means that if you are stuck on an earlier version of C# you may get an error like the following when trying to use a matcher like <code>Arg.Is(123)</code>:</p>
+
+<blockquote>
+  <p><code>CS7085: By-reference return type 'ref T' is not supported.</code></p>
+</blockquote>
+
+<p>If you have C# 7.0-compatible tooling installed you can <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/configure-language-version">set <code>&lt;LangVersion /&gt;</code> in your test csproj file</a> to <code>7</code> or higher, or to <code>latest</code> or <code>default</code>.</p>
+
+<p>Stuck with pre-7.0 tooling? Then use <code>Arg.Compat</code> instead of <code>Arg</code>, or use <code>CompatArg</code> in the <code>NSubstitute.Compatibility</code> namespace. <code>Arg.Compat</code> will work everywhere <code>Arg</code> does, with the exception of matching <code>out</code> and <code>ref</code> args. For example, if the documentation mentions <code>Arg.Is(42)</code>, you can instead use <code>Arg.Compat.Is(42)</code>. <code>CompatArg</code> is a bit trickier to setup, but may make migrating between <code>Arg</code> and <code>Arg.Compat</code> easier in some cases. Both options are described below.</p>
+
+<a id="using_argcompat"></a>
+<h2 id="using-argcompat">Using <code>Arg.Compat</code></h2>
+
+<p>The simplest work-around if you are stuck on pre-C#7 is to use <code>Arg.Compat.</code> wherever you would normally use <code>Arg.</code>. To migrate existing code, replace all instances of <code>Arg.</code> with <code>Arg.Compat.</code>.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator.Add(1, -10);
+
+// Instead of `Arg.Is&lt;int&gt;(x =&gt; x &lt; 0)`, use:
+calculator.Received().Add(1, Arg.Compat.Is&lt;int&gt;(x =&gt; x &lt; 0));
+
+// Instead of `Arg.Any&lt;int&gt;()`, use:
+calculator
+    .Received()
+    .Add(1, Arg.Compat.Any&lt;int&gt;());
+
+// Same for Returns and DidNotReceive:
+calculator.Add(Arg.Compat.Any&lt;int&gt;(), Arg.Compat.Is(42)).Returns(123);
+calculator.DidNotReceive().Add(Arg.Compat.Is&lt;int&gt;(x =&gt; x &gt; 10), -10);</pre>
+</div>
+
+<a id="using_nsubstitutecompatibilitycompatarg"></a>
+<h2 id="using-nsubstitutecompatibilitycompatarg">Using <code>NSubstitute.Compatibility.CompatArg</code></h2>
+
+<p>If you have a project with lots of existing arg matchers then migrating to <code>Arg.Compat</code> can require a lot of code changes. A smaller change is to instead use an instance of the <code>CompatArg</code> class in the <code>NSubstitute.Compatibility</code> namespace. This approach may also make it easier to upgrade to the newer <code>Arg</code> matchers in future.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">[TestFixture]
+public class SampleCompatArgFixture {
+
+    // Declare Arg field. Any existing `Arg` references will now go via `CompatArg`, instead
+    // of the new `Arg` type that is incompatible with older C# compilers.
+    private static readonly NSubstitute.Compatibility.CompatArg Arg = NSubstitute.Compatibility.CompatArg.Instance;
+
+    [Test]
+    public void DemonstrationOfCompatArgs() {
+        var calculator = Substitute.For&lt;ICalculator&gt;();
+
+        calculator.Add(1, -10);
+
+        // Arg.Is will now go via CompatArg. It is equivalent to Arg.Compat.Is.
+        calculator.Received().Add(1, Arg.Is&lt;int&gt;(x =&gt; x &lt; 0));
+    }
+}</pre>
+</div>
+
+<p>This works particularly well if a common test base class is used.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">public class BaseTestFixture {
+
+    // Declare Arg field. Any existing `Arg` references will now go via `CompatArg`, instead
+    // of the new `Arg` type that is incompatible with older C# compilers.
+    protected static readonly NSubstitute.Compatibility.CompatArg Arg = NSubstitute.Compatibility.CompatArg.Instance;
+
+}</pre>
+</div>
+
+<p>If you are later able to update the C# compiler your project is using, you can remove the <code>CompatArg</code> field and all <code>Arg</code> references will go through standard arg matchers (and you’ll now be able to use them with <code>out</code> and <code>ref</code> parameters!).</p>
+
+<a id="argument_matchers_in_expression_trees"></a>
+<h2 id="argument-matchers-in-expression-trees">Argument matchers in expression trees</h2>
+
+<p>As of NSubstitute 4.0 argument matchers can no longer be used in expression trees. Doing so will cause a compilation error:</p>
+
+<blockquote>
+  <p>CS8153: An expression tree lambda may not contain a call to a method, property, or indexer that returns by reference</p>
+</blockquote>
+
+<p>The <code>Arg.Compat</code> matchers can be used to work around this issue. They do not return by reference so they are fine to use in expression trees.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">public interface IFoo { void DoStuff(int i); }
+
+[Test]
+public void Sample() {
+    var sub = Substitute.For&lt;IFoo&gt;();
+    sub.DoStuff(42);
+    // If `specify` takes an `Expression&lt;Action&gt;` argument, this will fail with CS8153: 
+    //   specify(() =&gt; sub.Received().DoStuff(Arg.Any&lt;int&gt;()));
+
+    // Instead use compat matcher:
+    specify(() =&gt; sub.Received().DoStuff(Arg.Compat.Any&lt;int&gt;()));
+
+    // Or re-write without expression tree if possible:
+    sub.Received().DoStuff(Arg.Any&lt;int&gt;());
+}</pre>
+</div>
+
+
+      <div id="page-navigation">
+        <div class="previous">
+        
+            <a href="/help/threading/" title="Previous: Threading">&laquo; Threading</a>
+        
+        </div>
+        <div class="next">
+        
+            <a href="/help/nsubstitute-analysers/" title="Next: NSubstitute.Analyzers">NSubstitute.Analyzers &raquo; </a>
+        
+        </div>
+      </div>
+    </div>
+</div>
+
+
+  </div>
+
+  <div id="footer">
+  NSubstitute is open source software, licensed under the <a href="http://www.opensource.org/licenses/bsd-license.php">BSD License</a>.<br />
+The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
+  NSubstitute logo donated by <a href="http://troyhunt.com">Troy Hunt</a>.
+  </div>
+
+  <script type="text/javascript" src="/scripts/shCore.js"></script>
+  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+
+ <script type="text/javascript">
+    $(document).ready(function() {
+      doHighlighting();
+    });
+
+    function doHighlighting() {
+        SyntaxHighlighter.defaults.gutter = false;
+        SyntaxHighlighter.defaults.toolbar = false;
+        SyntaxHighlighter.all();
+    }
+  </script>
+
+</body>
+</html>

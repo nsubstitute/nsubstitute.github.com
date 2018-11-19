@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>NSubstitute: Setting a return value</title>
+  <title>NSubstitute: Safe configuration and overlapping calls</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
   <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
   <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
@@ -79,63 +79,37 @@
     </div>
 
     <div id="post-content">
-      <h1>Setting a return value</h1>
-      <p>The following examples relate to substituting for the following interface:</p>
+      <h1>Safe configuration and overlapping calls</h1>
+      <p>Sometimes we want to configure a call that overlaps a more general call we have previously setup to run a <a href="/help/callbacks">callback</a> or throw an <a href="/help/throwing-exceptions/">exception</a>. Ideally we would modify the setups so they don’t overlap, but we can also prevent these callbacks from running while we setup the next call by calling <code>Configure()</code> before invoking the method we want to re-configure. <code>Configure()</code> tells NSubstitute we are configuring the following call so that it will not run any callbacks from previous configurations.</p>
 
 <div class="highlight">
-    <pre class="brush: csharp">public interface ICalculator {
-	int Add(int a, int b);
-	string Mode { get; set; }
-}</pre>
+    <pre class="brush: csharp">calculator.Add(Arg.Any&lt;int&gt;(), Arg.Any&lt;int&gt;()).Returns(x =&gt; { throw new Exception(); });
+
+// Now if we try to add a return value for a more specific returns this will throw
+// before it gets a chance to configure the call:
+//    calculator.Add(1, 2).Returns(3);
+
+// Instead, we can use Configure to ensure the previous callback does not run:
+calculator.Configure().Add(1, 2).Returns(3);
+
+// Now both the exception callback and our other return have been configured:
+Assert.AreEqual(3, calculator.Add(1, 2));
+Assert.Throws&lt;Exception&gt;(() =&gt; calculator.Add(-2, -2));</pre>
 </div>
 
-<a id="for_methods"></a>
-<h2 id="for-methods">For methods</h2>
-<p>To set a return value for a method call on a substitute, call the method as normal, then follow it with a call to NSubstitute’s <code>Returns()</code> extension method.</p>
+<p>NSubstitute will also assume we are configuring a call if we have an argument matcher in our call, such as <code>Arg.Is(1)</code> in <code>calculator.Add(Arg.Is(1), 2).Returns(3)</code>, but it is generally better to be more explicit by using <code>.Configure()</code>.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">var calculator = Substitute.For&lt;ICalculator&gt;();
-calculator.Add(1, 2).Returns(3);</pre>
-</div>
-
-<p>This value will be returned every time this call is made. <code>Returns()</code> will only apply to this combination of arguments, so other calls to this method will return a default value instead.</p>
-
-<div class="highlight">
-    <pre class="brush: csharp">//Make a call return 3:
-calculator.Add(1, 2).Returns(3);
-Assert.AreEqual(calculator.Add(1, 2), 3);
-Assert.AreEqual(calculator.Add(1, 2), 3);
-
-//Call with different arguments does not return 3
-Assert.AreNotEqual(calculator.Add(3, 6), 3);</pre>
-</div>
-
-<a id="for_properties"></a>
-<h2 id="for-properties">For properties</h2>
-<p>The return value for a property can be set in the same was as for a method, using <code>Returns()</code>. You can also just use plain old property setters for read/write properties; they’ll behave just the way you expect them to.</p>
-
-<div class="highlight">
-    <pre class="brush: csharp">calculator.Mode.Returns(&quot;DEC&quot;);
-Assert.AreEqual(calculator.Mode, &quot;DEC&quot;);
-
-calculator.Mode = &quot;HEX&quot;;
-Assert.AreEqual(calculator.Mode, &quot;HEX&quot;);</pre>
-</div>
-
-<a id="more_ways_of_setting_return_values"></a>
-<h2 id="more-ways-of-setting-return-values">More ways of setting return values</h2>
-<p>This covers the very basics of setting a return value, but NSubstitute can do much more. Read on for other approachs, including <a href="/help/return-for-args">matching specific arguments</a>, <a href="/help/return-for-any-args">ignoring arguments</a>, using <a href="/help/return-from-function">functions to calculate return values</a> and returning <a href="/help/multiple-returns">multiple results</a>.</p>
-
+<p>This can be particularly useful with <a href="/help/partial-subs/">partial substitutes</a> to help avoid real code being executed when configuring calls that would otherwise call the base implementation.</p>
 
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/creating-a-substitute/" title="Previous: Creating a substitute">&laquo; Creating a substitute</a>
+            <a href="/help/throwing-exceptions/" title="Previous: Throwing exceptions">&laquo; Throwing exceptions</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/return-for-args/" title="Next: Return for specific args">Return for specific args &raquo; </a>
+            <a href="/help/raising-events/" title="Next: Raising events">Raising events &raquo; </a>
         
         </div>
       </div>

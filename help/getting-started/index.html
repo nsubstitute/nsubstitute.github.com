@@ -27,136 +27,180 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
+            
+            <li><a href="/help/threading/">Threading</a></li>
+            
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
+            
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Getting started</h1>
-      <p>The easiest way to get started is to reference NSubstitute from your test project using the <a href='http://nuget.org/List/Packages/NSubstitute'>NSubstitute NuGet package</a> via <a href='http://nuget.codeplex.com/wikipage?title=Getting%20Started'>NuGet</a> or <a href='https://github.com/openrasta/openwrap/wiki/Nuget'>OpenWrap</a>. Alternatively you can <a href='http://github.com/nsubstitute/NSubstitute/downloads'>download NSubstitute</a> and add a reference to the <code>NSubstitute.dll</code> file included in the download into your test project.</p>
+      <a id="adding_nsubstitute_to_your_test_project"></a>
+<h2 id="adding-nsubstitute-to-your-test-project">Adding NSubstitute to your test project</h2>
 
-<p>So now you are staring at a blank test fixture (created with your favourite unit testing framework; for these examples we&#8217;re using <a href='http://www.nunit.org/'>NUnit</a>), and are wondering where to start.</p>
+<p>First add the <a href="http://nuget.org/List/Packages/NSubstitute">NSubstitute NuGet package</a> to your test project using <a href="https://docs.microsoft.com/en-us/nuget/quickstart/use-a-package">NuGet</a> (either the command line executable, or via the package manager in your IDE).</p>
+
+<pre><code>&gt; Install-Package NSubstitute
+</code></pre>
+
+<p>It is optional but recommended to also install <a href="https://www.nuget.org/packages/NSubstitute.Analyzers.CSharp/">NSubstitute.Analyzers.CSharp</a> for C# projects, or <a href="https://www.nuget.org/packages/NSubstitute.Analyzers.VisualBasic/">NSubstitute.Analyzers.VisualBasic</a> for VB projects. NSubstitute will work without the analysers installed, but these packages will <a href="/help/nsubstitute-analysers/">help detect potential misuses of the NSubstitute API</a>.</p>
+
+<pre><code>&gt; Install-Package NSubstitute.Analyzers.CSharp
+// or
+&gt; Install-Package NSubstitute.Analyzers.VisualBasic
+</code></pre>
+
+<a id="using_nsubstitute_in_a_test_fixture"></a>
+<h2 id="using-nsubstitute-in-a-test-fixture">Using NSubstitute in a test fixture</h2>
+
+<p>So now you are staring at a blank test fixture (created with your favourite unit testing framework; for these examples we’re using <a href="http://www.nunit.org/">NUnit</a>), and are wondering where to start.</p>
 
 <p>First, add <code>using NSubstitute;</code> to your current C# file. This will give you everything you need to start substituting.</p>
 
-<p>Now let&#8217;s say we have a basic calculator interface:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>public interface ICalculator
+<p>Now let’s say we have a basic calculator interface:</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">public interface ICalculator
 {
     int Add(int a, int b);
     string Mode { get; set; }
     event EventHandler PoweringUp;
 }</pre>
 </div>
+
 <p>We can ask NSubstitute to create a substitute instance for this type. We could ask for a stub, mock, fake, spy, test double etc., but why bother when we just want to substitute an instance we have some control over?</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator = Substitute.For&lt;ICalculator&gt;();</pre>
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator = Substitute.For&lt;ICalculator&gt;();</pre>
 </div>
+
+<p>⚠️ <strong>Note</strong>: NSubstitute will only work properly with interfaces or with <code>virtual</code> members of classes. Be careful substituting for classes with non-virtual members. See <a href="/help/creating-a-substitute/#substituting_infrequently_and_carefully_for_classes">Creating a substitute</a> for more information.</p>
+
 <p>Now we can tell our substitute to return a value for a call:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(1, 2).Returns(3);
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator.Add(1, 2).Returns(3);
 Assert.That(calculator.Add(1, 2), Is.EqualTo(3));</pre>
 </div>
+
 <p>We can check that our substitute received a call, and did not receive others:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(1, 2);
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator.Add(1, 2);
 calculator.Received().Add(1, 2);
 calculator.DidNotReceive().Add(5, 7);</pre>
 </div>
+
 <p>If our <code>Received()</code> assertion fails, NSubstitute tries to give us some help as to what the problem might be:</p>
 
 <pre><code>NSubstitute.Exceptions.ReceivedCallsException : Expected to receive a call matching:
     Add(1, 2)
 Actually received no matching calls.
-Received 2 non-matching calls (non-matching arguments indicated with &#39;*&#39; characters):
+Received 2 non-matching calls (non-matching arguments indicated with '*' characters):
     Add(*4*, *7*)
-    Add(1, *5*)</code></pre>
+    Add(1, *5*)
+</code></pre>
 
 <p>We can also work with properties using the <code>Returns</code> syntax we use for methods, or just stick with plain old property setters (for read/write properties):</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Mode.Returns(&quot;DEC&quot;);
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator.Mode.Returns(&quot;DEC&quot;);
 Assert.That(calculator.Mode, Is.EqualTo(&quot;DEC&quot;));
 
 calculator.Mode = &quot;HEX&quot;;
 Assert.That(calculator.Mode, Is.EqualTo(&quot;HEX&quot;));</pre>
 </div>
-<p>NSubstitute supports <a href='/help/argument-matchers/'>argument matching</a> for setting return values and asserting a call was received:</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(10, -5);
+
+<p>NSubstitute supports <a href="/help/argument-matchers/">argument matching</a> for setting return values and asserting a call was received:</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator.Add(10, -5);
 calculator.Received().Add(10, Arg.Any&lt;int&gt;());
 calculator.Received().Add(10, Arg.Is&lt;int&gt;(x =&gt; x &lt; 0));</pre>
 </div>
-<p>We can use argument matching as well as passing a function to <code>Returns()</code> to get some more behaviour out of our substitute (possibly too much, but that&#8217;s your call):</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator
+
+<p>We can use argument matching as well as passing a function to <code>Returns()</code> to get some more behaviour out of our substitute (possibly too much, but that’s your call):</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator
    .Add(Arg.Any&lt;int&gt;(), Arg.Any&lt;int&gt;())
    .Returns(x =&gt; (int)x[0] + (int)x[1]);
 Assert.That(calculator.Add(5, 10), Is.EqualTo(15));</pre>
 </div>
+
 <p><code>Returns()</code> can also be called with multiple arguments to set up a sequence of return values.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Mode.Returns(&quot;HEX&quot;, &quot;DEC&quot;, &quot;BIN&quot;);
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator.Mode.Returns(&quot;HEX&quot;, &quot;DEC&quot;, &quot;BIN&quot;);
 Assert.That(calculator.Mode, Is.EqualTo(&quot;HEX&quot;));
 Assert.That(calculator.Mode, Is.EqualTo(&quot;DEC&quot;));
 Assert.That(calculator.Mode, Is.EqualTo(&quot;BIN&quot;));</pre>
 </div>
+
 <p>Finally, we can raise events on our substitutes (unfortunately C# dramatically restricts the extent to which this syntax can be cleaned up):</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>bool eventWasRaised = false;
+
+<div class="highlight">
+    <pre class="brush: csharp">bool eventWasRaised = false;
 calculator.PoweringUp += (sender, args) =&gt; eventWasRaised = true;
 
 calculator.PoweringUp += Raise.Event();
 Assert.That(eventWasRaised);</pre>
 </div>
-<p>That&#8217;s pretty much all you need to get started with NSubstitute. Read on for more detailed feature descriptions, as well as for some of the less common requirements that NSubstitute supports.</p>
+
+<p>That’s pretty much all you need to get started with NSubstitute. Read on for more detailed feature descriptions, as well as for some of the less common requirements that NSubstitute supports.</p>
+
       <div id="page-navigation">
         <div class="previous">
         
         </div>
         <div class="next">
         
-            <a href="/help/creating-a-substitute" title="Next: Creating a substitute">Creating a substitute &raquo; </a>
+            <a href="/help/creating-a-substitute/" title="Next: Creating a substitute">Creating a substitute &raquo; </a>
         
         </div>
       </div>

@@ -27,71 +27,81 @@
     <div id="post-index">
         <ul>
             
-            <li><a href="/help/getting-started">Getting started</a></li>
+            <li><a href="/help/getting-started/">Getting started</a></li>
             
-            <li><a href="/help/creating-a-substitute">Creating a substitute</a></li>
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
             
-            <li><a href="/help/set-return-value">Setting a return value</a></li>
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
             
-            <li><a href="/help/return-for-args">Return for specific args</a></li>
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
             
-            <li><a href="/help/return-for-any-args">Return for any args</a></li>
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
             
-            <li><a href="/help/return-from-function">Return from a function</a></li>
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
             
-            <li><a href="/help/multiple-returns">Multiple return values</a></li>
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
             
-            <li><a href="/help/replacing-return-values">Replacing return values</a></li>
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
             
-            <li><a href="/help/received-calls">Checking received calls</a></li>
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
             
-            <li><a href="/help/clear-received-calls">Clearing received calls</a></li>
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
             
-            <li><a href="/help/argument-matchers">Argument matchers</a></li>
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
             
-            <li><a href="/help/callbacks">Callbacks, void calls and When..Do</a></li>
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
             
-            <li><a href="/help/throwing-exceptions">Throwing exceptions</a></li>
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
             
-            <li><a href="/help/raising-events">Raising events</a></li>
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
             
-            <li><a href="/help/auto-and-recursive-mocks">Auto and recursive mocks</a></li>
+            <li><a href="/help/raising-events/">Raising events</a></li>
             
-            <li><a href="/help/setting-out-and-ref-arguments">Setting out and ref args</a></li>
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
             
-            <li><a href="/help/actions-with-arguments">Actions with argument matchers</a></li>
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
             
-            <li><a href="/help/received-in-order">Checking call order</a></li>
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
             
-            <li><a href="/help/partial-subs">Partial subs and test spies</a></li>
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
             
-            <li><a href="/help/return-for-all">Return for all calls of a type</a></li>
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
             
-            <li><a href="/help/threading">Threading</a></li>
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
+            
+            <li><a href="/help/threading/">Threading</a></li>
+            
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
+            
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Return for any args</h1>
-      <p>A call can be configured to return a value regardless of the arguments passed using the <code>ReturnsForAnyArgs()</code> extension method.</p>
-<div class='highlight'>
-    <pre class='brush: csharp'>calculator.Add(1, 2).ReturnsForAnyArgs(100); 
-Assert.AreEqual(calculator.Add(1, 2), 100);
-Assert.AreEqual(calculator.Add(-7, 15), 100);</pre>
+      
+<p>A call can be configured to return a value regardless of the arguments passed using the <code>ReturnsForAnyArgs()</code> extension method.</p>
+
+<div class="highlight">
+    <pre class="brush: csharp">calculator.Add(1, 2).ReturnsForAnyArgs(100); 
+Assert.AreEqual(100, calculator.Add(1, 2));
+Assert.AreEqual(100, calculator.Add(-7, 15));</pre>
 </div>
-<p>The same behaviour can also be achieved using <a href='/help/argument-matchers'>argument matchers</a>: it is simply a shortcut for replacing each argument with <code>Arg.Any&lt;T&gt;()</code>.</p>
+
+<p>The same behaviour can also be achieved using <a href="/help/argument-matchers">argument matchers</a>: it is simply a shortcut for replacing each argument with <code>Arg.Any&lt;T&gt;()</code>.</p>
 
 <p><code>ReturnsForAnyArgs()</code> has the same overloads as <code>Returns()</code>, so you can also specify multiple return values or calculated return values using this approach.</p>
+
       <div id="page-navigation">
         <div class="previous">
         
-            <a href="/help/return-for-args" title="Previous: Return for specific args">&laquo; Return for specific args</a>
+            <a href="/help/return-for-args/" title="Previous: Return for specific args">&laquo; Return for specific args</a>
         
         </div>
         <div class="next">
         
-            <a href="/help/return-from-function" title="Next: Return from a function">Return from a function &raquo; </a>
+            <a href="/help/return-from-function/" title="Next: Return from a function">Return from a function &raquo; </a>
         
         </div>
       </div>
