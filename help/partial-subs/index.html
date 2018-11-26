@@ -117,6 +117,8 @@ public void ShouldSumAllNumbersInFile() {
 
 <p>Note the <strong>CAUTION</strong> comment. If we had not used <a href="/help/configure/"><code>Configure()</code></a> here before <code>.ReadFile()</code> then the real <code>ReadFile</code> method would have executed before we had a chance to override the behaviour (<code>reader.ReadFile("foo.txt")</code> returns first before <code>.Returns(...)</code> executes). In some cases this may not be a problem, but if in doubt make sure you call <code>Configure()</code> first so NSubstitute knows you are configuring a call and don’t want to run any real code. (This still does not guarantee real code will not run – remember, NSubstitute will not prevent non-virtual calls from executing.)</p>
 
+<p><em>The <code>Configure()</code> method is only available in NSubstitute 4.0 and above. For verisons prior to 4.0 we need to use <code>When .. DoNotCallBase</code> described below.</em></p>
+
 <a id="void_methods_and_donotcallbase"></a>
 <h2 id="void-methods-and-donotcallbase">Void methods and <code>DoNotCallBase</code></h2>
 

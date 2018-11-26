@@ -80,7 +80,9 @@
 
     <div id="post-content">
       <h1>Safe configuration and overlapping calls</h1>
-      <p>Sometimes we want to configure a call that overlaps a more general call we have previously setup to run a <a href="/help/callbacks">callback</a> or throw an <a href="/help/throwing-exceptions/">exception</a>. Ideally we would modify the setups so they don’t overlap, but we can also prevent these callbacks from running while we setup the next call by calling <code>Configure()</code> before invoking the method we want to re-configure. <code>Configure()</code> tells NSubstitute we are configuring the following call so that it will not run any callbacks from previous configurations.</p>
+      <p><em><code>Configure()</code> is supported in NSubstitute 4.0 and above.</em></p>
+
+<p>Sometimes we want to configure a call that overlaps a more general call we have previously setup to run a <a href="/help/callbacks">callback</a> or throw an <a href="/help/throwing-exceptions/">exception</a>. Ideally we would modify the setups so they don’t overlap, but we can also prevent these callbacks from running while we setup the next call by calling <code>Configure()</code> before invoking the method we want to re-configure. <code>Configure()</code> tells NSubstitute we are configuring the following call so that it will not run any callbacks from previous configurations.</p>
 
 <div class="highlight">
     <pre class="brush: csharp">calculator.Add(Arg.Any&lt;int&gt;(), Arg.Any&lt;int&gt;()).Returns(x =&gt; { throw new Exception(); });
