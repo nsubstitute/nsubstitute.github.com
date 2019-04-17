@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <title>NSubstitute: Setting a return value</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
 </head>
 <body>
   <div id="header">
@@ -17,8 +15,7 @@
   </div>
   <div id="nav">
     <a href="/help/getting-started">Get started</a> |
-    <a href="/help.html">Docs</a> |
-    <a href="https://groups.google.com/group/nsubstitute">Discussion group</a> |
+    <a href="/help.html">Docs and getting help</a> |
     <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
@@ -75,6 +72,10 @@
             
             <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
+            <li><a href="/help/how-nsub-works/">How NSubstitute works</a></li>
+            
+            <li><a href="/help/search/">Search</a></li>
+            
         </ul>
     </div>
 
@@ -82,45 +83,48 @@
       <h1>Setting a return value</h1>
       <p>The following examples relate to substituting for the following interface:</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">public interface ICalculator {
-	int Add(int a, int b);
-	string Mode { get; set; }
-}</pre>
-</div>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">interface</span> <span class="nc">ICalculator</span> <span class="p">{</span>
+	<span class="kt">int</span> <span class="nf">Add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">);</span>
+	<span class="kt">string</span> <span class="n">Mode</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<!--
+```requiredcode
+ICalculator calculator;
+[SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
+```
+-->
 
 <a id="for_methods"></a>
 <h2 id="for-methods">For methods</h2>
-<p>To set a return value for a method call on a substitute, call the method as normal, then follow it with a call to NSubstitute’s <code>Returns()</code> extension method.</p>
+<p>To set a return value for a method call on a substitute, call the method as normal, then follow it with a call to NSubstitute’s <code class="highlighter-rouge">Returns()</code> extension method.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">var calculator = Substitute.For&lt;ICalculator&gt;();
-calculator.Add(1, 2).Returns(3);</pre>
-</div>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">calculator</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICalculator</span><span class="p">&gt;();</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="m">3</span><span class="p">);</span>
+</code></pre></div></div>
 
-<p>This value will be returned every time this call is made. <code>Returns()</code> will only apply to this combination of arguments, so other calls to this method will return a default value instead.</p>
+<p>This value will be returned every time this call is made. <code class="highlighter-rouge">Returns()</code> will only apply to this combination of arguments, so other calls to this method will return a default value instead.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">//Make a call return 3:
-calculator.Add(1, 2).Returns(3);
-Assert.AreEqual(calculator.Add(1, 2), 3);
-Assert.AreEqual(calculator.Add(1, 2), 3);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//Make a call return 3:</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="m">3</span><span class="p">);</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">),</span> <span class="m">3</span><span class="p">);</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">),</span> <span class="m">3</span><span class="p">);</span>
 
-//Call with different arguments does not return 3
-Assert.AreNotEqual(calculator.Add(3, 6), 3);</pre>
-</div>
+<span class="c1">//Call with different arguments does not return 3</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreNotEqual</span><span class="p">(</span><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="m">6</span><span class="p">),</span> <span class="m">3</span><span class="p">);</span>
+</code></pre></div></div>
 
 <a id="for_properties"></a>
 <h2 id="for-properties">For properties</h2>
-<p>The return value for a property can be set in the same was as for a method, using <code>Returns()</code>. You can also just use plain old property setters for read/write properties; they’ll behave just the way you expect them to.</p>
+<p>The return value for a property can be set in the same was as for a method, using <code class="highlighter-rouge">Returns()</code>. You can also just use plain old property setters for read/write properties; they’ll behave just the way you expect them to.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">calculator.Mode.Returns(&quot;DEC&quot;);
-Assert.AreEqual(calculator.Mode, &quot;DEC&quot;);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span><span class="p">.</span><span class="nf">Returns</span><span class="p">(</span><span class="s">"DEC"</span><span class="p">);</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span><span class="p">,</span> <span class="s">"DEC"</span><span class="p">);</span>
 
-calculator.Mode = &quot;HEX&quot;;
-Assert.AreEqual(calculator.Mode, &quot;HEX&quot;);</pre>
-</div>
+<span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span> <span class="p">=</span> <span class="s">"HEX"</span><span class="p">;</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span><span class="p">,</span> <span class="s">"HEX"</span><span class="p">);</span>
+</code></pre></div></div>
 
 <a id="more_ways_of_setting_return_values"></a>
 <h2 id="more-ways-of-setting-return-values">More ways of setting return values</h2>
@@ -150,22 +154,6 @@ Assert.AreEqual(calculator.Mode, &quot;HEX&quot;);</pre>
 The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
   NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
   </div>
-
-  <script type="text/javascript" src="/scripts/shCore.js"></script>
-  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
- <script type="text/javascript">
-    $(document).ready(function() {
-      doHighlighting();
-    });
-
-    function doHighlighting() {
-        SyntaxHighlighter.defaults.gutter = false;
-        SyntaxHighlighter.defaults.toolbar = false;
-        SyntaxHighlighter.all();
-    }
-  </script>
 
 </body>
 </html>

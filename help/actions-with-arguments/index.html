@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <title>NSubstitute: Actions with argument matchers</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
 </head>
 <body>
   <div id="header">
@@ -17,8 +15,7 @@
   </div>
   <div id="nav">
     <a href="/help/getting-started">Get started</a> |
-    <a href="/help.html">Docs</a> |
-    <a href="https://groups.google.com/group/nsubstitute">Discussion group</a> |
+    <a href="/help.html">Docs and getting help</a> |
     <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
@@ -75,6 +72,10 @@
             
             <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
+            <li><a href="/help/how-nsub-works/">How NSubstitute works</a></li>
+            
+            <li><a href="/help/search/">Search</a></li>
+            
         </ul>
     </div>
 
@@ -87,112 +88,122 @@
 <a id="invoking_callbacks"></a>
 <h2 id="invoking-callbacks">Invoking callbacks</h2>
 
-<p>Say our class under test needs to call a method on a dependency, and provide a callback so it can be notified when the dependent object has finished. We can use <code>Arg.Invoke()</code> to immediately invoke the callback argument as soon as the substitute is called.</p>
+<p>Say our class under test needs to call a method on a dependency, and provide a callback so it can be notified when the dependent object has finished. We can use <code class="highlighter-rouge">Arg.Invoke()</code> to immediately invoke the callback argument as soon as the substitute is called.</p>
 
-<p>Let’s look at a contrived example. Say we are testing an <code>OrderPlacedCommand</code>, which needs to use an <code>IOrderProcessor</code> to process the order, then raise and event using <code>IEvents</code> when this completes successfully.</p>
+<p>Let’s look at a contrived example. Say we are testing an <code class="highlighter-rouge">OrderPlacedCommand</code>, which needs to use an <code class="highlighter-rouge">IOrderProcessor</code> to process the order, then raise and event using <code class="highlighter-rouge">IEvents</code> when this completes successfully.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">public interface IOrderProcessor {
-    void ProcessOrder(int orderId, Action&lt;bool&gt; orderProcessed);
-}
+<!--
+```requiredcode
+public interface ICart { int OrderId { get; set; } }
+public interface IEvents { void RaiseOrderProcessed(int orderId); }
+```
+-->
 
-public class OrderPlacedCommand {
-    IOrderProcessor orderProcessor;
-    IEvents events;
-    public OrderPlacedCommand(IOrderProcessor orderProcessor, IEvents events) {
-        this.orderProcessor = orderProcessor;
-        this.events = events;
-    }
-    public void Execute(ICart cart) {
-        orderProcessor.ProcessOrder(
-            cart.OrderId, 
-            wasOk =&gt; { if (wasOk) events.RaiseOrderProcessed(cart.OrderId); }
-        );
-    }
-}</pre>
-</div>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">interface</span> <span class="nc">IOrderProcessor</span> <span class="p">{</span>
+    <span class="k">void</span> <span class="nf">ProcessOrder</span><span class="p">(</span><span class="kt">int</span> <span class="n">orderId</span><span class="p">,</span> <span class="n">Action</span><span class="p">&lt;</span><span class="kt">bool</span><span class="p">&gt;</span> <span class="n">orderProcessed</span><span class="p">);</span>
+<span class="p">}</span>
 
-<p>In our test we can use <code>Arg.Invoke</code> to simulate the situation where the <code>IOrderProcessor</code> finishes processing the order and invokes the callback to tell the calling code it is finished.</p>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">OrderPlacedCommand</span> <span class="p">{</span>
+    <span class="n">IOrderProcessor</span> <span class="n">orderProcessor</span><span class="p">;</span>
+    <span class="n">IEvents</span> <span class="n">events</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nf">OrderPlacedCommand</span><span class="p">(</span><span class="n">IOrderProcessor</span> <span class="n">orderProcessor</span><span class="p">,</span> <span class="n">IEvents</span> <span class="n">events</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">orderProcessor</span> <span class="p">=</span> <span class="n">orderProcessor</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">events</span> <span class="p">=</span> <span class="n">events</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Execute</span><span class="p">(</span><span class="n">ICart</span> <span class="n">cart</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">orderProcessor</span><span class="p">.</span><span class="nf">ProcessOrder</span><span class="p">(</span>
+            <span class="n">cart</span><span class="p">.</span><span class="n">OrderId</span><span class="p">,</span> 
+            <span class="n">wasOk</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="n">wasOk</span><span class="p">)</span> <span class="n">events</span><span class="p">.</span><span class="nf">RaiseOrderProcessed</span><span class="p">(</span><span class="n">cart</span><span class="p">.</span><span class="n">OrderId</span><span class="p">);</span> <span class="p">}</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<div class="highlight">
-    <pre class="brush: csharp">[Test]
-public void Placing_order_should_raise_order_processed_when_processing_is_successful() {
-    //Arrange
-    var cart = Substitute.For&lt;ICart&gt;();
-    var events = Substitute.For&lt;IEvents&gt;();
-    var processor = Substitute.For&lt;IOrderProcessor&gt;();
-    cart.OrderId = 3;
-    //Arrange for processor to invoke the callback arg with `true` whenever processing order id 3
-    processor.ProcessOrder(3, Arg.Invoke(true));
+<p>In our test we can use <code class="highlighter-rouge">Arg.Invoke</code> to simulate the situation where the <code class="highlighter-rouge">IOrderProcessor</code> finishes processing the order and invokes the callback to tell the calling code it is finished.</p>
 
-    //Act
-    var command = new OrderPlacedCommand(processor, events);
-    command.Execute(cart);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">[Test]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">Placing_order_should_raise_order_processed_when_processing_is_successful</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">//Arrange</span>
+    <span class="kt">var</span> <span class="n">cart</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICart</span><span class="p">&gt;();</span>
+    <span class="kt">var</span> <span class="n">events</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IEvents</span><span class="p">&gt;();</span>
+    <span class="kt">var</span> <span class="n">processor</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IOrderProcessor</span><span class="p">&gt;();</span>
+    <span class="n">cart</span><span class="p">.</span><span class="n">OrderId</span> <span class="p">=</span> <span class="m">3</span><span class="p">;</span>
+    <span class="c1">//Arrange for processor to invoke the callback arg with `true` whenever processing order id 3</span>
+    <span class="n">processor</span><span class="p">.</span><span class="nf">ProcessOrder</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="n">Arg</span><span class="p">.</span><span class="nf">Invoke</span><span class="p">(</span><span class="k">true</span><span class="p">));</span>
 
-    //Assert
-    events.Received().RaiseOrderProcessed(3);
-}</pre>
-</div>
+    <span class="c1">//Act</span>
+    <span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">OrderPlacedCommand</span><span class="p">(</span><span class="n">processor</span><span class="p">,</span> <span class="n">events</span><span class="p">);</span>
+    <span class="n">command</span><span class="p">.</span><span class="nf">Execute</span><span class="p">(</span><span class="n">cart</span><span class="p">);</span>
 
-<p>Here we setup the <code>processor</code> to invoke the callback whenever processing an order with id 3. We set it up to pass <code>true</code> to this callback using <code>Arg.Invoke(true)</code>.</p>
+    <span class="c1">//Assert</span>
+    <span class="n">events</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">RaiseOrderProcessed</span><span class="p">(</span><span class="m">3</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<p>There are several overloads to <code>Arg.Invoke</code> that let us invoke callbacks with varying numbers and types of arguments. We can also invoke custom delegate types (those that are not just simple <code>Action</code> delegates) using <code>Arg.InvokeDelegate</code>.</p>
+<p>Here we setup the <code class="highlighter-rouge">processor</code> to invoke the callback whenever processing an order with id 3. We set it up to pass <code class="highlighter-rouge">true</code> to this callback using <code class="highlighter-rouge">Arg.Invoke(true)</code>.</p>
+
+<p>There are several overloads to <code class="highlighter-rouge">Arg.Invoke</code> that let us invoke callbacks with varying numbers and types of arguments. We can also invoke custom delegate types (those that are not just simple <code class="highlighter-rouge">Action</code> delegates) using <code class="highlighter-rouge">Arg.InvokeDelegate</code>.</p>
 
 <a id="performing_actions_with_arguments"></a>
 <h2 id="performing-actions-with-arguments">Performing actions with arguments</h2>
 
-<p>Sometimes we may not want to invoke a callback immediately. Or maybe we want to store all instances of a particular argument passed to a method. Or even just capture a single argument for inspection later. We can use <code>Arg.Do</code> for these purposes. <code>Arg.Do</code> calls the action we give it with the argument used for each matching call.</p>
+<p>Sometimes we may not want to invoke a callback immediately. Or maybe we want to store all instances of a particular argument passed to a method. Or even just capture a single argument for inspection later. We can use <code class="highlighter-rouge">Arg.Do</code> for these purposes. <code class="highlighter-rouge">Arg.Do</code> calls the action we give it with the argument used for each matching call.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">var argumentUsed = 0;
-calculator.Multiply(Arg.Any&lt;int&gt;(), Arg.Do&lt;int&gt;(x =&gt; argumentUsed = x));
+<!--
+```requiredcode
+public interface ICalculator { int Multiply(int a, int b); }
+ICalculator calculator;
+[SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
+```
+-->
 
-calculator.Multiply(123, 42);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">argumentUsed</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Multiply</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(),</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">argumentUsed</span> <span class="p">=</span> <span class="n">x</span><span class="p">));</span>
 
-Assert.AreEqual(42, argumentUsed);</pre>
-</div>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Multiply</span><span class="p">(</span><span class="m">123</span><span class="p">,</span> <span class="m">42</span><span class="p">);</span>
 
-<p>Here we specify that a call to <code>Multiply</code> with any first argument should pass the second argument and put it in the <code>argumentUsed</code> variable. This can be quite useful when we want to assert several properties on an argument (for types more complex than <code>int</code> that is).</p>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">42</span><span class="p">,</span> <span class="n">argumentUsed</span><span class="p">);</span>
+</code></pre></div></div>
 
-<div class="highlight">
-    <pre class="brush: csharp">var firstArgsBeingMultiplied = new List&lt;int&gt;();
-calculator.Multiply(Arg.Do&lt;int&gt;(x =&gt; firstArgsBeingMultiplied.Add(x)), 10);
+<p>Here we specify that a call to <code class="highlighter-rouge">Multiply</code> with any first argument should pass the second argument and put it in the <code class="highlighter-rouge">argumentUsed</code> variable. This can be quite useful when we want to assert several properties on an argument (for types more complex than <code class="highlighter-rouge">int</code> that is).</p>
 
-calculator.Multiply(2, 10);
-calculator.Multiply(5, 10);
-calculator.Multiply(7, 4567); //Will not match our Arg.Do as second arg is not 10
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">firstArgsBeingMultiplied</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;();</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Multiply</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">firstArgsBeingMultiplied</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span> <span class="m">10</span><span class="p">);</span>
 
-Assert.AreEqual(firstArgsBeingMultiplied, new[] { 2, 5 });</pre>
-</div>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Multiply</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">10</span><span class="p">);</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Multiply</span><span class="p">(</span><span class="m">5</span><span class="p">,</span> <span class="m">10</span><span class="p">);</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Multiply</span><span class="p">(</span><span class="m">7</span><span class="p">,</span> <span class="m">4567</span><span class="p">);</span> <span class="c1">//Will not match our Arg.Do as second arg is not 10</span>
 
-<p>Here our <code>Arg.Do</code> takes whatever <code>int</code> is passed as the first argument to <code>Multiply</code> and adds it to a list whenever the second argument is 10.</p>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="n">firstArgsBeingMultiplied</span><span class="p">,</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="m">2</span><span class="p">,</span> <span class="m">5</span> <span class="p">});</span>
+</code></pre></div></div>
+
+<p>Here our <code class="highlighter-rouge">Arg.Do</code> takes whatever <code class="highlighter-rouge">int</code> is passed as the first argument to <code class="highlighter-rouge">Multiply</code> and adds it to a list whenever the second argument is 10.</p>
 
 <a id="argument_actions_and_call_specification"></a>
 <h2 id="argument-actions-and-call-specification">Argument actions and call specification</h2>
 
-<p>Argument actions act just like the <a href="/help/argument-matchers"><code>Arg.Any&lt;T&gt;()</code> argument matcher</a> in that they specify a call where that argument is any type compatible with <code>T</code> (and so can be used for <a href="/help/return-for-args">setting return values</a> and <a href="/help/received-calls">checking received calls</a>). They just have the added element of interacting with a specific argument of any call that matches that specification.</p>
+<p>Argument actions act just like the <a href="/help/argument-matchers"><code class="highlighter-rouge">Arg.Any&lt;T&gt;()</code> argument matcher</a> in that they specify a call where that argument is any type compatible with <code class="highlighter-rouge">T</code> (and so can be used for <a href="/help/return-for-args">setting return values</a> and <a href="/help/received-calls">checking received calls</a>). They just have the added element of interacting with a specific argument of any call that matches that specification.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">var numberOfCallsWhereFirstArgIsLessThan0 = 0;
-//Specify a call where the first arg is less than 0, and the second is any int.
-//When this specification is met we&#39;ll increment a counter in the Arg.Do action for 
-//the second argument that was used for the call, and we&#39;ll also make it return 123.
-calculator
-    .Multiply(
-        Arg.Is&lt;int&gt;(x =&gt; x &lt; 0), 
-        Arg.Do&lt;int&gt;(x =&gt; numberOfCallsWhereFirstArgIsLessThan0++)
-    ).Returns(123);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">numberOfCallsWhereFirstArgIsLessThan0</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+<span class="c1">//Specify a call where the first arg is less than 0, and the second is any int.</span>
+<span class="c1">//When this specification is met we'll increment a counter in the Arg.Do action for </span>
+<span class="c1">//the second argument that was used for the call, and we'll also make it return 123.</span>
+<span class="n">calculator</span>
+    <span class="p">.</span><span class="nf">Multiply</span><span class="p">(</span>
+        <span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">),</span> 
+        <span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">numberOfCallsWhereFirstArgIsLessThan0</span><span class="p">++)</span>
+    <span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="m">123</span><span class="p">);</span>
 
-var results = new[] {
-    calculator.Multiply(-4, 3),
-    calculator.Multiply(-27, 88),
-    calculator.Multiply(-7, 8),
-    calculator.Multiply(123, 2) //First arg greater than 0, so spec won&#39;t be met.
-};
+<span class="kt">var</span> <span class="n">results</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span>
+    <span class="n">calculator</span><span class="p">.</span><span class="nf">Multiply</span><span class="p">(-</span><span class="m">4</span><span class="p">,</span> <span class="m">3</span><span class="p">),</span>
+    <span class="n">calculator</span><span class="p">.</span><span class="nf">Multiply</span><span class="p">(-</span><span class="m">27</span><span class="p">,</span> <span class="m">88</span><span class="p">),</span>
+    <span class="n">calculator</span><span class="p">.</span><span class="nf">Multiply</span><span class="p">(-</span><span class="m">7</span><span class="p">,</span> <span class="m">8</span><span class="p">),</span>
+    <span class="n">calculator</span><span class="p">.</span><span class="nf">Multiply</span><span class="p">(</span><span class="m">123</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span> <span class="c1">//First arg greater than 0, so spec won't be met.</span>
+<span class="p">};</span>
 
-Assert.AreEqual(3, numberOfCallsWhereFirstArgIsLessThan0); //3 of 4 calls have first arg &lt; 0
-Assert.AreEqual(results, new[] {123, 123, 123, 0}); //Last call returns 0, not 123</pre>
-</div>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="n">numberOfCallsWhereFirstArgIsLessThan0</span><span class="p">);</span> <span class="c1">//3 of 4 calls have first arg &lt; 0</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="m">123</span><span class="p">,</span> <span class="m">123</span><span class="p">,</span> <span class="m">123</span><span class="p">,</span> <span class="m">0</span><span class="p">});</span> <span class="c1">//Last call returns 0, not 123</span>
+</code></pre></div></div>
 
 
       <div id="page-navigation">
@@ -218,22 +229,6 @@ Assert.AreEqual(results, new[] {123, 123, 123, 0}); //Last call returns 0, not 1
 The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
   NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
   </div>
-
-  <script type="text/javascript" src="/scripts/shCore.js"></script>
-  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
- <script type="text/javascript">
-    $(document).ready(function() {
-      doHighlighting();
-    });
-
-    function doHighlighting() {
-        SyntaxHighlighter.defaults.gutter = false;
-        SyntaxHighlighter.defaults.toolbar = false;
-        SyntaxHighlighter.all();
-    }
-  </script>
 
 </body>
 </html>

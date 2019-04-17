@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <title>NSubstitute: Return for specific args</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
 </head>
 <body>
   <div id="header">
@@ -17,8 +15,7 @@
   </div>
   <div id="nav">
     <a href="/help/getting-started">Get started</a> |
-    <a href="/help.html">Docs</a> |
-    <a href="https://groups.google.com/group/nsubstitute">Discussion group</a> |
+    <a href="/help.html">Docs and getting help</a> |
     <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
@@ -75,30 +72,43 @@
             
             <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
+            <li><a href="/help/how-nsub-works/">How NSubstitute works</a></li>
+            
+            <li><a href="/help/search/">Search</a></li>
+            
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Return for specific args</h1>
-      
+      <!--
+```requiredcode
+public interface ICalculator {
+	int Add(int a, int b);
+	string Mode { get; set; }
+}
+ICalculator calculator;
+[SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
+```
+-->
+
 <p>Return values can be configured for different combinations of arguments passed to calls using <a href="/help/argument-matchers">argument matchers</a>. This topic is covered in more detail in the <a href="/help/argument-matchers">Argument matchers</a> entry, but the following examples show the general idea.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">//Return when first arg is anything and second arg is 5:
-calculator.Add(Arg.Any&lt;int&gt;(), 5).Returns(10);
-Assert.AreEqual(10, calculator.Add(123, 5));
-Assert.AreEqual(10, calculator.Add(-9, 5));
-Assert.AreNotEqual(10, calculator.Add(-9, -9));
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//Return when first arg is anything and second arg is 5:</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(),</span> <span class="m">5</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="m">10</span><span class="p">);</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">10</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">123</span><span class="p">,</span> <span class="m">5</span><span class="p">));</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">10</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">9</span><span class="p">,</span> <span class="m">5</span><span class="p">));</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreNotEqual</span><span class="p">(</span><span class="m">10</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">9</span><span class="p">,</span> <span class="p">-</span><span class="m">9</span><span class="p">));</span>
 
-//Return when first arg is 1 and second arg less than 0:
-calculator.Add(1, Arg.Is&lt;int&gt;(x =&gt; x &lt; 0)).Returns(345);
-Assert.AreEqual(345, calculator.Add(1, -2));
-Assert.AreNotEqual(345, calculator.Add(1, 2));
+<span class="c1">//Return when first arg is 1 and second arg less than 0:</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">)).</span><span class="nf">Returns</span><span class="p">(</span><span class="m">345</span><span class="p">);</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">345</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="p">-</span><span class="m">2</span><span class="p">));</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreNotEqual</span><span class="p">(</span><span class="m">345</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">));</span>
 
-//Return when both args equal to 0:
-calculator.Add(Arg.Is(0), Arg.Is(0)).Returns(99);
-Assert.AreEqual(99, calculator.Add(0, 0));</pre>
-</div>
+<span class="c1">//Return when both args equal to 0:</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="m">0</span><span class="p">),</span> <span class="n">Arg</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="m">0</span><span class="p">)).</span><span class="nf">Returns</span><span class="p">(</span><span class="m">99</span><span class="p">);</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">99</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">));</span>
+</code></pre></div></div>
 
 
       <div id="page-navigation">
@@ -124,22 +134,6 @@ Assert.AreEqual(99, calculator.Add(0, 0));</pre>
 The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
   NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
   </div>
-
-  <script type="text/javascript" src="/scripts/shCore.js"></script>
-  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
- <script type="text/javascript">
-    $(document).ready(function() {
-      doHighlighting();
-    });
-
-    function doHighlighting() {
-        SyntaxHighlighter.defaults.gutter = false;
-        SyntaxHighlighter.defaults.toolbar = false;
-        SyntaxHighlighter.all();
-    }
-  </script>
 
 </body>
 </html>

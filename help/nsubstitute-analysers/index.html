@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <title>NSubstitute: NSubstitute.Analyzers</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
 </head>
 <body>
   <div id="header">
@@ -17,8 +15,7 @@
   </div>
   <div id="nav">
     <a href="/help/getting-started">Get started</a> |
-    <a href="/help.html">Docs</a> |
-    <a href="https://groups.google.com/group/nsubstitute">Discussion group</a> |
+    <a href="/help.html">Docs and getting help</a> |
     <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
@@ -75,6 +72,10 @@
             
             <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
+            <li><a href="/help/how-nsub-works/">How NSubstitute works</a></li>
+            
+            <li><a href="/help/search/">Search</a></li>
+            
         </ul>
     </div>
 
@@ -82,7 +83,7 @@
       <h1>NSubstitute.Analyzers</h1>
       <p>The <a href="https://github.com/nsubstitute/NSubstitute.Analyzers">NSubstitute.Analyzers</a> project uses <a href="https://docs.microsoft.com/en-us/visualstudio/extensibility/dotnet-compiler-platform-roslyn-extensibility">Roslyn</a> to add code analysis during compilation to detect possible errors using the NSubstitute API.</p>
 
-<p>For example: as noted in the warning in <a href="/help/creating-a-substitute/">Creating a substitute</a>, non-virtual members of a class can not be intercepted by NSubstitute. This can cause our tests to behave unpredictably if we attempt to use <code>.Returns()</code> or <code>.Received()</code> with them. NSubstitute.Analyzers can detect attempts to substitute for non-virtual members and raise an <a href="https://github.com/nsubstitute/NSubstitute.Analyzers/blob/dev/documentation/rules/NS1000.md">NS1000</a> warning at compile-time, including suggestions on how to fix it. It’s much nicer to find these problems at compile-time than during test execution, or worse, not finding them until much later when we realise our tests were not doing exactly what we thought they were!</p>
+<p>For example: as noted in the warning in <a href="/help/creating-a-substitute/">Creating a substitute</a>, non-virtual members of a class can not be intercepted by NSubstitute. This can cause our tests to behave unpredictably if we attempt to use <code class="highlighter-rouge">.Returns()</code> or <code class="highlighter-rouge">.Received()</code> with them. NSubstitute.Analyzers can detect attempts to substitute for non-virtual members and raise an <a href="https://github.com/nsubstitute/NSubstitute.Analyzers/blob/dev/documentation/rules/NS1000.md">NS1000</a> warning at compile-time, including suggestions on how to fix it. It’s much nicer to find these problems at compile-time than during test execution, or worse, not finding them until much later when we realise our tests were not doing exactly what we thought they were!</p>
 
 <p>The NSubstitute NuGet package will work fine without any additional packages, but we highly recommend also adding the appropriate Analyzers package to your project (C# or VB):</p>
 
@@ -99,7 +100,7 @@
 <a id="spelling"></a>
 <h2 id="spelling">Spelling</h2>
 
-<p>The Australian members of our team would like to point out they would have preferred to use the English spelling <code>NSubstitute.Analysers</code> for this project, but have begrudgingly agreed to use the American (mis)spelling instead. :)</p>
+<p>The Australian members of our team would like to point out they would have preferred to use the English spelling <code class="highlighter-rouge">NSubstitute.Analysers</code> for this project, but have begrudgingly agreed to use the American (mis)spelling instead. :)</p>
 
       <div id="page-navigation">
         <div class="previous">
@@ -108,6 +109,8 @@
         
         </div>
         <div class="next">
+        
+            <a href="/help/how-nsub-works/" title="Next: How NSubstitute works">How NSubstitute works &raquo; </a>
         
         </div>
       </div>
@@ -122,22 +125,6 @@
 The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
   NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
   </div>
-
-  <script type="text/javascript" src="/scripts/shCore.js"></script>
-  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
- <script type="text/javascript">
-    $(document).ready(function() {
-      doHighlighting();
-    });
-
-    function doHighlighting() {
-        SyntaxHighlighter.defaults.gutter = false;
-        SyntaxHighlighter.defaults.toolbar = false;
-        SyntaxHighlighter.all();
-    }
-  </script>
 
 </body>
 </html>

@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <title>NSubstitute: Argument matchers</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
 </head>
 <body>
   <div id="header">
@@ -17,8 +15,7 @@
   </div>
   <div id="nav">
     <a href="/help/getting-started">Get started</a> |
-    <a href="/help.html">Docs</a> |
-    <a href="https://groups.google.com/group/nsubstitute">Discussion group</a> |
+    <a href="/help.html">Docs and getting help</a> |
     <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
@@ -75,6 +72,10 @@
             
             <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
+            <li><a href="/help/how-nsub-works/">How NSubstitute works</a></li>
+            
+            <li><a href="/help/search/">Search</a></li>
+            
         </ul>
     </div>
 
@@ -82,98 +83,121 @@
       <h1>Argument matchers</h1>
       <p>Argument matchers can be used when <a href="/help/return-for-args">setting return values</a> and when <a href="/help/received-calls">checking received calls</a>. They provide a way to <em>specify</em> a call or group of calls, so that a return value can be set for all matching calls, or to check a matching call has been received.</p>
 
-<p>The argument matchers syntax shown here depends on having C# 7.0 or later. If you are stuck on an earlier version (getting an error such as <code>CS7085: By-reference return type 'ref T' is not supported</code> while trying to use them) please use <a href="/help/compat-args">compatibility argument matchers</a> instead.</p>
+<p>The argument matchers syntax shown here depends on having C# 7.0 or later. If you are stuck on an earlier version (getting an error such as <code class="highlighter-rouge">CS7085: By-reference return type 'ref T' is not supported</code> while trying to use them) please use <a href="/help/compat-args">compatibility argument matchers</a> instead.</p>
 
-<p>⚠️ <strong>Note:</strong> Argument matchers should only be used when setting return values or checking received calls. Using <code>Arg.Is</code> or <code>Arg.Any</code> without a call to <code>Returns(...)</code> or <code>Received()</code> can cause your tests to behave in unexpected ways. See <a href="#how_not_to_use_argument_matchers">How NOT to use argument matchers</a> for more information.</p>
+<p>⚠️ <strong>Note:</strong> Argument matchers should only be used when setting return values or checking received calls. Using <code class="highlighter-rouge">Arg.Is</code> or <code class="highlighter-rouge">Arg.Any</code> without a call to <code class="highlighter-rouge">Returns(...)</code> or <code class="highlighter-rouge">Received()</code> can cause your tests to behave in unexpected ways. See <a href="#how_not_to_use_argument_matchers">How NOT to use argument matchers</a> for more information.</p>
+
+<!--
+```requiredcode
+public interface ICalculator {
+    int Add(int a, int b);
+    int Subtract(int a, int b);
+    void StoreMemory(int slot, int value);
+    bool LoadMemory(int slot, out int value);
+}
+public interface IFormatter {
+  string Format(object o);
+}
+public interface IWidgetFactory {
+  string Make(int i);
+}
+public class Sprocket {
+  IWidgetFactory wf;
+  public Sprocket(IWidgetFactory wf) { this.wf = wf; }
+  public void StartWithWidget(int i) { wf.Make(i); }
+}
+ICalculator calculator;
+IFormatter formatter;
+string TestWidget = "test widget";
+[SetUp] public void SetUp() { 
+    calculator = Substitute.For<ICalculator>(); 
+    formatter = Substitute.For<IFormatter>();
+}
+```
+-->
 
 <a id="ignoring_arguments"></a>
 <h2 id="ignoring-arguments">Ignoring arguments</h2>
-<p>An argument of type <code>T</code> can be ignored using <code>Arg.Any&lt;T&gt;()</code>.</p>
+<p>An argument of type <code class="highlighter-rouge">T</code> can be ignored using <code class="highlighter-rouge">Arg.Any&lt;T&gt;()</code>.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">calculator.Add(Arg.Any&lt;int&gt;(), 5).Returns(7);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(),</span> <span class="m">5</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="m">7</span><span class="p">);</span>
 
-Assert.AreEqual(7, calculator.Add(42, 5));
-Assert.AreEqual(7, calculator.Add(123, 5));
-Assert.AreNotEqual(7, calculator.Add(1, 7));</pre>
-</div>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">7</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">42</span><span class="p">,</span> <span class="m">5</span><span class="p">));</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">7</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">123</span><span class="p">,</span> <span class="m">5</span><span class="p">));</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreNotEqual</span><span class="p">(</span><span class="m">7</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">7</span><span class="p">));</span>
+</code></pre></div></div>
 
-<p>In this example we return <code>7</code> when adding any number to <code>5</code>. We use <code>Arg.Any&lt;int&gt;()</code> to tell NSubstitute to ignore the first argument.</p>
+<p>In this example we return <code class="highlighter-rouge">7</code> when adding any number to <code class="highlighter-rouge">5</code>. We use <code class="highlighter-rouge">Arg.Any&lt;int&gt;()</code> to tell NSubstitute to ignore the first argument.</p>
 
 <p>We can also use this to match any argument of a specific sub-type.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">formatter.Format(new object());
-formatter.Format(&quot;some string&quot;);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">formatter</span><span class="p">.</span><span class="nf">Format</span><span class="p">(</span><span class="k">new</span> <span class="kt">object</span><span class="p">());</span>
+<span class="n">formatter</span><span class="p">.</span><span class="nf">Format</span><span class="p">(</span><span class="s">"some string"</span><span class="p">);</span>
 
-formatter.Received().Format(Arg.Any&lt;object&gt;());
-formatter.Received().Format(Arg.Any&lt;string&gt;());
-formatter.DidNotReceive().Format(Arg.Any&lt;int&gt;());</pre>
-</div>
+<span class="n">formatter</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Format</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;());</span>
+<span class="n">formatter</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Format</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;());</span>
+<span class="n">formatter</span><span class="p">.</span><span class="nf">DidNotReceive</span><span class="p">().</span><span class="nf">Format</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;());</span>
+</code></pre></div></div>
 
 <a id="conditionally_matching_an_argument"></a>
 <h2 id="conditionally-matching-an-argument">Conditionally matching an argument</h2>
-<p>An argument of type <code>T</code> can be conditionally matched using <code>Arg.Is&lt;T&gt;(Predicate&lt;T&gt; condition)</code>.</p>
+<p>An argument of type <code class="highlighter-rouge">T</code> can be conditionally matched using <code class="highlighter-rouge">Arg.Is&lt;T&gt;(Predicate&lt;T&gt; condition)</code>.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">calculator.Add(1, -10);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="p">-</span><span class="m">10</span><span class="p">);</span>
 
-//Received call with first arg 1 and second arg less than 0:
-calculator.Received().Add(1, Arg.Is&lt;int&gt;(x =&gt; x &lt; 0));
-//Received call with first arg 1 and second arg of -2, -5, or -10:
-calculator
-    .Received()
-    .Add(1, Arg.Is&lt;int&gt;(x =&gt; new[] {-2,-5,-10}.Contains(x)));
-//Did not receive call with first arg greater than 10:
-calculator.DidNotReceive().Add(Arg.Is&lt;int&gt;(x =&gt; x &gt; 10), -10);</pre>
-</div>
+<span class="c1">//Received call with first arg 1 and second arg less than 0:</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">));</span>
+<span class="c1">//Received call with first arg 1 and second arg of -2, -5, or -10:</span>
+<span class="n">calculator</span>
+    <span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+    <span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{-</span><span class="m">2</span><span class="p">,-</span><span class="m">5</span><span class="p">,-</span><span class="m">10</span><span class="p">}.</span><span class="nf">Contains</span><span class="p">(</span><span class="n">x</span><span class="p">)));</span>
+<span class="c1">//Did not receive call with first arg greater than 10:</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">DidNotReceive</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&gt;</span> <span class="m">10</span><span class="p">),</span> <span class="p">-</span><span class="m">10</span><span class="p">);</span>
+</code></pre></div></div>
 
 <p>If the condition throws an exception for an argument, then it will be assumed that the argument does not match. The exception itself will be swallowed.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">formatter.Format(Arg.Is&lt;string&gt;(x =&gt; x.Length &lt;= 10)).Returns(&quot;matched&quot;);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">formatter</span><span class="p">.</span><span class="nf">Format</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Length</span> <span class="p">&lt;=</span> <span class="m">10</span><span class="p">)).</span><span class="nf">Returns</span><span class="p">(</span><span class="s">"matched"</span><span class="p">);</span>
 
-Assert.AreEqual(&quot;matched&quot;, formatter.Format(&quot;short&quot;));
-Assert.AreNotEqual(&quot;matched&quot;, formatter.Format(&quot;not matched, too long&quot;));
-// Will not match because trying to access .Length on null will throw an exception when testing
-// our condition. NSubstitute will assume it does not match and swallow the exception.
-Assert.AreNotEqual(&quot;matched&quot;, formatter.Format(null));</pre>
-</div>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="s">"matched"</span><span class="p">,</span> <span class="n">formatter</span><span class="p">.</span><span class="nf">Format</span><span class="p">(</span><span class="s">"short"</span><span class="p">));</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreNotEqual</span><span class="p">(</span><span class="s">"matched"</span><span class="p">,</span> <span class="n">formatter</span><span class="p">.</span><span class="nf">Format</span><span class="p">(</span><span class="s">"not matched, too long"</span><span class="p">));</span>
+<span class="c1">// Will not match because trying to access .Length on null will throw an exception when testing</span>
+<span class="c1">// our condition. NSubstitute will assume it does not match and swallow the exception.</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreNotEqual</span><span class="p">(</span><span class="s">"matched"</span><span class="p">,</span> <span class="n">formatter</span><span class="p">.</span><span class="nf">Format</span><span class="p">(</span><span class="k">null</span><span class="p">));</span>
+</code></pre></div></div>
 
 <a id="matching_a_specific_argument"></a>
 <h2 id="matching-a-specific-argument">Matching a specific argument</h2>
-<p>An argument of type <code>T</code> can be matched using <code>Arg.Is&lt;T&gt;(T value)</code>.</p>
+<p>An argument of type <code class="highlighter-rouge">T</code> can be matched using <code class="highlighter-rouge">Arg.Is&lt;T&gt;(T value)</code>.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">calculator.Add(0, 42);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">42</span><span class="p">);</span>
 
-//This won&#39;t work; NSubstitute isn&#39;t sure which arg the matcher applies to:
-//calculator.Received().Add(0, Arg.Any&lt;int&gt;());
+<span class="c1">//This won't work; NSubstitute isn't sure which arg the matcher applies to:</span>
+<span class="c1">//calculator.Received().Add(0, Arg.Any&lt;int&gt;());</span>
 
-calculator.Received().Add(Arg.Is(0), Arg.Any&lt;int&gt;());</pre>
-</div>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="m">0</span><span class="p">),</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;());</span>
+</code></pre></div></div>
 
-<p>This matcher normally isn’t required; most of the time we can just use <code>0</code> instead of <code>Arg.Is(0)</code>. In some cases though, NSubstitute can’t work out which matcher applies to which argument (arg matchers are actually fuzzily matched; not passed directly to the function call). In these cases it will throw an <code>AmbiguousArgumentsException</code> and ask you to specify one or more additional argument matchers. In some cases you may have to explicitly use argument matchers for every argument.</p>
+<p>This matcher normally isn’t required; most of the time we can just use <code class="highlighter-rouge">0</code> instead of <code class="highlighter-rouge">Arg.Is(0)</code>. In some cases though, NSubstitute can’t work out which matcher applies to which argument (arg matchers are actually fuzzily matched; not passed directly to the function call). In these cases it will throw an <code class="highlighter-rouge">AmbiguousArgumentsException</code> and ask you to specify one or more additional argument matchers. In some cases you may have to explicitly use argument matchers for every argument.</p>
 
 <a id="matching_out_and_ref_args"></a>
-<h2 id="matching-out-and-ref-args">Matching <code>out</code> and <code>ref</code> args</h2>
+<h2 id="matching-out-and-ref-args">Matching <code class="highlighter-rouge">out</code> and <code class="highlighter-rouge">ref</code> args</h2>
 
-<p>Argument matchers can also be used with <code>out</code> and <code>ref</code> (NSubstitute 4.0 and later with C# 7.0 and later).</p>
+<p>Argument matchers can also be used with <code class="highlighter-rouge">out</code> and <code class="highlighter-rouge">ref</code> (NSubstitute 4.0 and later with C# 7.0 and later).</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">calculator
-    .LoadMemory(1, out Arg.Any&lt;int&gt;())
-    .Returns(x =&gt; {
-        x[1] = 42;
-        return true;
-    });
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span>
+    <span class="p">.</span><span class="nf">LoadMemory</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="k">out</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;())</span>
+    <span class="p">.</span><span class="nf">Returns</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="p">{</span>
+        <span class="n">x</span><span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="p">=</span> <span class="m">42</span><span class="p">;</span>
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+    <span class="p">});</span>
 
-var hasEntry = calculator.LoadMemory(1, out var memoryValue);
-Assert.AreEqual(true, hasEntry);
-Assert.AreEqual(42, memoryValue);</pre>
-</div>
+<span class="kt">var</span> <span class="n">hasEntry</span> <span class="p">=</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">LoadMemory</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="k">out</span> <span class="kt">var</span> <span class="n">memoryValue</span><span class="p">);</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="k">true</span><span class="p">,</span> <span class="n">hasEntry</span><span class="p">);</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">42</span><span class="p">,</span> <span class="n">memoryValue</span><span class="p">);</span>
+</code></pre></div></div>
 
-<p>See <a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a> for more information on working with <code>out</code> and <code>ref</code>.</p>
+<p>See <a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a> for more information on working with <code class="highlighter-rouge">out</code> and <code class="highlighter-rouge">ref</code>.</p>
 
 <a id="how_not_to_use_argument_matchers"></a>
 <h2 id="how-not-to-use-argument-matchers">How NOT to use argument matchers</h2>
@@ -183,109 +207,116 @@ Assert.AreEqual(42, memoryValue);</pre>
 <a id="using_matchers_outside_of_stubbing_or_checking_received_calls"></a>
 <h3 id="using-matchers-outside-of-stubbing-or-checking-received-calls">Using matchers outside of stubbing or checking received calls</h3>
 
-<p>Argument matchers should only be used when setting return values or checking received calls. Using <code>Arg.Is</code> or <code>Arg.Any</code> without a call to <code>Returns(...)</code> or <code>Received()</code> can cause your tests to behave in unexpected ways.</p>
+<p>Argument matchers should only be used when setting return values or checking received calls. Using <code class="highlighter-rouge">Arg.Is</code> or <code class="highlighter-rouge">Arg.Any</code> without a call to <code class="highlighter-rouge">Returns(...)</code> or <code class="highlighter-rouge">Received()</code> can cause your tests to behave in unexpected ways.</p>
 
 <p>For example:</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">/* ARRANGE */
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* ARRANGE */</span>
 
-var widgetFactory = Substitute.For&lt;IWidgetFactory&gt;();
-var subject = new Sprocket(widgetFactory);
+<span class="kt">var</span> <span class="n">widgetFactory</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IWidgetFactory</span><span class="p">&gt;();</span>
+<span class="kt">var</span> <span class="n">subject</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Sprocket</span><span class="p">(</span><span class="n">widgetFactory</span><span class="p">);</span>
 
-// OK: Use arg matcher for a return value:
-widgetFactory.Make(Arg.Is&lt;int&gt;(x =&gt; x &gt; 10)).Returns(TestWidget);
+<span class="c1">// OK: Use arg matcher for a return value:</span>
+<span class="n">widgetFactory</span><span class="p">.</span><span class="nf">Make</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&gt;</span> <span class="m">10</span><span class="p">)).</span><span class="nf">Returns</span><span class="p">(</span><span class="n">TestWidget</span><span class="p">);</span>
 
-/* ACT */
+<span class="cm">/* ACT */</span>
 
-// NOT OK: arg matcher used with a real call:
-//   subject.StartWithWidget(Arg.Any&lt;int&gt;());
+<span class="c1">// NOT OK: arg matcher used with a real call:</span>
+<span class="c1">//   subject.StartWithWidget(Arg.Any&lt;int&gt;());</span>
 
-// Use a real argument instead:
-subject.StartWithWidget(4);
+<span class="c1">// Use a real argument instead:</span>
+<span class="n">subject</span><span class="p">.</span><span class="nf">StartWithWidget</span><span class="p">(</span><span class="m">4</span><span class="p">);</span>
 
-/* ASSERT */
+<span class="cm">/* ASSERT */</span>
 
-// OK: Use arg matcher to check a call was received:
-widgetFactory.Received().Make(Arg.Is&lt;int&gt;(x =&gt; x &gt; 0));</pre>
-</div>
+<span class="c1">// OK: Use arg matcher to check a call was received:</span>
+<span class="n">widgetFactory</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Make</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">));</span>
+</code></pre></div></div>
 
-<p>In this example it would be an error to use an argument matcher in the <code>ACT</code> part of this test. Even if we don’t mind what specific argument we pass to our subject, <code>Arg.Any</code> is only for substitutes, and only for setting return values or checking received calls; not for real calls.</p>
+<p>In this example it would be an error to use an argument matcher in the <code class="highlighter-rouge">ACT</code> part of this test. Even if we don’t mind what specific argument we pass to our subject, <code class="highlighter-rouge">Arg.Any</code> is only for substitutes, and only for setting return values or checking received calls; not for real calls.</p>
 
-<p>(If you do want to indicate to readers that the precise argument used for a real call doesn’t matter you could use a variable such as <code>var someInt = 4; subject.StartWithWidget(someInt);</code> or similar. Just stay clear of argument matchers for this!)</p>
+<p>(If you do want to indicate to readers that the precise argument used for a real call doesn’t matter you could use a variable such as <code class="highlighter-rouge">var someInt = 4; subject.StartWithWidget(someInt);</code> or similar. Just stay clear of argument matchers for this!)</p>
 
 <a id="modifying_values_being_matched"></a>
 <h3 id="modifying-values-being-matched">Modifying values being matched</h3>
 
 <p>When NSubstitute records calls, it keeps a reference to the arguments passed, not a deep clone of each argument at the time of the call. This means that if the properties of an argument change after the call assertions may not behave as expected.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">public class Person {
-    public string Name { get; set; }
+<!--
+```requiredcode
+public interface IPersonLookup {
+    void Add(Person p);
 }
+public interface IPersonStructLookup {
+    void Add(PersonStruct p);
+}
+```
+-->
 
-[Test]
-public void MutatingAMatchedArgument() {
-    var person = new Person { Name = &quot;Carrot&quot; };
-    var lookup = Substitute.For&lt;IPersonLookup&gt;();
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Person</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
-    // Called with a Person that has a .Name property of &quot;Carrot&quot;
-    lookup.Add(person);
+<span class="na">[Test]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">MutatingAMatchedArgument</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">var</span> <span class="n">person</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Person</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">"Carrot"</span> <span class="p">};</span>
+    <span class="kt">var</span> <span class="n">lookup</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IPersonLookup</span><span class="p">&gt;();</span>
 
-    // The Name in that person reference later gets updated ...
-    person.Name = &quot;Vimes&quot;;
+    <span class="c1">// Called with a Person that has a .Name property of "Carrot"</span>
+    <span class="n">lookup</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">person</span><span class="p">);</span>
 
-    // When the substitute is queried, it will check the fields of the person reference it was called with.
-    // This means the argument it was called with does NOT have a .Name of &quot;Carrot&quot; (it was changed!)
-    lookup.DidNotReceive().Add(Arg.Is&lt;Person&gt;(p =&gt; p.Name == &quot;Carrot&quot;));
-    // Instead, it now has the updated name:
-    lookup.Received().Add(Arg.Is&lt;Person&gt;(p =&gt; p.Name == &quot;Vimes&quot;));
-}</pre>
-</div>
+    <span class="c1">// The Name in that person reference later gets updated ...</span>
+    <span class="n">person</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="s">"Vimes"</span><span class="p">;</span>
 
-<p>This looks confusing at first, but if we remember substitutes are pretty much forced to store references to arguments used then it makes sense. The alternative of storing deep-cloned snapshots of every argument to every call received is fairly impractical, especially if we consider objects with very complex hierarchies (e.g. tens of fields, each with an object with tens of fields of its own, etc.). Storing snapshots would also lead to the same confusion in the reverse situation, where we know a substitute was called with a particular reference but the <code>Arg.Is(person)</code> check fails due to a change in one of its fields.</p>
+    <span class="c1">// When the substitute is queried, it will check the fields of the person reference it was called with.</span>
+    <span class="c1">// This means the argument it was called with does NOT have a .Name of "Carrot" (it was changed!)</span>
+    <span class="n">lookup</span><span class="p">.</span><span class="nf">DidNotReceive</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">p</span> <span class="p">=&gt;</span> <span class="n">p</span><span class="p">.</span><span class="n">Name</span> <span class="p">==</span> <span class="s">"Carrot"</span><span class="p">));</span>
+    <span class="c1">// Instead, it now has the updated name:</span>
+    <span class="n">lookup</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">p</span> <span class="p">=&gt;</span> <span class="n">p</span><span class="p">.</span><span class="n">Name</span> <span class="p">==</span> <span class="s">"Vimes"</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This looks confusing at first, but if we remember substitutes are pretty much forced to store references to arguments used then it makes sense. The alternative of storing deep-cloned snapshots of every argument to every call received is fairly impractical, especially if we consider objects with very complex hierarchies (e.g. tens of fields, each with an object with tens of fields of its own, etc.). Storing snapshots would also lead to the same confusion in the reverse situation, where we know a substitute was called with a particular reference but the <code class="highlighter-rouge">Arg.Is(person)</code> check fails due to a change in one of its fields.</p>
 
 <p>That said, there are times when snapshots like this are useful, and there are a few ways to enable this with NSubstitute.</p>
 
 <p>The first option is to use structs instead of classes for these cases. These are passed by value rather than by reference, so that value will be stored by substitutes and modifications made afterwards will not affect that value.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">public struct PersonStruct {
-    public string Name { get; set; }
-}
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">struct</span> <span class="nc">PersonStruct</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
-[Test]
-public void MutatingAStruct() {
-    var person = new PersonStruct { Name = &quot;Carrot&quot; };
-    var lookup = Substitute.For&lt;IPersonStructLookup&gt;();
+<span class="na">[Test]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">MutatingAStruct</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">var</span> <span class="n">person</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PersonStruct</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">"Carrot"</span> <span class="p">};</span>
+    <span class="kt">var</span> <span class="n">lookup</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IPersonStructLookup</span><span class="p">&gt;();</span>
 
-    lookup.Add(person);
+    <span class="n">lookup</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">person</span><span class="p">);</span>
 
-    person.Name = &quot;Vimes&quot;;
+    <span class="n">person</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="s">"Vimes"</span><span class="p">;</span>
 
-    // `person` was passed by value, and that value still has the original Name
-    lookup.Received().Add(Arg.Is&lt;PersonStruct&gt;(p =&gt; p.Name == &quot;Carrot&quot;));
-}</pre>
-</div>
+    <span class="c1">// `person` was passed by value, and that value still has the original Name</span>
+    <span class="n">lookup</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">PersonStruct</span><span class="p">&gt;(</span><span class="n">p</span> <span class="p">=&gt;</span> <span class="n">p</span><span class="p">.</span><span class="n">Name</span> <span class="p">==</span> <span class="s">"Carrot"</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>For cases where that is not possible or wanted then we can manually snapshot the values we are interested in.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">[Test]
-public void ManualArgSnapshot() {
-    var person = new Person { Name = &quot;Carrot&quot; };
-    var lookup = Substitute.For&lt;IPersonLookup&gt;();
-    var namesAdded = new List&lt;string&gt;();
-    // Manually snapshot the value or values we care about:
-    lookup.Add(Arg.Do&lt;Person&gt;(p =&gt; namesAdded.Add(p.Name)));
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">[Test]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">ManualArgSnapshot</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">var</span> <span class="n">person</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Person</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">"Carrot"</span> <span class="p">};</span>
+    <span class="kt">var</span> <span class="n">lookup</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IPersonLookup</span><span class="p">&gt;();</span>
+    <span class="kt">var</span> <span class="n">namesAdded</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+    <span class="c1">// Manually snapshot the value or values we care about:</span>
+    <span class="n">lookup</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">p</span> <span class="p">=&gt;</span> <span class="n">namesAdded</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">Name</span><span class="p">)));</span>
 
 
-    lookup.Add(person);
-    person.Name = &quot;Vimes&quot;;
+    <span class="n">lookup</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">person</span><span class="p">);</span>
+    <span class="n">person</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="s">"Vimes"</span><span class="p">;</span>
 
-    Assert.AreEqual(&quot;Carrot&quot;, namesAdded[0]);
-}</pre>
-</div>
+    <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="s">"Carrot"</span><span class="p">,</span> <span class="n">namesAdded</span><span class="p">[</span><span class="m">0</span><span class="p">]);</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>We can then use our standard assertion library for checking the value. This approach can also be helpful for asserting on complex objects, as our assertions can be more detailed and provide more useful information than NSubstitute typically provides in these cases.</p>
 
@@ -312,22 +343,6 @@ public void ManualArgSnapshot() {
 The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
   NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
   </div>
-
-  <script type="text/javascript" src="/scripts/shCore.js"></script>
-  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
- <script type="text/javascript">
-    $(document).ready(function() {
-      doHighlighting();
-    });
-
-    function doHighlighting() {
-        SyntaxHighlighter.defaults.gutter = false;
-        SyntaxHighlighter.defaults.toolbar = false;
-        SyntaxHighlighter.all();
-    }
-  </script>
 
 </body>
 </html>

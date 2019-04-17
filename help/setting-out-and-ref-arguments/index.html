@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <title>NSubstitute: Setting out and ref args</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
 </head>
 <body>
   <div id="header">
@@ -17,8 +15,7 @@
   </div>
   <div id="nav">
     <a href="/help/getting-started">Get started</a> |
-    <a href="/help.html">Docs</a> |
-    <a href="https://groups.google.com/group/nsubstitute">Discussion group</a> |
+    <a href="/help.html">Docs and getting help</a> |
     <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
@@ -75,67 +72,67 @@
             
             <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
+            <li><a href="/help/how-nsub-works/">How NSubstitute works</a></li>
+            
+            <li><a href="/help/search/">Search</a></li>
+            
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Setting out and ref args</h1>
-      <p><code>Out</code> and <code>ref</code> arguments can be set using a <a href="/help/return-from-function"><code>Returns()</code> callback</a>, or using <a href="/help/callbacks"><code>When..Do</code></a>.</p>
+      <p><code class="highlighter-rouge">Out</code> and <code class="highlighter-rouge">ref</code> arguments can be set using a <a href="/help/return-from-function"><code class="highlighter-rouge">Returns()</code> callback</a>, or using <a href="/help/callbacks"><code class="highlighter-rouge">When..Do</code></a>.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">public interface ILookup {
-    bool TryLookup(string key, out string value);
-}</pre>
-</div>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">interface</span> <span class="nc">ILookup</span> <span class="p">{</span>
+    <span class="kt">bool</span> <span class="nf">TryLookup</span><span class="p">(</span><span class="kt">string</span> <span class="n">key</span><span class="p">,</span> <span class="k">out</span> <span class="kt">string</span> <span class="k">value</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>For the interface above we can configure the return value and set the output of the second argument like this:</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">//Arrange
-var lookup = Substitute.For&lt;ILookup&gt;();
-lookup
-    .TryLookup(&quot;hello&quot;, out Arg.Is(&quot;&quot;))
-    .Returns(x =&gt; { 
-        x[1] = &quot;world!&quot;;
-        return true;
-    });
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//Arrange</span>
+<span class="kt">var</span> <span class="n">lookup</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ILookup</span><span class="p">&gt;();</span>
+<span class="n">lookup</span>
+    <span class="p">.</span><span class="nf">TryLookup</span><span class="p">(</span><span class="s">"hello"</span><span class="p">,</span> <span class="k">out</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;())</span>
+    <span class="p">.</span><span class="nf">Returns</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="p">{</span> 
+        <span class="n">x</span><span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="p">=</span> <span class="s">"world!"</span><span class="p">;</span>
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+    <span class="p">});</span>
 
-//Act
-var value = &quot;&quot;;
-var result = lookup.TryLookup(&quot;hello&quot;, out value);
+<span class="c1">//Act</span>
+<span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">lookup</span><span class="p">.</span><span class="nf">TryLookup</span><span class="p">(</span><span class="s">"hello"</span><span class="p">,</span> <span class="k">out</span> <span class="kt">var</span> <span class="k">value</span><span class="p">);</span>
 
-//Assert
-Assert.True(result);
-Assert.AreEqual(value, &quot;world!&quot;);</pre>
-</div>
+<span class="c1">//Assert</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">True</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="k">value</span><span class="p">,</span> <span class="s">"world!"</span><span class="p">);</span>
+</code></pre></div></div>
 
 <a id="matching_after_assignments"></a>
 <h2 id="matching-after-assignments">Matching after assignments</h2>
 
 <p>Be careful when using an argument matcher with a reference we also assign to. The assignment can cause previously matching arguments to stop matching.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">var counter = 0;
-var value = &quot;&quot;;
-var lookup = Substitute.For&lt;ILookup&gt;();
-lookup
-    .TryLookup(&quot;hello&quot;, out Arg.Is(value)) // value is &quot;&quot;, matcher will check for &quot;&quot;
-    .Returns(x =&gt; { 
-        x[1] = &quot;assigned&quot;; // Assign to 2nd arg
-        counter++;         // Count this matching call
-        return true;
-    });
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">counter</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+<span class="kt">var</span> <span class="k">value</span> <span class="p">=</span> <span class="s">""</span><span class="p">;</span>
+<span class="kt">var</span> <span class="n">lookup</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ILookup</span><span class="p">&gt;();</span>
+<span class="n">lookup</span>
+    <span class="p">.</span><span class="nf">TryLookup</span><span class="p">(</span><span class="s">"hello"</span><span class="p">,</span> <span class="k">out</span> <span class="n">Arg</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="k">value</span><span class="p">))</span> <span class="c1">// value is "", matcher will check for ""</span>
+    <span class="p">.</span><span class="nf">Returns</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="p">{</span> 
+        <span class="n">x</span><span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="p">=</span> <span class="s">"assigned"</span><span class="p">;</span> <span class="c1">// Assign to 2nd arg</span>
+        <span class="n">counter</span><span class="p">++;</span>         <span class="c1">// Count this matching call</span>
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+    <span class="p">});</span>
 
-// value is &quot;&quot;, this will match!
-lookup.TryLookup(&quot;hello&quot;, out value);
-// Call matches, counter is now 1:
-Assert.AreEqual(1, counter);
+<span class="c1">// value is "", this will match!</span>
+<span class="n">lookup</span><span class="p">.</span><span class="nf">TryLookup</span><span class="p">(</span><span class="s">"hello"</span><span class="p">,</span> <span class="k">out</span> <span class="k">value</span><span class="p">);</span>
+<span class="c1">// Call matches, counter is now 1:</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="n">counter</span><span class="p">);</span>
 
-// value is now &quot;assigned&quot; but arg matcher is still looking for &quot;&quot;, will NOT match anymore!
-lookup.TryLookup(&quot;hello&quot;, out value);
-// Call does NOT match anymore, counter is still 1:
-Assert.AreEqual(1, counter);</pre>
-</div>
+<span class="c1">// value is now "assigned" but arg matcher is still looking for "", will NOT match anymore!</span>
+<span class="n">lookup</span><span class="p">.</span><span class="nf">TryLookup</span><span class="p">(</span><span class="s">"hello"</span><span class="p">,</span> <span class="k">out</span> <span class="k">value</span><span class="p">);</span>
+<span class="c1">// Call does NOT match anymore, counter is still 1:</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="n">counter</span><span class="p">);</span>
+</code></pre></div></div>
 
 
       <div id="page-navigation">
@@ -161,22 +158,6 @@ Assert.AreEqual(1, counter);</pre>
 The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
   NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
   </div>
-
-  <script type="text/javascript" src="/scripts/shCore.js"></script>
-  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
- <script type="text/javascript">
-    $(document).ready(function() {
-      doHighlighting();
-    });
-
-    function doHighlighting() {
-        SyntaxHighlighter.defaults.gutter = false;
-        SyntaxHighlighter.defaults.toolbar = false;
-        SyntaxHighlighter.all();
-    }
-  </script>
 
 </body>
 </html>

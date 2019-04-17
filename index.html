@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <title>NSubstitute: A friendly substitute for .NET mocking libraries</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
 </head>
 <body>
   <div id="header">
@@ -17,79 +15,92 @@
   </div>
   <div id="nav">
     <a href="/help/getting-started">Get started</a> |
-    <a href="/help.html">Docs</a> |
-    <a href="https://groups.google.com/group/nsubstitute">Discussion group</a> |
+    <a href="/help.html">Docs and getting help</a> |
     <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
   <div id="content">
-        <div id="features">
-      <div class="feature">
-        <h2>Simple, succinct, pleasant to use</h2>
-        <p>
-    <div class="highlight">
-    <pre class="brush: csharp">//Create:
-var calculator = Substitute.For&lt;ICalculator&gt;();
+      <div id="features">
+<div class="feature">
+    <h2>Simple, succinct, pleasant to use</h2>
 
-//Set a return value:
-calculator.Add(1, 2).Returns(3);
-Assert.AreEqual(3, calculator.Add(1, 2));
+    <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//Create:</span>
+<span class="kt">var</span> <span class="n">calculator</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICalculator</span><span class="p">&gt;();</span>
 
-//Check received calls:
-calculator.Received().Add(1, Arg.Any&lt;int&gt;());
-calculator.DidNotReceive().Add(2, 2);
+<span class="c1">//Set a return value:</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="m">3</span><span class="p">);</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">));</span>
 
-//Raise events
-calculator.PoweringUp += Raise.Event();</pre>
-</div>
+<span class="c1">//Check received calls:</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;());</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">DidNotReceive</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">);</span>
 
-    
-        </p>
-      </div>
+<span class="c1">//Raise events</span>
+<span class="n">calculator</span><span class="p">.</span><span class="n">PoweringUp</span> <span class="p">+=</span> <span class="n">Raise</span><span class="p">.</span><span class="nf">Event</span><span class="p">();</span>
+</code></pre></div>    </div>
 
-      <div class="feature">
-        <h2>Helpful exceptions</h2>
-        <div class="highlight">
-            <pre>
+    <!--
+```requiredcode
+    public interface ICalculator
+    {
+        int Add(int a, int b);
+        string Mode { get; set; }
+        event EventHandler PoweringUp;
+    }
+```
+-->
+  </div>
+
+<div class="feature">
+<h2>Helpful exceptions</h2>
+<div class="highlight">
+<pre>
 ReceivedCallsException : Expected to receive a call matching:
     Add(1, 2)
 Actually received no matching calls.
 Received 2 non-matching calls (non-matching arguments indicated with '*' characters):
     Add(*4*, *7*)
     Add(1, *5*)</pre>
-        </div>
-      </div>
+</div>
+</div>
 
-      <div class="feature">
-        <h2>Don't sweat the small stuff</h2>
-        <p>Mock, stub, fake, spy, test double? Strict or loose? Nah, just substitute for the type you need!</p>
-        <p>NSubstitute is designed for Arrange-Act-Assert (AAA) testing, so you just need to arrange how it should work, then assert it received the calls you expected once you're done. Because you've got more important code to write than whether you need a mock or a stub.</p>
-      </div>
+<div class="feature">
+<h2>Don't sweat the small stuff</h2>
+<p>Mock, stub, fake, spy, test double? Strict or loose? Nah, just substitute for the type you need!</p>
+<p>NSubstitute is designed for Arrange-Act-Assert (AAA) testing, so you just need to arrange how it should work, then assert it received the calls you expected once you're done. Because you've got more important code to write than whether you need a mock or a stub.</p>
+</div>
 
-  </div>
+</div>
 
-  <div id="downloads" class="sidebar download">
-      <ul>
-          <li class="nuget">
-              <a href="https://nuget.org/List/Packages/NSubstitute">Install via NuGet:</a> <code>Install-Package NSubstitute</code>
-          </li>
-          <li class="nuget"><a href="/help/nsubstitute-analysers/">Optional analysers for C# and VB</a></li>
-          <li class="github">
-              <a href="https://github.com/nsubstitute/nsubstitute">Source</a>
-          </li>
-      </ul>
-  </div>
+<div id="downloads" class="sidebar download">
+<ul>
+<li class="nuget">
+<a href="https://nuget.org/List/Packages/NSubstitute">Install via NuGet:</a> <code>Install-Package NSubstitute</code>
+</li>
+<li class="nuget"><a href="/help/nsubstitute-analysers/">Optional analysers for C#:</a>
+<code>Install-Package NSubstitute.<wbr />Analyzers.<wbr />CSharp</code>
+</li>
+<li class="nuget"><a href="/help/nsubstitute-analysers/">Optional analysers for VB:</a>
+<code>Install-Package NSubstitute.<wbr />Analyzers.<wbr />VisualBasic</code>
+</li>
+<li class="github">
+<a href="https://github.com/nsubstitute/nsubstitute">Source</a>
+</li>
+</ul>
+</div>
 
-  <div class="sidebar">
-      <div id="why-use-it">
-        <h3>Another library?</h3>
-      <p>There are already some great mocking libraries around for .NET, so why create another? We found that for all their great features, none of the existing libraries had the succinct syntax we were craving &mdash; the code required to configure test doubles quickly obscured the intention behind our tests.</p>
+<div class="sidebar">
+<div id="why-use-it">
+<h3>Another library?</h3>
 
-	  <p>We've attempted to make the most frequently required operations obvious and easy to use, keeping less usual scenarios discoverable and accessible, and all the while maintaining as much natural language as possible.</p>
+<p>There are already some great mocking libraries around for .NET, so why create another? We found that for all their great features, none of the existing libraries had the succinct syntax we were craving &mdash; the code required to configure test doubles quickly obscured the intention behind our tests.</p>
 
-	  <p>Perfect for those new to testing, and for others who would just like to to get their tests written with less noise and fewer lambdas.</p>
-      </div>
-  </div>
+<p>We've attempted to make the most frequently required operations obvious and easy to use, keeping less usual scenarios discoverable and accessible, and all the while maintaining as much natural language as possible.</p>
+
+<p>Perfect for those new to testing, and for others who would just like to to get their tests written with less noise and fewer lambdas.</p>
+
+</div>
+</div>
 
   </div>
 
@@ -98,22 +109,6 @@ Received 2 non-matching calls (non-matching arguments indicated with '*' charact
 The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
   NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
   </div>
-
-  <script type="text/javascript" src="/scripts/shCore.js"></script>
-  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
- <script type="text/javascript">
-    $(document).ready(function() {
-      doHighlighting();
-    });
-
-    function doHighlighting() {
-        SyntaxHighlighter.defaults.gutter = false;
-        SyntaxHighlighter.defaults.toolbar = false;
-        SyntaxHighlighter.all();
-    }
-  </script>
 
 </body>
 </html>

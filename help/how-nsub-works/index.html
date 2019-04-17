@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>NSubstitute: How NSubstitute works</title>
+  <link rel="stylesheet" href="/css/style.css" type="text/css" />
+</head>
+<body>
+  <div id="header">
+    <a href="/" alt="NSubstitute">
+      <img src="/images/nsubstitute-100x100.png" style="float: left; margin-right: 15px; width: 100px; height: 100px;" />
+      <h1 style="display: inline"> NSubstitute </h1> <br />
+      <span><i>A friendly substitute for .NET mocking frameworks</i></span>
+    </a>
+  </div>
+  <div id="nav">
+    <a href="/help/getting-started">Get started</a> |
+    <a href="/help.html">Docs and getting help</a> |
+    <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
+  </div>
+
+  <div id="content">
+      <div id="post">
+    <div id="post-index">
+        <ul>
+            
+            <li><a href="/help/getting-started/">Getting started</a></li>
+            
+            <li><a href="/help/creating-a-substitute/">Creating a substitute</a></li>
+            
+            <li><a href="/help/set-return-value/">Setting a return value</a></li>
+            
+            <li><a href="/help/return-for-args/">Return for specific args</a></li>
+            
+            <li><a href="/help/return-for-any-args/">Return for any args</a></li>
+            
+            <li><a href="/help/return-from-function/">Return from a function</a></li>
+            
+            <li><a href="/help/multiple-returns/">Multiple return values</a></li>
+            
+            <li><a href="/help/replacing-return-values/">Replacing return values</a></li>
+            
+            <li><a href="/help/received-calls/">Checking received calls</a></li>
+            
+            <li><a href="/help/clear-received-calls/">Clearing received calls</a></li>
+            
+            <li><a href="/help/argument-matchers/">Argument matchers</a></li>
+            
+            <li><a href="/help/callbacks/">Callbacks, void calls and When..Do</a></li>
+            
+            <li><a href="/help/throwing-exceptions/">Throwing exceptions</a></li>
+            
+            <li><a href="/help/configure/">Safe configuration and overlapping calls</a></li>
+            
+            <li><a href="/help/raising-events/">Raising events</a></li>
+            
+            <li><a href="/help/auto-and-recursive-mocks/">Auto and recursive mocks</a></li>
+            
+            <li><a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a></li>
+            
+            <li><a href="/help/actions-with-arguments/">Actions with argument matchers</a></li>
+            
+            <li><a href="/help/received-in-order/">Checking call order</a></li>
+            
+            <li><a href="/help/partial-subs/">Partial subs and test spies</a></li>
+            
+            <li><a href="/help/return-for-all/">Return for all calls of a type</a></li>
+            
+            <li><a href="/help/threading/">Threading</a></li>
+            
+            <li><a href="/help/compat-args/">Compatibility argument matchers</a></li>
+            
+            <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
+            
+            <li><a href="/help/how-nsub-works/">How NSubstitute works</a></li>
+            
+            <li><a href="/help/search/">Search</a></li>
+            
+        </ul>
+    </div>
+
+    <div id="post-content">
+      <h1>How NSubstitute works</h1>
+      <p>When we substitute for a class or interface, NSubstitute uses the wonderful <a href="https://github.com/castleproject/Core">Castle DynamicProxy library</a> to generate a new class that inherits from that class or implements that interface. This allows us to use that substitute in place of the original type.</p>
+
+<p>You can think of it working a bit like this:</p>
+
+<!--
+```requiredcode
+public static void handle_call_invocation() {}
+public static int configured_value_for_call() => 42;
+```
+-->
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">Original</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">virtual</span> <span class="kt">int</span> <span class="nf">DoStuffWith</span><span class="p">(</span><span class="kt">string</span> <span class="n">s</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Now if we do:</span>
+<span class="c1">//      var sub = Substitute.For&lt;Original&gt;();</span>
+<span class="c1">//</span>
+<span class="c1">// This is a bit like doing:</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">SubstituteForOriginal</span> <span class="p">:</span> <span class="n">Original</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">override</span> <span class="kt">int</span> <span class="nf">DoStuffWith</span><span class="p">(</span><span class="kt">string</span> <span class="n">s</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Tell NSubstitute to record the call, run when..do actions etc,</span>
+        <span class="c1">// then return the value configured for this call.</span>
+        <span class="nf">handle_call_invocation</span><span class="p">();</span>
+        <span class="k">return</span> <span class="nf">configured_value_for_call</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">Original</span> <span class="n">sub</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">SubstituteForOriginal</span><span class="p">();</span>
+</code></pre></div></div>
+
+<a id="calamities_with_classes"></a>
+<h2 id="calamities-with-classes">Calamities with classes</h2>
+
+<p>For the case when <code class="highlighter-rouge">Original</code> is an interface this works perfectly; every member in the interface will be intercepted by NSubstitute’s logic for recording calls and returning configured values.</p>
+
+<p>There are some caveats when <code class="highlighter-rouge">Original</code> is a class though (hence all the <a href="/help/creating-a-substitute#substituting-infrequently-and-carefully-for-classes">warnings about them in the documentation</a>).</p>
+
+<a id="non_virtual_members"></a>
+<h3 id="non-virtual-members">Non-virtual members</h3>
+
+<p>If <code class="highlighter-rouge">DoStuffWith(string s)</code> is not <code class="highlighter-rouge">virtual</code>, the <code class="highlighter-rouge">SubstituteForOriginal</code> class will not be able to override it, so when it is called NSubstitute will not know about it. It is effectively invisible to NSubstitute; it can’t record calls to it, it can’t configure values using <code class="highlighter-rouge">Returns</code>, it can’t run actions via <code class="highlighter-rouge">When..Do</code>, it can’t verify the call was received. Instead, the real base implementation of the member will run.</p>
+
+<p>This can cause all sorts of problems if we accidentally attempt to configure a non-virtual call, because NSubstitute will get confused about which call you’re talking about. Usually this will result in a run-time error, but in the worst case it can affect the outcome of your test, or even the following test in the suite, in non-obvious ways. Thankfully we have <a href="/help/nsubstitute-analyzers">NSubstitute.Analyzers</a> to detect these cases at compile time.</p>
+
+<a id="internal_members"></a>
+<h3 id="internal-members">Internal members</h3>
+
+<p>Similar limitations apply to <code class="highlighter-rouge">internal virtual</code> members. Because <code class="highlighter-rouge">SubstituteForOriginal</code> gets generated in a separate assembly, <code class="highlighter-rouge">internal</code> members are invisible to NSubstitute by default. There are two ways to solve this:</p>
+
+<ul>
+  <li>Use <code class="highlighter-rouge">[assembly: InternalsVisibleTo(InternalsVisible.ToDynamicProxyGenAssembly2)]</code> in the test assembly so that the <code class="highlighter-rouge">internal</code> member can be overridden.</li>
+  <li>Make the member <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/protected-internal"><code class="highlighter-rouge">protected internal virtual</code></a> so that sub-classes can access the member.</li>
+</ul>
+
+<p>Remember that if the member is non-virtual, NSubstitute will not be able to intercept it regardless of whether it is <code class="highlighter-rouge">internal</code> or <code class="highlighter-rouge">InternalsVisibleTo</code> has been added.</p>
+
+<p>The good news is that <a href="/help/nsubstitute-analyzers">NSubstitute.Analyzers</a> will also detect attempts to use <code class="highlighter-rouge">internal</code> members at compile time, and will suggest fixes for these cases.</p>
+
+<a id="real_code"></a>
+<h3 id="real-code">Real code</h3>
+
+<p>The final thing to notice here is that there is the potential for real logic from the <code class="highlighter-rouge">Original</code> class to execute. We’ve already seen how this is possible for non-virtual members, but it can also happen if <code class="highlighter-rouge">Original</code> has code in its constructor. If the constructor calls <code class="highlighter-rouge">FileSystem.DeleteAllMyStuff()</code>, then constructing <code class="highlighter-rouge">SubstituteForOriginal</code> will also run this when the base constructor gets called.</p>
+
+<a id="class_conclusion"></a>
+<h3 id="class-conclusion">Class conclusion</h3>
+
+<ul>
+  <li>Be careful substituting for classes!</li>
+  <li>Where possible use interfaces instead.</li>
+  <li>Remember NSubstitute works by inheriting from (or implementing) your original type. If you can’t override a member by manually writing a sub-class, then NSubstitute won’t be able to either!</li>
+  <li>Install <a href="/help/nsubstitute-analyzers">NSubstitute.Analyzers</a> where ever you install NSubstitute. This will help you avoid these (and other) pitfalls.</li>
+</ul>
+
+
+      <div id="page-navigation">
+        <div class="previous">
+        
+            <a href="/help/nsubstitute-analysers/" title="Previous: NSubstitute.Analyzers">&laquo; NSubstitute.Analyzers</a>
+        
+        </div>
+        <div class="next">
+        
+            <a href="/help/search/" title="Next: Search">Search &raquo; </a>
+        
+        </div>
+      </div>
+    </div>
+</div>
+
+
+  </div>
+
+  <div id="footer">
+  NSubstitute is open source software, licensed under the <a href="https://www.opensource.org/licenses/bsd-license.php">BSD License</a>.<br />
+The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
+  NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
+  </div>
+
+</body>
+</html>

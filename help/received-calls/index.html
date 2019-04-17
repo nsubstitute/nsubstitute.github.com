@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <title>NSubstitute: Checking received calls</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
 </head>
 <body>
   <div id="header">
@@ -17,8 +15,7 @@
   </div>
   <div id="nav">
     <a href="/help/getting-started">Get started</a> |
-    <a href="/help.html">Docs</a> |
-    <a href="https://groups.google.com/group/nsubstitute">Discussion group</a> |
+    <a href="/help.html">Docs and getting help</a> |
     <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
@@ -75,242 +72,248 @@
             
             <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
+            <li><a href="/help/how-nsub-works/">How NSubstitute works</a></li>
+            
+            <li><a href="/help/search/">Search</a></li>
+            
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Checking received calls</h1>
-      <p>In some cases (particularly for <code>void</code> methods) it is useful to check that a specific call has been received by a substitute. This can be checked using the <code>Received()</code> extension method, followed by the call being checked.</p>
+      <p>In some cases (particularly for <code class="highlighter-rouge">void</code> methods) it is useful to check that a specific call has been received by a substitute. This can be checked using the <code class="highlighter-rouge">Received()</code> extension method, followed by the call being checked.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">public interface ICommand {
-    void Execute();
-    event EventHandler Executed;
-}
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">interface</span> <span class="nc">ICommand</span> <span class="p">{</span>
+    <span class="k">void</span> <span class="nf">Execute</span><span class="p">();</span>
+    <span class="k">event</span> <span class="n">EventHandler</span> <span class="n">Executed</span><span class="p">;</span>
+<span class="p">}</span>
 
-public class SomethingThatNeedsACommand {
-    ICommand command;
-    public SomethingThatNeedsACommand(ICommand command) { 
-        this.command = command;
-    }
-    public void DoSomething() { command.Execute(); }
-    public void DontDoAnything() { }
-}
+<span class="k">public</span> <span class="k">class</span> <span class="nc">SomethingThatNeedsACommand</span> <span class="p">{</span>
+    <span class="n">ICommand</span> <span class="n">command</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nf">SomethingThatNeedsACommand</span><span class="p">(</span><span class="n">ICommand</span> <span class="n">command</span><span class="p">)</span> <span class="p">{</span> 
+        <span class="k">this</span><span class="p">.</span><span class="n">command</span> <span class="p">=</span> <span class="n">command</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">DoSomething</span><span class="p">()</span> <span class="p">{</span> <span class="n">command</span><span class="p">.</span><span class="nf">Execute</span><span class="p">();</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">DontDoAnything</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
 
-[Test]
-public void Should_execute_command() {
-    //Arrange
-    var command = Substitute.For&lt;ICommand&gt;();
-    var something = new SomethingThatNeedsACommand(command);
-    //Act
-    something.DoSomething();
-    //Assert
-    command.Received().Execute();
-}</pre>
-</div>
+<span class="na">[Test]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">Should_execute_command</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">//Arrange</span>
+    <span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
+    <span class="kt">var</span> <span class="n">something</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">SomethingThatNeedsACommand</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
+    <span class="c1">//Act</span>
+    <span class="n">something</span><span class="p">.</span><span class="nf">DoSomething</span><span class="p">();</span>
+    <span class="c1">//Assert</span>
+    <span class="n">command</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Execute</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<p>In this case <code>command</code> did receive a call to <code>Execute()</code>, and so will complete successfully. If <code>Execute()</code> has not been received NSubstitute will throw a <code>ReceivedCallsException</code> and let you know what call was expected and with which arguments, as well as listing actual calls to that method and which the arguments differed.</p>
+<p>In this case <code class="highlighter-rouge">command</code> did receive a call to <code class="highlighter-rouge">Execute()</code>, and so will complete successfully. If <code class="highlighter-rouge">Execute()</code> has not been received NSubstitute will throw a <code class="highlighter-rouge">ReceivedCallsException</code> and let you know what call was expected and with which arguments, as well as listing actual calls to that method and which the arguments differed.</p>
 
 <a id="check_a_call_was_not_received"></a>
 <h2 id="check-a-call-was-not-received">Check a call was not received</h2>
-<p>NSubstitute can also make sure a call was not received using the <code>DidNotReceive()</code> extension method.</p>
+<p>NSubstitute can also make sure a call was not received using the <code class="highlighter-rouge">DidNotReceive()</code> extension method.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">var command = Substitute.For&lt;ICommand&gt;();
-var something = new SomethingThatNeedsACommand(command);
-//Act
-something.DontDoAnything();
-//Assert
-command.DidNotReceive().Execute();</pre>
-</div>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
+<span class="kt">var</span> <span class="n">something</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">SomethingThatNeedsACommand</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
+<span class="c1">//Act</span>
+<span class="n">something</span><span class="p">.</span><span class="nf">DontDoAnything</span><span class="p">();</span>
+<span class="c1">//Assert</span>
+<span class="n">command</span><span class="p">.</span><span class="nf">DidNotReceive</span><span class="p">().</span><span class="nf">Execute</span><span class="p">();</span>
+</code></pre></div></div>
 
 <a id="check_a_call_was_received_a_specific_number_of_times"></a>
 <h2 id="check-a-call-was-received-a-specific-number-of-times">Check a call was received a specific number of times</h2>
 
-<p>The <code>Received()</code> extension method will assert that at least one call was made to a member, and <code>DidNotReceive()</code> asserts that zero calls were made. NSubstitute also gives you the option of asserting a specific number of calls were received by passing an integer to <code>Received()</code>. This will throw if the substitute does not receive <em>exactly</em> that many matching calls. Too few, or too many, and the assertion will fail.</p>
+<p>The <code class="highlighter-rouge">Received()</code> extension method will assert that at least one call was made to a member, and <code class="highlighter-rouge">DidNotReceive()</code> asserts that zero calls were made. NSubstitute also gives you the option of asserting a specific number of calls were received by passing an integer to <code class="highlighter-rouge">Received()</code>. This will throw if the substitute does not receive <em>exactly</em> that many matching calls. Too few, or too many, and the assertion will fail.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">public class CommandRepeater {
-    ICommand command;
-    int numberOfTimesToCall;
-    public CommandRepeater(ICommand command, int numberOfTimesToCall) {
-      this.command = command;
-      this.numberOfTimesToCall = numberOfTimesToCall;
-    }
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">CommandRepeater</span> <span class="p">{</span>
+    <span class="n">ICommand</span> <span class="n">command</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">numberOfTimesToCall</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nf">CommandRepeater</span><span class="p">(</span><span class="n">ICommand</span> <span class="n">command</span><span class="p">,</span> <span class="kt">int</span> <span class="n">numberOfTimesToCall</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="n">command</span> <span class="p">=</span> <span class="n">command</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="n">numberOfTimesToCall</span> <span class="p">=</span> <span class="n">numberOfTimesToCall</span><span class="p">;</span>
+    <span class="p">}</span>
 
-    public void Execute() { 
-      for (var i=0; i&lt;numberOfTimesToCall; i++) command.Execute();
-    }
-}
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Execute</span><span class="p">()</span> <span class="p">{</span> 
+      <span class="k">for</span> <span class="p">(</span><span class="kt">var</span> <span class="n">i</span><span class="p">=</span><span class="m">0</span><span class="p">;</span> <span class="n">i</span><span class="p">&lt;</span><span class="n">numberOfTimesToCall</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span> <span class="n">command</span><span class="p">.</span><span class="nf">Execute</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 
-[Test]
-public void Should_execute_command_the_number_of_times_specified() {
-  var command = Substitute.For&lt;ICommand&gt;();
-  var repeater = new CommandRepeater(command, 3);
-  //Act
-  repeater.Execute();
-  //Assert
-  command.Received(3).Execute(); // &lt;&lt; This will fail if 2 or 4 calls were received
-}</pre>
-</div>
+<span class="na">[Test]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">Should_execute_command_the_number_of_times_specified</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
+  <span class="kt">var</span> <span class="n">repeater</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">CommandRepeater</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span>
+  <span class="c1">//Act</span>
+  <span class="n">repeater</span><span class="p">.</span><span class="nf">Execute</span><span class="p">();</span>
+  <span class="c1">//Assert</span>
+  <span class="n">command</span><span class="p">.</span><span class="nf">Received</span><span class="p">(</span><span class="m">3</span><span class="p">).</span><span class="nf">Execute</span><span class="p">();</span> <span class="c1">// &lt;&lt; This will fail if 2 or 4 calls were received</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<p>We can also use <code>Received(1)</code> to check a call was received once and only once. This differs from the standard <code>Received()</code> call, which checks a call was received <em>at least</em> once. <code>Received(0)</code> behaves the same as <code>DidNotReceive()</code>.</p>
+<p>We can also use <code class="highlighter-rouge">Received(1)</code> to check a call was received once and only once. This differs from the standard <code class="highlighter-rouge">Received()</code> call, which checks a call was received <em>at least</em> once. <code class="highlighter-rouge">Received(0)</code> behaves the same as <code class="highlighter-rouge">DidNotReceive()</code>.</p>
 
 <a id="received_or_not_with_specific_arguments"></a>
 <h2 id="received-or-not-with-specific-arguments">Received (or not) with specific arguments</h2>
 
+<!--
+```requiredcode
+public interface ICalculator {
+    int Add(int a, int b);
+    int Subtract(int a, int b);
+    string Mode { get; set; }
+}
+ICalculator calculator;
+[SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
+```
+-->
+
 <p>We can also use <a href="/help/argument-matchers">argument matchers</a> to check calls were received (or not) with particular arguments. This is covered in more detail in the <a href="/help/argument-matchers">argument matchers</a> topic, but the following examples show the general idea:</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">calculator.Add(1, 2);
-calculator.Add(-100, 100);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">);</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">100</span><span class="p">,</span> <span class="m">100</span><span class="p">);</span>
 
-//Check received with second arg of 2 and any first arg:
-calculator.Received().Add(Arg.Any&lt;int&gt;(), 2);
-//Check received with first arg less than 0, and second arg of 100:
-calculator.Received().Add(Arg.Is&lt;int&gt;(x =&gt; x &lt; 0), 100);
-//Check did not receive a call where second arg is &gt;= 500 and any first arg:
-calculator
-    .DidNotReceive()
-    .Add(Arg.Any&lt;int&gt;(), Arg.Is&lt;int&gt;(x =&gt; x &gt;= 500));</pre>
-</div>
+<span class="c1">//Check received with second arg of 2 and any first arg:</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(),</span> <span class="m">2</span><span class="p">);</span>
+<span class="c1">//Check received with first arg less than 0, and second arg of 100:</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">),</span> <span class="m">100</span><span class="p">);</span>
+<span class="c1">//Check did not receive a call where second arg is &gt;= 500 and any first arg:</span>
+<span class="n">calculator</span>
+    <span class="p">.</span><span class="nf">DidNotReceive</span><span class="p">()</span>
+    <span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(),</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&gt;=</span> <span class="m">500</span><span class="p">));</span>
+</code></pre></div></div>
 
 <a id="ignoring_arguments"></a>
 <h2 id="ignoring-arguments">Ignoring arguments</h2>
 
-<p>NSubstitute can also check calls were received or not received but ignore the arguments used, just like we can for <a href="/help/return-for-any-args">setting returns for any arguments</a>. In this case we need <code>ReceivedWithAnyArgs()</code> and <code>DidNotReceiveWithAnyArgs()</code>.</p>
+<p>NSubstitute can also check calls were received or not received but ignore the arguments used, just like we can for <a href="/help/return-for-any-args">setting returns for any arguments</a>. In this case we need <code class="highlighter-rouge">ReceivedWithAnyArgs()</code> and <code class="highlighter-rouge">DidNotReceiveWithAnyArgs()</code>.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">calculator.Add(1, 3);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span>
 
-calculator.ReceivedWithAnyArgs().Add(1,1);
-calculator.DidNotReceiveWithAnyArgs().Subtract(0,0);</pre>
-</div>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">ReceivedWithAnyArgs</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">);</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">DidNotReceiveWithAnyArgs</span><span class="p">().</span><span class="nf">Subtract</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">);</span>
+</code></pre></div></div>
 
 <a id="checking_calls_to_properties"></a>
 <h2 id="checking-calls-to-properties">Checking calls to properties</h2>
 
 <p>The same syntax can be used to check calls on properties. Normally we’d want to avoid this, as we’re really more interested in testing the required behaviour rather than the precise implementation details (i.e. we would set the property to return a value and check that was used properly, rather than assert that the property getter was called). Still, there are probably times when checking getters and setters were called can come in handy, so here’s how you do it:</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">var mode = calculator.Mode;
-calculator.Mode = &quot;TEST&quot;;
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">mode</span> <span class="p">=</span> <span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span><span class="p">;</span>
+<span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span> <span class="p">=</span> <span class="s">"TEST"</span><span class="p">;</span>
 
-//Check received call to property getter
-//We need to assign the result to a variable to keep
-//the compiler happy.
-var temp = calculator.Received().Mode;
+<span class="c1">//Check received call to property getter</span>
+<span class="c1">//We need to assign the result to a variable to keep</span>
+<span class="c1">//the compiler happy.</span>
+<span class="kt">var</span> <span class="n">temp</span> <span class="p">=</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="n">Mode</span><span class="p">;</span>
 
-//Check received call to property setter with arg of &quot;TEST&quot;
-calculator.Received().Mode = &quot;TEST&quot;;</pre>
-</div>
+<span class="c1">//Check received call to property setter with arg of "TEST"</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="n">Mode</span> <span class="p">=</span> <span class="s">"TEST"</span><span class="p">;</span>
+</code></pre></div></div>
 
 <a id="checking_calls_to_indexers"></a>
 <h2 id="checking-calls-to-indexers">Checking calls to indexers</h2>
 <p>An indexer is really just another property, so we can use the same syntax to check calls to indexers.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">var dictionary = Substitute.For&lt;IDictionary&lt;string, int&gt;&gt;();
-dictionary[&quot;test&quot;] = 1;
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">dictionary</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IDictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">int</span><span class="p">&gt;&gt;();</span>
+<span class="n">dictionary</span><span class="p">[</span><span class="s">"test"</span><span class="p">]</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span>
 
-dictionary.Received()[&quot;test&quot;] = 1;
-dictionary.Received()[&quot;test&quot;] = Arg.Is&lt;int&gt;(x =&gt; x &lt; 5);</pre>
-</div>
+<span class="n">dictionary</span><span class="p">.</span><span class="nf">Received</span><span class="p">()[</span><span class="s">"test"</span><span class="p">]</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span>
+<span class="n">dictionary</span><span class="p">.</span><span class="nf">Received</span><span class="p">()[</span><span class="s">"test"</span><span class="p">]</span> <span class="p">=</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&lt;</span> <span class="m">5</span><span class="p">);</span>
+</code></pre></div></div>
 
 <a id="checking_event_subscriptions"></a>
 <h2 id="checking-event-subscriptions">Checking event subscriptions</h2>
 
 <p>As with properties, we’d normally favour testing the required behaviour over checking subscriptions to particular event handlers. We can do that by <a href="/help/raising-events/">raising an event on the substitute</a> and asserting our class performs the correct behaviour in response:</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">public class CommandWatcher {
-    ICommand command;
-    public CommandWatcher(ICommand command) { 
-    	command.Executed += OnExecuted;
-    }
-    public bool DidStuff { get; private set; }
-    public void OnExecuted(object o, EventArgs e) { DidStuff = true; }
-} 
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">CommandWatcher</span> <span class="p">{</span>
+    <span class="n">ICommand</span> <span class="n">command</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nf">CommandWatcher</span><span class="p">(</span><span class="n">ICommand</span> <span class="n">command</span><span class="p">)</span> <span class="p">{</span> 
+    	<span class="n">command</span><span class="p">.</span><span class="n">Executed</span> <span class="p">+=</span> <span class="n">OnExecuted</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">bool</span> <span class="n">DidStuff</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">private</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">OnExecuted</span><span class="p">(</span><span class="kt">object</span> <span class="n">o</span><span class="p">,</span> <span class="n">EventArgs</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span> <span class="n">DidStuff</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> 
 
-[Test]
-public void ShouldDoStuffWhenCommandExecutes() {
-  var command = Substitute.For&lt;ICommand&gt;();
-  var watcher = new CommandWatcher(command);
+<span class="na">[Test]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldDoStuffWhenCommandExecutes</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
+  <span class="kt">var</span> <span class="n">watcher</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">CommandWatcher</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
 
-  command.Executed += Raise.Event();
+  <span class="n">command</span><span class="p">.</span><span class="n">Executed</span> <span class="p">+=</span> <span class="n">Raise</span><span class="p">.</span><span class="nf">Event</span><span class="p">();</span>
 
-  Assert.That(watcher.DidStuff);
-}</pre>
-</div>
+  <span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">watcher</span><span class="p">.</span><span class="n">DidStuff</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
-<p>If required though, <code>Received</code> will let us assert that the subscription was received:</p>
+<p>If required though, <code class="highlighter-rouge">Received</code> will let us assert that the subscription was received:</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">[Test]
-public void MakeSureWatcherSubscribesToCommandExecuted() {
-  var command = Substitute.For&lt;ICommand&gt;();
-  var watcher = new CommandWatcher(command);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">[Test]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">MakeSureWatcherSubscribesToCommandExecuted</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
+  <span class="kt">var</span> <span class="n">watcher</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">CommandWatcher</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
 
-  // Not recommended. Favour testing behaviour over implementation specifics.
-  // Can check subscription:
-  command.Received().Executed += watcher.OnExecuted;
-  // Or, if the handler is not accessible:
-  command.Received().Executed += Arg.Any&lt;EventHandler&gt;();
-}</pre>
-</div>
+  <span class="c1">// Not recommended. Favour testing behaviour over implementation specifics.</span>
+  <span class="c1">// Can check subscription:</span>
+  <span class="n">command</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="n">Executed</span> <span class="p">+=</span> <span class="n">watcher</span><span class="p">.</span><span class="n">OnExecuted</span><span class="p">;</span>
+  <span class="c1">// Or, if the handler is not accessible:</span>
+  <span class="n">command</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="n">Executed</span> <span class="p">+=</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">EventHandler</span><span class="p">&gt;();</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <a id="checking_event_invocation"></a>
 <h2 id="checking-event-invocation">Checking event invocation</h2>
 
-<p>We can also use substitutes for event handlers to confirm that a particular event was raised correctly. Often a simple lambda function will suffice, but if we want to use argument matchers we can use a substitute and <code>Received</code>. Both options are shown below:</p>
+<p>We can also use substitutes for event handlers to confirm that a particular event was raised correctly. Often a simple lambda function will suffice, but if we want to use argument matchers we can use a substitute and <code class="highlighter-rouge">Received</code>. Both options are shown below:</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">public class LowFuelWarningEventArgs : EventArgs {
-	public int PercentLeft { get; }
-	public LowFuelWarningEventArgs(int percentLeft){
-		PercentLeft = percentLeft;
-	}
-}
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">LowFuelWarningEventArgs</span> <span class="p">:</span> <span class="n">EventArgs</span> <span class="p">{</span>
+	<span class="k">public</span> <span class="kt">int</span> <span class="n">PercentLeft</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+	<span class="k">public</span> <span class="nf">LowFuelWarningEventArgs</span><span class="p">(</span><span class="kt">int</span> <span class="n">percentLeft</span><span class="p">){</span>
+		<span class="n">PercentLeft</span> <span class="p">=</span> <span class="n">percentLeft</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
 
-public class FuelManagement{
-	public event EventHandler&lt;LowFuelWarningEventArgs&gt; LowFuelDetected;
-	public void DoSomething(){
-		LowFuelDetected?.Invoke(this, new LowFuelWarningEventArgs(15));
-	}
-}
+<span class="k">public</span> <span class="k">class</span> <span class="nc">FuelManagement</span><span class="p">{</span>
+	<span class="k">public</span> <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">LowFuelWarningEventArgs</span><span class="p">&gt;</span> <span class="n">LowFuelDetected</span><span class="p">;</span>
+	<span class="k">public</span> <span class="k">void</span> <span class="nf">DoSomething</span><span class="p">(){</span>
+		<span class="n">LowFuelDetected</span><span class="p">?.</span><span class="nf">Invoke</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">new</span> <span class="nf">LowFuelWarningEventArgs</span><span class="p">(</span><span class="m">15</span><span class="p">));</span>
+	<span class="p">}</span>
+<span class="p">}</span>
 
-// Often it is easiest to use a lambda for this, as shown in the following test:
-[Test]
-public void ShouldRaiseLowFuel_WithoutNSub(){
-	var fuelManagement = new FuelManagement();
-	var eventWasRaised = false;
-	fuelManagement.LowFuelDetected += (o,e) =&gt; eventWasRaised = true;
+<span class="c1">// Often it is easiest to use a lambda for this, as shown in the following test:</span>
+<span class="na">[Test]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldRaiseLowFuel_WithoutNSub</span><span class="p">(){</span>
+	<span class="kt">var</span> <span class="n">fuelManagement</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">FuelManagement</span><span class="p">();</span>
+	<span class="kt">var</span> <span class="n">eventWasRaised</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+	<span class="n">fuelManagement</span><span class="p">.</span><span class="n">LowFuelDetected</span> <span class="p">+=</span> <span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">eventWasRaised</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
 
-	fuelManagement.DoSomething();
+	<span class="n">fuelManagement</span><span class="p">.</span><span class="nf">DoSomething</span><span class="p">();</span>
 
-	Assert.That(eventWasRaised);
-}
+	<span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">eventWasRaised</span><span class="p">);</span>
+<span class="p">}</span>
 
-// We can also use NSubstitute for this if we want more involved argument matching logic.
-// NSubstitute also gives us a descriptive message if the assertion fails which may be helpful in some cases.
-// (For example, if the call was not received with the expected arguments, we&#39;ll get a list of the non-matching
-// calls made to that member.)
-//
-// Note we could still use lambdas and standard assertions for this, but a substitute may be worth considering
-// in some of these cases.
-[Test]
-public void ShouldRaiseLowFuel(){
-	var fuelManagement = new FuelManagement();
-	var handler = Substitute.For&lt;EventHandler&lt;LowFuelWarningEventArgs&gt;&gt;();
-	fuelManagement.LowFuelDetected += handler;
+<span class="c1">// We can also use NSubstitute for this if we want more involved argument matching logic.</span>
+<span class="c1">// NSubstitute also gives us a descriptive message if the assertion fails which may be helpful in some cases.</span>
+<span class="c1">// (For example, if the call was not received with the expected arguments, we'll get a list of the non-matching</span>
+<span class="c1">// calls made to that member.)</span>
+<span class="c1">//</span>
+<span class="c1">// Note we could still use lambdas and standard assertions for this, but a substitute may be worth considering</span>
+<span class="c1">// in some of these cases.</span>
+<span class="na">[Test]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldRaiseLowFuel</span><span class="p">(){</span>
+	<span class="kt">var</span> <span class="n">fuelManagement</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">FuelManagement</span><span class="p">();</span>
+	<span class="kt">var</span> <span class="n">handler</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">LowFuelWarningEventArgs</span><span class="p">&gt;&gt;();</span>
+	<span class="n">fuelManagement</span><span class="p">.</span><span class="n">LowFuelDetected</span> <span class="p">+=</span> <span class="n">handler</span><span class="p">;</span>
 
-	fuelManagement.DoSomething();
+	<span class="n">fuelManagement</span><span class="p">.</span><span class="nf">DoSomething</span><span class="p">();</span>
 
-	handler
-	    .Received()
-	    .Invoke(fuelManagement, Arg.Is&lt;LowFuelWarningEventArgs&gt;(x =&gt; x.PercentLeft &lt; 20));
-}</pre>
-</div>
+	<span class="n">handler</span>
+	    <span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+	    <span class="p">.</span><span class="nf">Invoke</span><span class="p">(</span><span class="n">fuelManagement</span><span class="p">,</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">LowFuelWarningEventArgs</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">PercentLeft</span> <span class="p">&lt;</span> <span class="m">20</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 
       <div id="page-navigation">
@@ -336,22 +339,6 @@ public void ShouldRaiseLowFuel(){
 The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
   NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
   </div>
-
-  <script type="text/javascript" src="/scripts/shCore.js"></script>
-  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
- <script type="text/javascript">
-    $(document).ready(function() {
-      doHighlighting();
-    });
-
-    function doHighlighting() {
-        SyntaxHighlighter.defaults.gutter = false;
-        SyntaxHighlighter.defaults.toolbar = false;
-        SyntaxHighlighter.all();
-    }
-  </script>
 
 </body>
 </html>

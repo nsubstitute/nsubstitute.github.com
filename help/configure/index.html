@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <title>NSubstitute: Safe configuration and overlapping calls</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
 </head>
 <body>
   <div id="header">
@@ -17,8 +15,7 @@
   </div>
   <div id="nav">
     <a href="/help/getting-started">Get started</a> |
-    <a href="/help.html">Docs</a> |
-    <a href="https://groups.google.com/group/nsubstitute">Discussion group</a> |
+    <a href="/help.html">Docs and getting help</a> |
     <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
@@ -75,31 +72,42 @@
             
             <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
+            <li><a href="/help/how-nsub-works/">How NSubstitute works</a></li>
+            
+            <li><a href="/help/search/">Search</a></li>
+            
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Safe configuration and overlapping calls</h1>
-      <p><em><code>Configure()</code> is supported in NSubstitute 4.0 and above.</em></p>
+      <p><em><code class="highlighter-rouge">Configure()</code> is supported in NSubstitute 4.0 and above.</em></p>
 
-<p>Sometimes we want to configure a call that overlaps a more general call we have previously setup to run a <a href="/help/callbacks">callback</a> or throw an <a href="/help/throwing-exceptions/">exception</a>. Ideally we would modify the setups so they don’t overlap, but we can also prevent these callbacks from running while we setup the next call by calling <code>Configure()</code> before invoking the method we want to re-configure. <code>Configure()</code> tells NSubstitute we are configuring the following call so that it will not run any callbacks from previous configurations.</p>
+<p>Sometimes we want to configure a call that overlaps a more general call we have previously setup to run a <a href="/help/callbacks">callback</a> or throw an <a href="/help/throwing-exceptions/">exception</a>. Ideally we would modify the setups so they don’t overlap, but we can also prevent these callbacks from running while we setup the next call by calling <code class="highlighter-rouge">Configure()</code> before invoking the method we want to re-configure. <code class="highlighter-rouge">Configure()</code> tells NSubstitute we are configuring the following call so that it will not run any callbacks from previous configurations.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">calculator.Add(Arg.Any&lt;int&gt;(), Arg.Any&lt;int&gt;()).Returns(x =&gt; { throw new Exception(); });
+<!--
+```requiredcode
+public interface ICalculator { int Add(int a, int b); }
+ICalculator calculator;
+[SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
+```
+-->
 
-// Now if we try to add a return value for a more specific returns this will throw
-// before it gets a chance to configure the call:
-//    calculator.Add(1, 2).Returns(3);
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(),</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;()).</span><span class="nf">Returns</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="k">throw</span> <span class="k">new</span> <span class="nf">Exception</span><span class="p">();</span> <span class="p">});</span>
 
-// Instead, we can use Configure to ensure the previous callback does not run:
-calculator.Configure().Add(1, 2).Returns(3);
+<span class="c1">// Now if we try to add a return value for a more specific returns this will throw</span>
+<span class="c1">// before it gets a chance to configure the call:</span>
+<span class="c1">//    calculator.Add(1, 2).Returns(3);</span>
 
-// Now both the exception callback and our other return have been configured:
-Assert.AreEqual(3, calculator.Add(1, 2));
-Assert.Throws&lt;Exception&gt;(() =&gt; calculator.Add(-2, -2));</pre>
-</div>
+<span class="c1">// Instead, we can use Configure to ensure the previous callback does not run:</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Configure</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="m">3</span><span class="p">);</span>
 
-<p>NSubstitute will also assume we are configuring a call if we have an argument matcher in our call, such as <code>Arg.Is(1)</code> in <code>calculator.Add(Arg.Is(1), 2).Returns(3)</code>, but it is generally better to be more explicit by using <code>.Configure()</code>.</p>
+<span class="c1">// Now both the exception callback and our other return have been configured:</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">));</span>
+<span class="n">Assert</span><span class="p">.</span><span class="n">Throws</span><span class="p">&lt;</span><span class="n">Exception</span><span class="p">&gt;(()</span> <span class="p">=&gt;</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">2</span><span class="p">,</span> <span class="p">-</span><span class="m">2</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p>NSubstitute will also assume we are configuring a call if we have an argument matcher in our call, such as <code class="highlighter-rouge">Arg.Is(1)</code> in <code class="highlighter-rouge">calculator.Add(Arg.Is(1), 2).Returns(3)</code>, but it is generally better to be more explicit by using <code class="highlighter-rouge">.Configure()</code>.</p>
 
 <p>This can be particularly useful with <a href="/help/partial-subs/">partial substitutes</a> to help avoid real code being executed when configuring calls that would otherwise call the base implementation.</p>
 
@@ -126,22 +134,6 @@ Assert.Throws&lt;Exception&gt;(() =&gt; calculator.Add(-2, -2));</pre>
 The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
   NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
   </div>
-
-  <script type="text/javascript" src="/scripts/shCore.js"></script>
-  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
- <script type="text/javascript">
-    $(document).ready(function() {
-      doHighlighting();
-    });
-
-    function doHighlighting() {
-        SyntaxHighlighter.defaults.gutter = false;
-        SyntaxHighlighter.defaults.toolbar = false;
-        SyntaxHighlighter.all();
-    }
-  </script>
 
 </body>
 </html>

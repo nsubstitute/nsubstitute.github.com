@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <title>NSubstitute: Return for all calls of a type</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
 </head>
 <body>
   <div id="header">
@@ -17,8 +15,7 @@
   </div>
   <div id="nav">
     <a href="/help/getting-started">Get started</a> |
-    <a href="/help.html">Docs</a> |
-    <a href="https://groups.google.com/group/nsubstitute">Discussion group</a> |
+    <a href="/help.html">Docs and getting help</a> |
     <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
@@ -75,81 +72,97 @@
             
             <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
+            <li><a href="/help/how-nsub-works/">How NSubstitute works</a></li>
+            
+            <li><a href="/help/search/">Search</a></li>
+            
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Return for all calls of a type</h1>
-      <p>We can return a specific value for all calls to a substitute using <code>sub.ReturnsForAll&lt;T&gt;(T value)</code>. This will cause <code>sub</code> to return <code>value</code> for all calls that return something of type <code>T</code> and are <a href="#returns_vs_returnsforall">not already stubbed</a>.</p>
+      <p>We can return a specific value for all calls to a substitute using <code class="highlighter-rouge">sub.ReturnsForAll&lt;T&gt;(T value)</code>. This will cause <code class="highlighter-rouge">sub</code> to return <code class="highlighter-rouge">value</code> for all calls that return something of type <code class="highlighter-rouge">T</code> and are <a href="#returns_vs_returnsforall">not already stubbed</a>.</p>
 
-<p><strong>Note: we need <code>using NSubstitute.Extensions</code> to import the <code>.ReturnsForAll&lt;T&gt;()</code> extension method.</strong></p>
+<p><strong>Note: we need <code class="highlighter-rouge">using NSubstitute.Extensions</code> to import the <code class="highlighter-rouge">.ReturnsForAll&lt;T&gt;()</code> extension method.</strong></p>
 
-<p>The type must match exactly: <code>.ReturnsForAll&lt;Cat&gt;(cat)</code> will not set a return value for a call that returns <code>Animal</code>, even if <code>Cat</code> inherits from <code>Animal</code>. To return for the super-type, use <code>.ReturnsForAll&lt;Animal&gt;(cat)</code>. (If you’d like a change in this behaviour, please <a href="https://groups.google.com/forum/#!forum/nsubstitute">let us know</a>).</p>
+<p>The type must match exactly: <code class="highlighter-rouge">.ReturnsForAll&lt;Cat&gt;(cat)</code> will not set a return value for a call that returns <code class="highlighter-rouge">Animal</code>, even if <code class="highlighter-rouge">Cat</code> inherits from <code class="highlighter-rouge">Animal</code>. To return for the super-type, use <code class="highlighter-rouge">.ReturnsForAll&lt;Animal&gt;(cat)</code>. (If you’d like a change in this behaviour, please <a href="https://groups.google.com/forum/#!forum/nsubstitute">let us know</a>).</p>
 
-<p>There is also an overload that takes a <code>Func&lt;CallInfo,T&gt;</code> so the value to return will be calculated each time.</p>
+<p>There is also an overload that takes a <code class="highlighter-rouge">Func&lt;CallInfo,T&gt;</code> so the value to return will be calculated each time.</p>
 
 <a id="fluent_interface_example"></a>
 <h2 id="fluent-interface-example">Fluent interface example</h2>
 
 <p>One example of where this can be useful is a builder-style interface where each call returns a reference to itself.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">// using NSubstitute.Extensions;
+<!--
+```requiredcode
+public interface IWidgetContainer {}
+```
+-->
 
-public interface IWidgetBuilder {
-  IWidgetBuilder Quantity(int i); 
-  IWidgetBuilder AddLineItem(string s); 
-  IWidgetContainer GetWidgets();
-}
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// using NSubstitute.Extensions;</span>
 
-public class ProductionLine {
-  IWidgetBuilder builder;
-  public ProductionLine(IWidgetBuilder builder) {
-    this.builder = builder;
-  }
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">IWidgetBuilder</span> <span class="p">{</span>
+  <span class="n">IWidgetBuilder</span> <span class="nf">Quantity</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">);</span> 
+  <span class="n">IWidgetBuilder</span> <span class="nf">AddLineItem</span><span class="p">(</span><span class="kt">string</span> <span class="n">s</span><span class="p">);</span> 
+  <span class="n">IWidgetContainer</span> <span class="nf">GetWidgets</span><span class="p">();</span>
+<span class="p">}</span>
 
-  public IWidgetContainer Run() {
-    return builder
-              .Quantity(2)
-              .AddLineItem(&quot;Thingoe&quot;)
-              .AddLineItem(&quot;Other thingoe&quot;)
-              .GetWidgets();
-  }
-}
+<span class="k">public</span> <span class="k">class</span> <span class="nc">ProductionLine</span> <span class="p">{</span>
+  <span class="n">IWidgetBuilder</span> <span class="n">builder</span><span class="p">;</span>
+  <span class="k">public</span> <span class="nf">ProductionLine</span><span class="p">(</span><span class="n">IWidgetBuilder</span> <span class="n">builder</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="n">builder</span> <span class="p">=</span> <span class="n">builder</span><span class="p">;</span>
+  <span class="p">}</span>
 
-[Test]
-public void ShouldReturnWidgetsFromBuilder() {
-  var builder = Substitute.For&lt;IWidgetBuilder&gt;();
-  builder.ReturnsForAll&lt;IWidgetBuilder&gt;(builder);
-  var line = new ProductionLine(builder);
+  <span class="k">public</span> <span class="n">IWidgetContainer</span> <span class="nf">Run</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">builder</span>
+              <span class="p">.</span><span class="nf">Quantity</span><span class="p">(</span><span class="m">2</span><span class="p">)</span>
+              <span class="p">.</span><span class="nf">AddLineItem</span><span class="p">(</span><span class="s">"Thingoe"</span><span class="p">)</span>
+              <span class="p">.</span><span class="nf">AddLineItem</span><span class="p">(</span><span class="s">"Other thingoe"</span><span class="p">)</span>
+              <span class="p">.</span><span class="nf">GetWidgets</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 
-  var result = line.Run();
+<span class="na">[Test]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldReturnWidgetsFromBuilder</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">var</span> <span class="n">builder</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IWidgetBuilder</span><span class="p">&gt;();</span>
+  <span class="n">builder</span><span class="p">.</span><span class="n">ReturnsForAll</span><span class="p">&lt;</span><span class="n">IWidgetBuilder</span><span class="p">&gt;(</span><span class="n">builder</span><span class="p">);</span>
+  <span class="kt">var</span> <span class="n">line</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ProductionLine</span><span class="p">(</span><span class="n">builder</span><span class="p">);</span>
 
-  Assert.That(result, Is.EqualTo(builder.GetWidgets()));
-}</pre>
-</div>
+  <span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">line</span><span class="p">.</span><span class="nf">Run</span><span class="p">();</span>
 
-<p>In this test <code>builder</code> will return a reference to itself whenever a call returns a value of type <code>IWidgetBuilder</code>, so the chained calls will all work on the same <code>builder</code> instance.</p>
+  <span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Is</span><span class="p">.</span><span class="nf">EqualTo</span><span class="p">(</span><span class="n">builder</span><span class="p">.</span><span class="nf">GetWidgets</span><span class="p">()));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this test <code class="highlighter-rouge">builder</code> will return a reference to itself whenever a call returns a value of type <code class="highlighter-rouge">IWidgetBuilder</code>, so the chained calls will all work on the same <code class="highlighter-rouge">builder</code> instance.</p>
 
 <a id="returns_vs_returnsforall"></a>
 <h2 id="returns-vs-returnsforall">Returns vs. ReturnsForAll</h2>
 
-<p>Calls will only use <code>.ReturnsForAll</code> values when NSubstitute can’t find an explicitly stubbed value for the call. So if we set <code>sub.GetWidget().Returns(widget)</code>, that will take precendence over any values stubbed by <code>sub.ReturnsForAll&lt;Widget&gt;(otherWidget)</code>.</p>
+<p>Calls will only use <code class="highlighter-rouge">.ReturnsForAll</code> values when NSubstitute can’t find an explicitly stubbed value for the call. So if we set <code class="highlighter-rouge">sub.GetWidget().Returns(widget)</code>, that will take precendence over any values stubbed by <code class="highlighter-rouge">sub.ReturnsForAll&lt;Widget&gt;(otherWidget)</code>.</p>
 
-<div class="highlight">
-    <pre class="brush: csharp">[Test]
-public void ReturnsTakesPrecedence() {
-  var widget = new Widget();
-  var otherWidget = new Widget();
-  var sub = Substitute.For&lt;IWidgetExample&gt;();
-  sub.GetWidget(1).Returns(widget);
-  sub.ReturnsForAll&lt;Widget&gt;(otherWidget);
+<!--
+```requiredcode
+public class Widget {}
+public interface IWidgetExample {
+  Widget GetWidget(int i);
+}
+```
+-->
 
-  Assert.That(sub.GetWidget(1), Is.SameAs(widget));
-  Assert.That(sub.GetWidget(42), Is.SameAs(otherWidget));
-}</pre>
-</div>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">[Test]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">ReturnsTakesPrecedence</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">var</span> <span class="n">widget</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Widget</span><span class="p">();</span>
+  <span class="kt">var</span> <span class="n">otherWidget</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Widget</span><span class="p">();</span>
+  <span class="kt">var</span> <span class="n">sub</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IWidgetExample</span><span class="p">&gt;();</span>
+  <span class="n">sub</span><span class="p">.</span><span class="nf">GetWidget</span><span class="p">(</span><span class="m">1</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="n">widget</span><span class="p">);</span>
+  <span class="n">sub</span><span class="p">.</span><span class="n">ReturnsForAll</span><span class="p">&lt;</span><span class="n">Widget</span><span class="p">&gt;(</span><span class="n">otherWidget</span><span class="p">);</span>
 
+  <span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">sub</span><span class="p">.</span><span class="nf">GetWidget</span><span class="p">(</span><span class="m">1</span><span class="p">),</span> <span class="n">Is</span><span class="p">.</span><span class="nf">SameAs</span><span class="p">(</span><span class="n">widget</span><span class="p">));</span>
+  <span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">sub</span><span class="p">.</span><span class="nf">GetWidget</span><span class="p">(</span><span class="m">42</span><span class="p">),</span> <span class="n">Is</span><span class="p">.</span><span class="nf">SameAs</span><span class="p">(</span><span class="n">otherWidget</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
       <div id="page-navigation">
         <div class="previous">
@@ -174,22 +187,6 @@ public void ReturnsTakesPrecedence() {
 The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
   NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
   </div>
-
-  <script type="text/javascript" src="/scripts/shCore.js"></script>
-  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
- <script type="text/javascript">
-    $(document).ready(function() {
-      doHighlighting();
-    });
-
-    function doHighlighting() {
-        SyntaxHighlighter.defaults.gutter = false;
-        SyntaxHighlighter.defaults.toolbar = false;
-        SyntaxHighlighter.all();
-    }
-  </script>
 
 </body>
 </html>

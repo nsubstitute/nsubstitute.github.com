@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <title>NSubstitute: Threading</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shCore.css" type="text/css" />
-  <link rel="stylesheet" href="/css/shThemeDefault.css" type="text/css" />
 </head>
 <body>
   <div id="header">
@@ -17,8 +15,7 @@
   </div>
   <div id="nav">
     <a href="/help/getting-started">Get started</a> |
-    <a href="/help.html">Docs</a> |
-    <a href="https://groups.google.com/group/nsubstitute">Discussion group</a> |
+    <a href="/help.html">Docs and getting help</a> |
     <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
   </div>
 
@@ -75,14 +72,20 @@
             
             <li><a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a></li>
             
+            <li><a href="/help/how-nsub-works/">How NSubstitute works</a></li>
+            
+            <li><a href="/help/search/">Search</a></li>
+            
         </ul>
     </div>
 
     <div id="post-content">
       <h1>Threading</h1>
-      <p>It is fairly standard for production code to call a substitute from multiple threads, but we should avoid having our test code configure or assert on a substitute while it is also be used from other threads in production code. See <a href="https://github.com/nsubstitute/NSubstitute/issues/256">Issue #256</a> for an example of how doing this can result in problems.</p>
+      <p>It is fairly standard for production code to call a substitute from multiple threads, but we should avoid having our test code configure or assert on a substitute while it is also be used from other threads in production code.</p>
 
-<p>To avoid this sort of problem, make sure your test has finished configuring its substitutes before exercising the production code, then make sure the production code has completed before your test asserts on <code>Received()</code> calls.</p>
+<p>Although this particular issue has been mitigated by work in <a href="https://github.com/nsubstitute/NSubstitute/pull/462">#452</a>, issue <a href="https://github.com/nsubstitute/NSubstitute/issues/256">#256</a> shows the types of problems that can occur if we’re not careful with threading.</p>
+
+<p>To avoid this sort of problem, make sure your test has finished configuring its substitutes before exercising the production code, then make sure the production code has completed before your test asserts on <code class="highlighter-rouge">Received()</code> calls.</p>
 
 
       <div id="page-navigation">
@@ -108,22 +111,6 @@
 The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
   NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
   </div>
-
-  <script type="text/javascript" src="/scripts/shCore.js"></script>
-  <script type="text/javascript" src="/scripts/shBrushCSharp.js"></script>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-
- <script type="text/javascript">
-    $(document).ready(function() {
-      doHighlighting();
-    });
-
-    function doHighlighting() {
-        SyntaxHighlighter.defaults.gutter = false;
-        SyntaxHighlighter.defaults.toolbar = false;
-        SyntaxHighlighter.all();
-    }
-  </script>
 
 </body>
 </html>
