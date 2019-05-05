@@ -99,12 +99,17 @@ public interface IFormatter {
   string Format(object o);
 }
 public interface IWidgetFactory {
-  string Make(int i);
+  string Make(WidgetInfo info);
+  string MakeDefaultWidget();
+}
+public class WidgetInfo {
+  public string Name { get; set; }
+  public int Quantity { get; set; }
 }
 public class Sprocket {
   IWidgetFactory wf;
   public Sprocket(IWidgetFactory wf) { this.wf = wf; }
-  public void StartWithWidget(int i) { wf.Make(i); }
+  public void StartWithWidget(WidgetInfo info) { wf.Make(info); }
 }
 ICalculator calculator;
 IFormatter formatter;
@@ -207,7 +212,18 @@ string TestWidget = "test widget";
 <a id="using_matchers_outside_of_stubbing_or_checking_received_calls"></a>
 <h3 id="using-matchers-outside-of-stubbing-or-checking-received-calls">Using matchers outside of stubbing or checking received calls</h3>
 
-<p>Argument matchers should only be used when setting return values or checking received calls. Using <code class="highlighter-rouge">Arg.Is</code> or <code class="highlighter-rouge">Arg.Any</code> without a call to <code class="highlighter-rouge">Returns(...)</code> or <code class="highlighter-rouge">Received()</code> can cause your tests to behave in unexpected ways.</p>
+<p>Argument matchers should only be used when specifying calls for the purposes of setting return values, checking received calls, or configuring callbacks (for example: with <code class="highlighter-rouge">Returns</code>, <code class="highlighter-rouge">Received</code> or <code class="highlighter-rouge">When</code>). Using <code class="highlighter-rouge">Arg.Is</code> or <code class="highlighter-rouge">Arg.Any</code> in other situations can cause your tests to behave in unexpected ways.</p>
+
+<p>Argument matchers should only be used for:</p>
+
+<ul>
+  <li>Specifying a call when using <code class="highlighter-rouge">Returns</code> and <code class="highlighter-rouge">ReturnsForAnyArgs</code></li>
+  <li>Specifying a call within a <code class="highlighter-rouge">When</code> or <code class="highlighter-rouge">WhenForAnyArgs</code> block to configure a callback/call action</li>
+  <li>Specifying a call to check with <code class="highlighter-rouge">Received</code>, <code class="highlighter-rouge">DidNotReceive</code> and <code class="highlighter-rouge">Received.InOrder</code></li>
+  <li>Configuring a callback with <code class="highlighter-rouge">Arg.Do</code> or <code class="highlighter-rouge">Arg.Invoke</code></li>
+</ul>
+
+<p>Using an argument matcher without one of these calls is most likely an error.</p>
 
 <p>For example:</p>
 
@@ -217,25 +233,58 @@ string TestWidget = "test widget";
 <span class="kt">var</span> <span class="n">subject</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Sprocket</span><span class="p">(</span><span class="n">widgetFactory</span><span class="p">);</span>
 
 <span class="c1">// OK: Use arg matcher for a return value:</span>
-<span class="n">widgetFactory</span><span class="p">.</span><span class="nf">Make</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&gt;</span> <span class="m">10</span><span class="p">)).</span><span class="nf">Returns</span><span class="p">(</span><span class="n">TestWidget</span><span class="p">);</span>
+<span class="n">widgetFactory</span><span class="p">.</span><span class="nf">Make</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">WidgetInfo</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Quantity</span> <span class="p">&gt;</span> <span class="m">10</span><span class="p">)).</span><span class="nf">Returns</span><span class="p">(</span><span class="n">TestWidget</span><span class="p">);</span>
 
 <span class="cm">/* ACT */</span>
 
 <span class="c1">// NOT OK: arg matcher used with a real call:</span>
-<span class="c1">//   subject.StartWithWidget(Arg.Any&lt;int&gt;());</span>
+<span class="c1">//   subject.StartWithWidget(Arg.Any&lt;WidgetInfo&gt;());</span>
 
 <span class="c1">// Use a real argument instead:</span>
-<span class="n">subject</span><span class="p">.</span><span class="nf">StartWithWidget</span><span class="p">(</span><span class="m">4</span><span class="p">);</span>
+<span class="n">subject</span><span class="p">.</span><span class="nf">StartWithWidget</span><span class="p">(</span><span class="k">new</span> <span class="n">WidgetInfo</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">"Test"</span><span class="p">,</span> <span class="n">Quantity</span> <span class="p">=</span> <span class="m">4</span> <span class="p">});</span>
 
 <span class="cm">/* ASSERT */</span>
 
 <span class="c1">// OK: Use arg matcher to check a call was received:</span>
-<span class="n">widgetFactory</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Make</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">));</span>
+<span class="n">widgetFactory</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Make</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">WidgetInfo</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Name</span> <span class="p">==</span> <span class="s">"Test"</span><span class="p">));</span>
 </code></pre></div></div>
 
-<p>In this example it would be an error to use an argument matcher in the <code class="highlighter-rouge">ACT</code> part of this test. Even if we don’t mind what specific argument we pass to our subject, <code class="highlighter-rouge">Arg.Any</code> is only for substitutes, and only for setting return values or checking received calls; not for real calls.</p>
+<p>In this example it would be an error to use an argument matcher in the <code class="highlighter-rouge">ACT</code> part of this test. Even if we don’t mind what specific argument we pass to our subject, <code class="highlighter-rouge">Arg.Any</code> is only for substitutes, and only for specifying a call while setting return values, checking received calls or for configuring callbacks; not for real calls.</p>
 
-<p>(If you do want to indicate to readers that the precise argument used for a real call doesn’t matter you could use a variable such as <code class="highlighter-rouge">var someInt = 4; subject.StartWithWidget(someInt);</code> or similar. Just stay clear of argument matchers for this!)</p>
+<p>(If you do want to indicate to readers that the precise argument used for a real call doesn’t matter you could use a variable such as <code class="highlighter-rouge">var someWidget = new WidgetInfo(); subject.StartWithWidget(someWidget);</code> or similar. Just stay clear of argument matchers for this!)</p>
+
+<p>Similarly, we should not use an arg matcher as a real value to return from a call (even a substituted one):</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">widgetFactory</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IWidgetFactory</span><span class="p">&gt;();</span>
+
+<span class="c1">// NOT OK: using an arg matcher as a value, not to specify a call:</span>
+<span class="c1">//    widgetFactory.MakeDefaultWidget().Returns(Arg.Any&lt;string&gt;());</span>
+
+<span class="c1">// Instead use something like:</span>
+<span class="n">widgetFactory</span><span class="p">.</span><span class="nf">MakeDefaultWidget</span><span class="p">().</span><span class="nf">Returns</span><span class="p">(</span><span class="s">"any widget"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Another legal use of argument matchers is specifying calls when configuring callbacks:</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* ARRANGE */</span>
+<span class="kt">var</span> <span class="n">widgetFactory</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IWidgetFactory</span><span class="p">&gt;();</span>
+<span class="kt">var</span> <span class="n">subject</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Sprocket</span><span class="p">(</span><span class="n">widgetFactory</span><span class="p">);</span>
+
+<span class="c1">// OK: Use arg matcher to configure a callback:</span>
+<span class="kt">var</span> <span class="n">testLog</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+<span class="n">widgetFactory</span><span class="p">.</span><span class="nf">When</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="nf">Make</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">WidgetInfo</span><span class="p">&gt;())).</span><span class="nf">Do</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">testLog</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">Arg</span><span class="p">&lt;</span><span class="n">WidgetInfo</span><span class="p">&gt;().</span><span class="n">Name</span><span class="p">));</span>
+
+<span class="c1">// OK: Use Arg.Do to configure a callback:</span>
+<span class="kt">var</span> <span class="n">testLog2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+<span class="n">widgetFactory</span><span class="p">.</span><span class="nf">Make</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">WidgetInfo</span><span class="p">&gt;(</span><span class="n">info</span> <span class="p">=&gt;</span> <span class="n">testLog2</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">info</span><span class="p">.</span><span class="n">Name</span><span class="p">)));</span>
+
+<span class="cm">/* ACT */</span>
+<span class="n">subject</span><span class="p">.</span><span class="nf">StartWithWidget</span><span class="p">(</span><span class="k">new</span> <span class="n">WidgetInfo</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">"Test Widget"</span> <span class="p">});</span>
+
+<span class="cm">/* ASSERT */</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="s">"Test Widget"</span> <span class="p">},</span> <span class="n">testLog</span><span class="p">);</span>
+<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="s">"Test Widget"</span> <span class="p">},</span> <span class="n">testLog2</span><span class="p">);</span>
+</code></pre></div></div>
 
 <a id="modifying_values_being_matched"></a>
 <h3 id="modifying-values-being-matched">Modifying values being matched</h3>
