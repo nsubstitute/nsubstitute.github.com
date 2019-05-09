@@ -191,8 +191,8 @@ ICalculator calculator;
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span>
 
-<span class="n">calculator</span><span class="p">.</span><span class="nf">ReceivedWithAnyArgs</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">);</span>
-<span class="n">calculator</span><span class="p">.</span><span class="nf">DidNotReceiveWithAnyArgs</span><span class="p">().</span><span class="nf">Subtract</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">);</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">ReceivedWithAnyArgs</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="k">default</span><span class="p">);</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">DidNotReceiveWithAnyArgs</span><span class="p">().</span><span class="nf">Subtract</span><span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="k">default</span><span class="p">);</span>
 </code></pre></div></div>
 
 <a id="checking_calls_to_properties"></a>

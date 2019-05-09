@@ -99,6 +99,11 @@ ICalculator calculator;
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">100</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">7</span><span class="p">,</span> <span class="m">15</span><span class="p">));</span>
 </code></pre></div></div>
 
+<p><strong>Tip!</strong> You can also use the <code class="highlighter-rouge">default</code> C# keyword for better readability:</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="k">default</span><span class="p">).</span><span class="nf">ReturnsForAnyArgs</span><span class="p">(</span><span class="m">100</span><span class="p">);</span>
+</code></pre></div></div>
+
 <p>The same behaviour can also be achieved using <a href="/help/argument-matchers">argument matchers</a>: it is simply a shortcut for replacing each argument with <code class="highlighter-rouge">Arg.Any&lt;T&gt;()</code>.</p>
 
 <p><code class="highlighter-rouge">ReturnsForAnyArgs()</code> has the same overloads as <code class="highlighter-rouge">Returns()</code>, so you can also specify multiple return values or calculated return values using this approach.</p>

@@ -96,13 +96,13 @@ ICalculator calculator;
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">counter</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
 <span class="n">calculator</span>
-    <span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="k">default</span><span class="p">)</span>
     <span class="p">.</span><span class="nf">ReturnsForAnyArgs</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="m">0</span><span class="p">)</span>
     <span class="p">.</span><span class="nf">AndDoes</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">counter</span><span class="p">++);</span>
 
-<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">7</span><span class="p">,</span><span class="m">3</span><span class="p">);</span>
-<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">2</span><span class="p">);</span>
-<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">11</span><span class="p">,-</span><span class="m">3</span><span class="p">);</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">7</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">);</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">11</span><span class="p">,</span> <span class="p">-</span><span class="m">3</span><span class="p">);</span>
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="n">counter</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span>
 </code></pre></div></div>
 

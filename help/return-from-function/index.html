@@ -120,7 +120,7 @@ ICalculator calculator;
 </code></pre></div></div>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFoo</span><span class="p">&gt;();</span>
-<span class="n">foo</span><span class="p">.</span><span class="nf">Bar</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="s">""</span><span class="p">).</span><span class="nf">ReturnsForAnyArgs</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="s">"Hello "</span> <span class="p">+</span> <span class="n">x</span><span class="p">.</span><span class="n">Arg</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;());</span>
+<span class="n">foo</span><span class="p">.</span><span class="nf">Bar</span><span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="k">default</span><span class="p">).</span><span class="nf">ReturnsForAnyArgs</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="s">"Hello "</span> <span class="p">+</span> <span class="n">x</span><span class="p">.</span><span class="n">Arg</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;());</span>
 <span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">foo</span><span class="p">.</span><span class="nf">Bar</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="s">"World"</span><span class="p">),</span> <span class="n">Is</span><span class="p">.</span><span class="nf">EqualTo</span><span class="p">(</span><span class="s">"Hello World"</span><span class="p">));</span>
 </code></pre></div></div>
 
@@ -133,7 +133,7 @@ ICalculator calculator;
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">counter</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
 <span class="n">calculator</span>
-    <span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="k">default</span><span class="p">)</span>
     <span class="p">.</span><span class="nf">ReturnsForAnyArgs</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="p">{</span>
         <span class="n">counter</span><span class="p">++;</span>
         <span class="k">return</span> <span class="m">0</span><span class="p">;</span>
@@ -149,7 +149,7 @@ ICalculator calculator;
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">counter</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
 <span class="n">calculator</span>
-    <span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="k">default</span><span class="p">)</span>
     <span class="p">.</span><span class="nf">ReturnsForAnyArgs</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="m">0</span><span class="p">)</span>
     <span class="p">.</span><span class="nf">AndDoes</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">counter</span><span class="p">++);</span>
 
