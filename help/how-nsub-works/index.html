@@ -123,7 +123,7 @@ public static int configured_value_for_call() => 42;
 
 <p>If <code class="highlighter-rouge">DoStuffWith(string s)</code> is not <code class="highlighter-rouge">virtual</code>, the <code class="highlighter-rouge">SubstituteForOriginal</code> class will not be able to override it, so when it is called NSubstitute will not know about it. It is effectively invisible to NSubstitute; it can’t record calls to it, it can’t configure values using <code class="highlighter-rouge">Returns</code>, it can’t run actions via <code class="highlighter-rouge">When..Do</code>, it can’t verify the call was received. Instead, the real base implementation of the member will run.</p>
 
-<p>This can cause all sorts of problems if we accidentally attempt to configure a non-virtual call, because NSubstitute will get confused about which call you’re talking about. Usually this will result in a run-time error, but in the worst case it can affect the outcome of your test, or even the following test in the suite, in non-obvious ways. Thankfully we have <a href="/help/nsubstitute-analyzers">NSubstitute.Analyzers</a> to detect these cases at compile time.</p>
+<p>This can cause all sorts of problems if we accidentally attempt to configure a non-virtual call, because NSubstitute will get confused about which call you’re talking about. Usually this will result in a run-time error, but in the worst case it can affect the outcome of your test, or even the following test in the suite, in non-obvious ways. Thankfully we have <a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a> to detect these cases at compile time.</p>
 
 <a id="internal_members"></a>
 <h3 id="internal-members">Internal members</h3>
@@ -137,7 +137,7 @@ public static int configured_value_for_call() => 42;
 
 <p>Remember that if the member is non-virtual, NSubstitute will not be able to intercept it regardless of whether it is <code class="highlighter-rouge">internal</code> or <code class="highlighter-rouge">InternalsVisibleTo</code> has been added.</p>
 
-<p>The good news is that <a href="/help/nsubstitute-analyzers">NSubstitute.Analyzers</a> will also detect attempts to use <code class="highlighter-rouge">internal</code> members at compile time, and will suggest fixes for these cases.</p>
+<p>The good news is that <a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a> will also detect attempts to use <code class="highlighter-rouge">internal</code> members at compile time, and will suggest fixes for these cases.</p>
 
 <a id="real_code"></a>
 <h3 id="real-code">Real code</h3>
@@ -151,7 +151,7 @@ public static int configured_value_for_call() => 42;
   <li>Be careful substituting for classes!</li>
   <li>Where possible use interfaces instead.</li>
   <li>Remember NSubstitute works by inheriting from (or implementing) your original type. If you can’t override a member by manually writing a sub-class, then NSubstitute won’t be able to either!</li>
-  <li>Install <a href="/help/nsubstitute-analyzers">NSubstitute.Analyzers</a> where ever you install NSubstitute. This will help you avoid these (and other) pitfalls.</li>
+  <li>Install <a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a> where ever you install NSubstitute. This will help you avoid these (and other) pitfalls.</li>
 </ul>
 
 
