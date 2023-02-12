@@ -205,8 +205,8 @@ ICalculator calculator;
 
 <span class="c1">//Check received call to property getter</span>
 <span class="c1">//We need to assign the result to a variable to keep</span>
-<span class="c1">//the compiler happy.</span>
-<span class="kt">var</span> <span class="n">temp</span> <span class="p">=</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="n">Mode</span><span class="p">;</span>
+<span class="c1">//the compiler happy or use discards (since C# 7.0).</span>
+<span class="n">_</span> <span class="p">=</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="n">Mode</span><span class="p">;</span>
 
 <span class="c1">//Check received call to property setter with arg of "TEST"</span>
 <span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="n">Mode</span> <span class="p">=</span> <span class="s">"TEST"</span><span class="p">;</span>
