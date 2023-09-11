@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <title>NSubstitute: Actions with argument matchers</title>
   <link rel="stylesheet" href="/css/style.css" type="text/css" />
+  <script src="/js/scripts.js"></script>
 </head>
 <body>
   <div id="header">
@@ -204,7 +205,6 @@ ICalculator calculator;
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="n">numberOfCallsWhereFirstArgIsLessThan0</span><span class="p">);</span> <span class="c1">//3 of 4 calls have first arg &lt; 0</span>
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="m">123</span><span class="p">,</span> <span class="m">123</span><span class="p">,</span> <span class="m">123</span><span class="p">,</span> <span class="m">0</span><span class="p">});</span> <span class="c1">//Last call returns 0, not 123</span>
 </code></pre></div></div>
-
 
       <div id="page-navigation">
         <div class="previous">
