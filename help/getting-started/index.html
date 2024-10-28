@@ -87,22 +87,21 @@
 
 <p>First add the <a href="https://nuget.org/List/Packages/NSubstitute">NSubstitute NuGet package</a> to your test project using <a href="https://docs.microsoft.com/en-us/nuget/quickstart/use-a-package">NuGet</a> (either the command line executable, or via the package manager in your IDE).</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; Install-Package NSubstitute
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> Install-Package NSubstitute
 </code></pre></div></div>
 
 <p>It is optional but recommended to also install <a href="https://www.nuget.org/packages/NSubstitute.Analyzers.CSharp/">NSubstitute.Analyzers.CSharp</a> for C# projects, or <a href="https://www.nuget.org/packages/NSubstitute.Analyzers.VisualBasic/">NSubstitute.Analyzers.VisualBasic</a> for VB projects. NSubstitute will work without the analysers installed, but these packages will <a href="/help/nsubstitute-analysers/">help detect potential misuses of the NSubstitute API</a>.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; Install-Package NSubstitute.Analyzers.CSharp
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> Install-Package NSubstitute.Analyzers.CSharp
 // or
-&gt; Install-Package NSubstitute.Analyzers.VisualBasic
+<span class="o">&gt;</span> Install-Package NSubstitute.Analyzers.VisualBasic
 </code></pre></div></div>
-
 <a id="using_nsubstitute_in_a_test_fixture"></a>
 <h2 id="using-nsubstitute-in-a-test-fixture">Using NSubstitute in a test fixture</h2>
 
 <p>So now you are staring at a blank test fixture (created with your favourite unit testing framework; for these examples we’re using <a href="https://nunit.org/">NUnit</a>), and are wondering where to start.</p>
 
-<p>First, add <code class="highlighter-rouge">using NSubstitute;</code> to your current C# file. This will give you everything you need to start substituting.</p>
+<p>First, add <code>using NSubstitute;</code> to your current C# file. This will give you everything you need to start substituting.</p>
 
 <p>Now let’s say we have a basic calculator interface:</p>
 
@@ -127,7 +126,7 @@ public void SetUp() { calculator = Substitute.For<ICalculator>(); }
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICalculator</span><span class="p">&gt;();</span>
 </code></pre></div></div>
 
-<p>⚠️ <strong>Note</strong>: NSubstitute will only work properly with interfaces, or with class members that are overridable from the test assembly. Be very careful substituting for classes with non-virtual or <code class="highlighter-rouge">internal virtual</code> members, as real code could be inadvertently executed in your test. See <a href="/help/creating-a-substitute/#substituting_infrequently_and_carefully_for_classes">Creating a substitute</a> and <a href="/help/how-nsub-works">How NSubstitute works</a> for more information. Also make sure to install <a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a> which can warn about many of these cases (but not all of them; be careful with classes!).</p>
+<p>⚠️ <strong>Note</strong>: NSubstitute will only work properly with interfaces, or with class members that are overridable from the test assembly. Be very careful substituting for classes with non-virtual or <code>internal virtual</code> members, as real code could be inadvertently executed in your test. See <a href="/help/creating-a-substitute/#substituting_infrequently_and_carefully_for_classes">Creating a substitute</a> and <a href="/help/how-nsub-works">How NSubstitute works</a> for more information. Also make sure to install <a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a> which can warn about many of these cases (but not all of them; be careful with classes!).</p>
 
 <p>Now we can tell our substitute to return a value for a call:</p>
 
@@ -142,17 +141,17 @@ public void SetUp() { calculator = Substitute.For<ICalculator>(); }
 <span class="n">calculator</span><span class="p">.</span><span class="nf">DidNotReceive</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="m">5</span><span class="p">,</span> <span class="m">7</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p>If our <code class="highlighter-rouge">Received()</code> assertion fails, NSubstitute tries to give us some help as to what the problem might be:</p>
+<p>If our <code>Received()</code> assertion fails, NSubstitute tries to give us some help as to what the problem might be:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NSubstitute.Exceptions.ReceivedCallsException : Expected to receive a call matching:
+<pre><code>NSubstitute.Exceptions.ReceivedCallsException : Expected to receive a call matching:
     Add(1, 2)
 Actually received no matching calls.
 Received 2 non-matching calls (non-matching arguments indicated with '*' characters):
     Add(*4*, *7*)
     Add(1, *5*)
-</code></pre></div></div>
+</code></pre>
 
-<p>We can also work with properties using the <code class="highlighter-rouge">Returns</code> syntax we use for methods, or just stick with plain old property setters (for read/write properties):</p>
+<p>We can also work with properties using the <code>Returns</code> syntax we use for methods, or just stick with plain old property setters (for read/write properties):</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span><span class="p">.</span><span class="nf">Returns</span><span class="p">(</span><span class="s">"DEC"</span><span class="p">);</span>
 <span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span><span class="p">,</span> <span class="n">Is</span><span class="p">.</span><span class="nf">EqualTo</span><span class="p">(</span><span class="s">"DEC"</span><span class="p">));</span>
@@ -168,7 +167,7 @@ Received 2 non-matching calls (non-matching arguments indicated with '*' charact
 <span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="m">10</span><span class="p">,</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span> <span class="p">&lt;</span> <span class="m">0</span><span class="p">));</span>
 </code></pre></div></div>
 
-<p>We can use argument matching as well as passing a function to <code class="highlighter-rouge">Returns()</code> to get some more behaviour out of our substitute (possibly too much, but that’s your call):</p>
+<p>We can use argument matching as well as passing a function to <code>Returns()</code> to get some more behaviour out of our substitute (possibly too much, but that’s your call):</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span>
    <span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(),</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;())</span>
@@ -176,7 +175,7 @@ Received 2 non-matching calls (non-matching arguments indicated with '*' charact
 <span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">5</span><span class="p">,</span> <span class="m">10</span><span class="p">),</span> <span class="n">Is</span><span class="p">.</span><span class="nf">EqualTo</span><span class="p">(</span><span class="m">15</span><span class="p">));</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">Returns()</code> can also be called with multiple arguments to set up a sequence of return values.</p>
+<p><code>Returns()</code> can also be called with multiple arguments to set up a sequence of return values.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span><span class="p">.</span><span class="nf">Returns</span><span class="p">(</span><span class="s">"HEX"</span><span class="p">,</span> <span class="s">"DEC"</span><span class="p">,</span> <span class="s">"BIN"</span><span class="p">);</span>
 <span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span><span class="p">,</span> <span class="n">Is</span><span class="p">.</span><span class="nf">EqualTo</span><span class="p">(</span><span class="s">"HEX"</span><span class="p">));</span>
@@ -195,6 +194,10 @@ Received 2 non-matching calls (non-matching arguments indicated with '*' charact
 
 <p>That’s pretty much all you need to get started with NSubstitute. Read on for more detailed feature descriptions, as well as for some of the less common requirements that NSubstitute supports.</p>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-01-01-getting-started.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

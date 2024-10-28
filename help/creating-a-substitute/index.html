@@ -94,9 +94,9 @@
 
 <p>⚠️ <strong>Warning:</strong> Substituting for classes can have some nasty side-effects!</p>
 
-<p>For starters, <strong>NSubstitute can only work with <em>virtual</em> members of the class</strong> that are overridable in the test assembly, so any non-virtual code in the class will actually execute! If you try to substitute for a class that formats your hard drive in the constructor or in a non-virtual property setter then you’re asking for trouble. By overridable we mean <code class="highlighter-rouge">public virtual</code>, <code class="highlighter-rouge">protected virtual</code>, <code class="highlighter-rouge">protected internal virtual</code>, or <code class="highlighter-rouge">internal virtual</code> with <code class="highlighter-rouge">InternalsVisibleTo</code> attribute applied (although to configure or assert on calls members will also need to be callable from the test assembly, so <code class="highlighter-rouge">public virtual</code> or <code class="highlighter-rouge">internal virtual</code> with <code class="highlighter-rouge">InternalsVisibleTo</code>). See <a href="/help/how-nsub-works">How NSubstitute works</a> for more information.</p>
+<p>For starters, <strong>NSubstitute can only work with <em>virtual</em> members of the class</strong> that are overridable in the test assembly, so any non-virtual code in the class will actually execute! If you try to substitute for a class that formats your hard drive in the constructor or in a non-virtual property setter then you’re asking for trouble. By overridable we mean <code>public virtual</code>, <code>protected virtual</code>, <code>protected internal virtual</code>, or <code>internal virtual</code> with <code>InternalsVisibleTo</code> attribute applied (although to configure or assert on calls members will also need to be callable from the test assembly, so <code>public virtual</code> or <code>internal virtual</code> with <code>InternalsVisibleTo</code>). See <a href="/help/how-nsub-works">How NSubstitute works</a> for more information.</p>
 
-<p>It also means features like <code class="highlighter-rouge">Received()</code>, <code class="highlighter-rouge">Returns()</code>, <code class="highlighter-rouge">Arg.Is()</code>, <code class="highlighter-rouge">Arg.Any()</code> and <code class="highlighter-rouge">When()..Do()</code> <strong>will not work with these non-overridable members</strong>. For example: <code class="highlighter-rouge">subClass.Received().NonVirtualCall()</code> will not actually run an assertion (it will always pass, even if there are no calls to <code class="highlighter-rouge">NonVirtualCall()</code>), and can even cause confusing problems with later tests. These features will work correctly with virtual members of the class, but we have to be careful to avoid the non-virtual ones.</p>
+<p>It also means features like <code>Received()</code>, <code>Returns()</code>, <code>Arg.Is()</code>, <code>Arg.Any()</code> and <code>When()..Do()</code> <strong>will not work with these non-overridable members</strong>. For example: <code>subClass.Received().NonVirtualCall()</code> will not actually run an assertion (it will always pass, even if there are no calls to <code>NonVirtualCall()</code>), and can even cause confusing problems with later tests. These features will work correctly with virtual members of the class, but we have to be careful to avoid the non-virtual ones.</p>
 
 <p>For these reasons we strongly recommend using <a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a> to detect these cases, and sticking to substituting for interfaces as much as possible. (Interfaces are always safe to substitute and do not suffer from any of the limitations that class substitutes do.)</p>
 
@@ -124,9 +124,9 @@
 <p>Your substitute can implement several types this way, but remember you can only implement a maximum of one class. You can specify as many interfaces as you like, but only one of these can be a class. The most flexible way of creating substitutes for multiple types is using this overload:</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">substitute</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="nf">For</span><span class="p">(</span>
-		<span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="k">typeof</span><span class="p">(</span><span class="n">ICommand</span><span class="p">),</span> <span class="k">typeof</span><span class="p">(</span><span class="n">ISomeInterface</span><span class="p">),</span> <span class="k">typeof</span><span class="p">(</span><span class="n">SomeClassWithCtorArgs</span><span class="p">)</span> <span class="p">},</span>
-		<span class="k">new</span> <span class="kt">object</span><span class="p">[]</span> <span class="p">{</span> <span class="m">5</span><span class="p">,</span> <span class="s">"hello world"</span> <span class="p">}</span>
-	<span class="p">);</span>
+    <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="k">typeof</span><span class="p">(</span><span class="n">ICommand</span><span class="p">),</span> <span class="k">typeof</span><span class="p">(</span><span class="n">ISomeInterface</span><span class="p">),</span> <span class="k">typeof</span><span class="p">(</span><span class="n">SomeClassWithCtorArgs</span><span class="p">)</span> <span class="p">},</span>
+    <span class="k">new</span> <span class="kt">object</span><span class="p">[]</span> <span class="p">{</span> <span class="m">5</span><span class="p">,</span> <span class="s">"hello world"</span> <span class="p">}</span>
+<span class="p">);</span>
 <span class="n">Assert</span><span class="p">.</span><span class="n">IsInstanceOf</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;(</span><span class="n">substitute</span><span class="p">);</span>
 <span class="n">Assert</span><span class="p">.</span><span class="n">IsInstanceOf</span><span class="p">&lt;</span><span class="n">ISomeInterface</span><span class="p">&gt;(</span><span class="n">substitute</span><span class="p">);</span>
 <span class="n">Assert</span><span class="p">.</span><span class="n">IsInstanceOf</span><span class="p">&lt;</span><span class="n">SomeClassWithCtorArgs</span><span class="p">&gt;(</span><span class="n">substitute</span><span class="p">);</span>
@@ -137,27 +137,27 @@
 public interface ISomeInterface { }
 public abstract class SomeClassWithCtorArgs
 {
-	protected SomeClassWithCtorArgs(int anInt, string aString) { }
+    protected SomeClassWithCtorArgs(int anInt, string aString) { }
 }
 
 public interface ICommand
 {
-	void Execute();
+    void Execute();
 }
 
 public class CommandRunner
 {
-	private readonly ICommand _command;
-	public CommandRunner(ICommand command)
-	{
-		_command = command;
-	}
+    private readonly ICommand _command;
+    public CommandRunner(ICommand command)
+    {
+        _command = command;
+    }
 
-	public void RunCommand()
-	{
-		_command.Execute();
-		if (_command is IDisposable) ((IDisposable)_command).Dispose();
-	}
+    public void RunCommand()
+    {
+        _command.Execute();
+        if (_command is IDisposable) ((IDisposable)_command).Dispose();
+    }
 }
 ```
 -->
@@ -165,7 +165,7 @@ public class CommandRunner
 <a id="substituting_for_delegates"></a>
 <h2 id="substituting-for-delegates">Substituting for delegates</h2>
 
-<p>NSubstitute can also substitute for delegate types by using <code class="highlighter-rouge">Substiute.For&lt;T&gt;()</code>. When substituting for delegate types you will not be able to get the substitute to implement additional interfaces or classes.</p>
+<p>NSubstitute can also substitute for delegate types by using <code>Substiute.For&lt;T&gt;()</code>. When substituting for delegate types you will not be able to get the substitute to implement additional interfaces or classes.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">func</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;&gt;();</span>
 
@@ -178,6 +178,10 @@ public class CommandRunner
 
 <p>When required we can also create substitutes that run real code by default, letting us replace <a href="/help/partial-subs/">specific parts of a class with substitute behaviour</a>.</p>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-01-02-creating-a-substitute.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

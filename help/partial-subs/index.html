@@ -89,7 +89,7 @@
 <a id="replacing_a_single_method"></a>
 <h2 id="replacing-a-single-method">Replacing a single method</h2>
 
-<p>In this example we want to test the <code class="highlighter-rouge">Read()</code> method logic without running <code class="highlighter-rouge">ReadFile()</code>.</p>
+<p>In this example we want to test the <code>Read()</code> method logic without running <code>ReadFile()</code>.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">SummingReader</span> <span class="p">{</span>
   <span class="k">public</span> <span class="k">virtual</span> <span class="kt">int</span> <span class="nf">Read</span><span class="p">(</span><span class="kt">string</span> <span class="n">path</span><span class="p">)</span> <span class="p">{</span>
@@ -100,9 +100,9 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>By default <code class="highlighter-rouge">ReadFile</code> may access a file on the file system, but we can <code class="highlighter-rouge">Substitute.ForPartsOf&lt;SummingReader&gt;()</code> and override <code class="highlighter-rouge">ReadFile</code> to return a substitute value, rather than loading data from a real file, using <code class="highlighter-rouge">Returns</code>:</p>
+<p>By default <code>ReadFile</code> may access a file on the file system, but we can <code>Substitute.ForPartsOf&lt;SummingReader&gt;()</code> and override <code>ReadFile</code> to return a substitute value, rather than loading data from a real file, using <code>Returns</code>:</p>
 
-<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">[Test]</span>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldSumAllNumbersInFile</span><span class="p">()</span> <span class="p">{</span>
   <span class="kt">var</span> <span class="n">reader</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">ForPartsOf</span><span class="p">&lt;</span><span class="n">SummingReader</span><span class="p">&gt;();</span>
   <span class="n">reader</span><span class="p">.</span><span class="nf">Configure</span><span class="p">().</span><span class="nf">ReadFile</span><span class="p">(</span><span class="s">"foo.txt"</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="s">"1,2,3,4,5"</span><span class="p">);</span> <span class="c1">// CAUTION: real code warning!</span>
@@ -113,16 +113,16 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Now the real <code class="highlighter-rouge">Read</code> method will execute, but <code class="highlighter-rouge">ReadFile</code> will return our substituted value instead of calling the original method, so we can run the test without having to worry about a real file system.</p>
+<p>Now the real <code>Read</code> method will execute, but <code>ReadFile</code> will return our substituted value instead of calling the original method, so we can run the test without having to worry about a real file system.</p>
 
-<p>Note the <strong>CAUTION</strong> comment. If we had not used <a href="/help/configure/"><code class="highlighter-rouge">Configure()</code></a> here before <code class="highlighter-rouge">.ReadFile()</code> then the real <code class="highlighter-rouge">ReadFile</code> method would have executed before we had a chance to override the behaviour (<code class="highlighter-rouge">reader.ReadFile("foo.txt")</code> returns first before <code class="highlighter-rouge">.Returns(...)</code> executes). In some cases this may not be a problem, but if in doubt make sure you call <code class="highlighter-rouge">Configure()</code> first so NSubstitute knows you are configuring a call and don’t want to run any real code. (This still does not guarantee real code will not run – remember, NSubstitute will not prevent non-virtual calls from executing.)</p>
+<p>Note the <strong>CAUTION</strong> comment. If we had not used <a href="/help/configure/"><code>Configure()</code></a> here before <code>.ReadFile()</code> then the real <code>ReadFile</code> method would have executed before we had a chance to override the behaviour (<code>reader.ReadFile("foo.txt")</code> returns first before <code>.Returns(...)</code> executes). In some cases this may not be a problem, but if in doubt make sure you call <code>Configure()</code> first so NSubstitute knows you are configuring a call and don’t want to run any real code. (This still does not guarantee real code will not run – remember, NSubstitute will not prevent non-virtual calls from executing.)</p>
 
-<p><em>The <code class="highlighter-rouge">Configure()</code> method is only available in NSubstitute 4.0 and above. For verisons prior to 4.0 we need to use <code class="highlighter-rouge">When .. DoNotCallBase</code> described below.</em></p>
+<p><em>The <code>Configure()</code> method is only available in NSubstitute 4.0 and above. For verisons prior to 4.0 we need to use <code>When .. DoNotCallBase</code> described below.</em></p>
 
 <a id="void_methods_and_donotcallbase"></a>
-<h2 id="void-methods-and-donotcallbase">Void methods and <code class="highlighter-rouge">DoNotCallBase</code></h2>
+<h2 id="void-methods-and-donotcallbase">Void methods and <code>DoNotCallBase</code></h2>
 
-<p>We can’t use <code class="highlighter-rouge">.Returns()</code> with void methods, but we can stop a void method on a partial substitute from calling the real method using <code class="highlighter-rouge">When .. DoNotCallBase</code>. (This also works for non-void methods, although generally we use <code class="highlighter-rouge">Configure()</code> and <code class="highlighter-rouge">Returns()</code> to override the base behaviour in these cases.)</p>
+<p>We can’t use <code>.Returns()</code> with void methods, but we can stop a void method on a partial substitute from calling the real method using <code>When .. DoNotCallBase</code>. (This also works for non-void methods, although generally we use <code>Configure()</code> and <code>Returns()</code> to override the base behaviour in these cases.)</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">EmailServer</span> <span class="p">{</span>
   <span class="k">public</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">Send</span><span class="p">(</span><span class="kt">string</span> <span class="n">to</span><span class="p">,</span> <span class="kt">string</span> <span class="k">from</span><span class="p">,</span> <span class="kt">string</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span>
@@ -137,7 +137,7 @@
   <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="na">[Test]</span>
+<span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldSendMultipleEmails</span><span class="p">()</span> <span class="p">{</span>
   <span class="kt">var</span> <span class="n">server</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">ForPartsOf</span><span class="p">&lt;</span><span class="n">EmailServer</span><span class="p">&gt;();</span>
   <span class="n">server</span><span class="p">.</span><span class="nf">WhenForAnyArgs</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="nf">Send</span><span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="k">default</span><span class="p">,</span> <span class="k">default</span><span class="p">)).</span><span class="nf">DoNotCallBase</span><span class="p">();</span> <span class="c1">// Make sure Send won't call real implementation</span>
@@ -156,8 +156,12 @@
 <a id="test_spies"></a>
 <h2 id="test-spies">Test spies</h2>
 
-<p>Even without substituting for specific parts of a class, the instance returned by <code class="highlighter-rouge">Substitute.ForPartsOf&lt;T&gt;</code> records all calls made to virtual members, so we can <a href="/help/received-calls/">check <code class="highlighter-rouge">Received()</code> calls</a> made to any partial substitute.</p>
+<p>Even without substituting for specific parts of a class, the instance returned by <code>Substitute.ForPartsOf&lt;T&gt;</code> records all calls made to virtual members, so we can <a href="/help/received-calls/">check <code>Received()</code> calls</a> made to any partial substitute.</p>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2013-02-01-partial-subs.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

@@ -85,8 +85,8 @@
       <!--
 ```requiredcode
 public interface ICalculator {
-	int Add(int a, int b);
-	string Mode { get; set; }
+    int Add(int a, int b);
+    string Mode { get; set; }
 }
 ICalculator calculator;
 [SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
@@ -101,12 +101,12 @@ ICalculator calculator;
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="s">"BIN"</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p>This can also be achieved by <a href="/help/return-from-function">returning from a function</a>, but passing multiple values to <code class="highlighter-rouge">Returns()</code> is simpler and reads better.</p>
+<p>This can also be achieved by <a href="/help/return-from-function">returning from a function</a>, but passing multiple values to <code>Returns()</code> is simpler and reads better.</p>
 
 <a id="multiple_returns_using_callbacks"></a>
 <h2 id="multiple-returns-using-callbacks">Multiple returns using callbacks</h2>
 
-<p><code class="highlighter-rouge">Returns()</code> also supports passing multiple <a href="/help/return-from-function">functions to return from</a>, which allows one call in a sequence to throw an exception or perform some other action.</p>
+<p><code>Returns()</code> also supports passing multiple <a href="/help/return-from-function">functions to return from</a>, which allows one call in a sequence to throw an exception or perform some other action.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span><span class="p">.</span><span class="nf">Returns</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="s">"DEC"</span><span class="p">,</span> <span class="n">x</span> <span class="p">=&gt;</span> <span class="s">"HEX"</span><span class="p">,</span> <span class="n">x</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="k">throw</span> <span class="k">new</span> <span class="nf">Exception</span><span class="p">();</span> <span class="p">});</span>
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="s">"DEC"</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="n">Mode</span><span class="p">);</span>
@@ -117,8 +117,12 @@ ICalculator calculator;
 <a id="configuring_other_calls_without_using_up_multiple_returns"></a>
 <h2 id="configuring-other-calls-without-using-up-multiple-returns">Configuring other calls without using up multiple returns</h2>
 
-<p>If a call has been configured with multiple returns values, you can configure a more specific call without using up any of these callbacks using <a href="/help/configure/"><code class="highlighter-rouge">.Configure()</code></a>.</p>
+<p>If a call has been configured with multiple returns values, you can configure a more specific call without using up any of these callbacks using <a href="/help/configure/"><code>.Configure()</code></a>.</p>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-02-04-multiple-returns.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

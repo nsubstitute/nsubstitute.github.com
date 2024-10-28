@@ -82,13 +82,13 @@
 
     <div id="post-content">
       <h1>Callbacks, void calls and When..Do</h1>
-      <p>Sometimes it is useful to execute some arbitrary code whenever a particular call is made. We have already seen an example of this when <a href="/help/return-from-function/#callbacks">passing functions to <code class="highlighter-rouge">Returns()</code></a>.</p>
+      <p>Sometimes it is useful to execute some arbitrary code whenever a particular call is made. We have already seen an example of this when <a href="/help/return-from-function/#callbacks">passing functions to <code>Returns()</code></a>.</p>
 
 <!--
 ```requiredcode
 public interface ICalculator {
-	int Add(int a, int b);
-	string Mode { get; set; }
+    int Add(int a, int b);
+    string Mode { get; set; }
 }
 ICalculator calculator;
 [SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
@@ -110,19 +110,19 @@ ICalculator calculator;
 <p>The <a href="/help/return-from-function">Return from a function</a> topic has more information on the arguments passed to the callback.</p>
 
 <a id="callbacks_for_void_calls"></a>
-<h2 id="callbacks-for-void-calls">Callbacks for <code class="highlighter-rouge">void</code> calls</h2>
+<h2 id="callbacks-for-void-calls">Callbacks for <code>void</code> calls</h2>
 
-<p><code class="highlighter-rouge">Returns()</code> can be used to get callbacks for members that return a value, but for <code class="highlighter-rouge">void</code> members we need a different technique, because we can’t call a method on a <code class="highlighter-rouge">void</code> return. For these cases we can use the <code class="highlighter-rouge">When..Do</code> syntax.</p>
+<p><code>Returns()</code> can be used to get callbacks for members that return a value, but for <code>void</code> members we need a different technique, because we can’t call a method on a <code>void</code> return. For these cases we can use the <code>When..Do</code> syntax.</p>
 
 <a id="when_called_do_this"></a>
 <h2 id="when-called-do-this">When called, do this</h2>
 
-<p><code class="highlighter-rouge">When..Do</code> uses two calls to configure our callback. First, <code class="highlighter-rouge">When()</code> is called on the substitute and passed a function. The argument to the function is the substitute itself, and we can call the member we are interested in here, even if it returns <code class="highlighter-rouge">void</code>. We then call <code class="highlighter-rouge">Do()</code> and pass in our callback that will be executed when the substitute’s member is called.</p>
+<p><code>When..Do</code> uses two calls to configure our callback. First, <code>When()</code> is called on the substitute and passed a function. The argument to the function is the substitute itself, and we can call the member we are interested in here, even if it returns <code>void</code>. We then call <code>Do()</code> and pass in our callback that will be executed when the substitute’s member is called.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">interface</span> <span class="nc">IFoo</span> <span class="p">{</span>
     <span class="k">void</span> <span class="nf">SayHello</span><span class="p">(</span><span class="kt">string</span> <span class="n">to</span><span class="p">);</span>
 <span class="p">}</span>
-<span class="na">[Test]</span>
+<span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">SayHello</span><span class="p">()</span> <span class="p">{</span>
     <span class="kt">var</span> <span class="n">counter</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
     <span class="kt">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFoo</span><span class="p">&gt;();</span>
@@ -135,9 +135,9 @@ ICalculator calculator;
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>The argument passed to the <code class="highlighter-rouge">Do()</code> method is the same call information passed to the <a href="/help/return-from-function"><code class="highlighter-rouge">Returns()</code> callback</a>, which gives us access to the arguments used for the call.</p>
+<p>The argument passed to the <code>Do()</code> method is the same call information passed to the <a href="/help/return-from-function"><code>Returns()</code> callback</a>, which gives us access to the arguments used for the call.</p>
 
-<p>Note that we can also use <code class="highlighter-rouge">When..Do</code> syntax for non-void members, but generally the <code class="highlighter-rouge">Returns()</code> syntax is preferred for brevity and clarity. You may still find it useful for non-voids when you want to execute a function without changing a previous return value.</p>
+<p>Note that we can also use <code>When..Do</code> syntax for non-void members, but generally the <code>Returns()</code> syntax is preferred for brevity and clarity. You may still find it useful for non-voids when you want to execute a function without changing a previous return value.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">counter</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
 <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="m">3</span><span class="p">);</span>
@@ -153,14 +153,14 @@ ICalculator calculator;
 <a id="per_argument_callbacks"></a>
 <h2 id="per-argument-callbacks">Per argument callbacks</h2>
 
-<p>In cases where we only need callbacks for a particular argument we may be able to use <a href="/help/actions-with-arguments">per argument callbacks like <code class="highlighter-rouge">Arg.Do()</code> and <code class="highlighter-rouge">Arg.Invoke()</code></a> instead of <code class="highlighter-rouge">When..Do</code>.</p>
+<p>In cases where we only need callbacks for a particular argument we may be able to use <a href="/help/actions-with-arguments">per argument callbacks like <code>Arg.Do()</code> and <code>Arg.Invoke()</code></a> instead of <code>When..Do</code>.</p>
 
 <p>Argument callbacks give us slightly more concise code in a style that is more in keeping with the rest of the NSubstitute API. See <a href="/help/actions-with-arguments">Actions with arguments</a> for more information and examples.</p>
 
 <a id="callback_builder_for_more_complex_callbacks"></a>
 <h2 id="callback-builder-for-more-complex-callbacks">Callback builder for more complex callbacks</h2>
 
-<p>The <code class="highlighter-rouge">Callback</code> builder lets us create more complex <code class="highlighter-rouge">Do()</code> scenarios.  We can use <code class="highlighter-rouge">Callback.First()</code> followed by <code class="highlighter-rouge">Then()</code>, <code class="highlighter-rouge">ThenThrow()</code> and <code class="highlighter-rouge">ThenKeepDoing()</code> to build chains of callbacks. We can also use <code class="highlighter-rouge">Always()</code> and <code class="highlighter-rouge">AlwaysThrow()</code> to specify callbacks called every time. Note that a callback set by an <code class="highlighter-rouge">Always()</code> method will be called even if other callbacks will throw an exception.</p>
+<p>The <code>Callback</code> builder lets us create more complex <code>Do()</code> scenarios.  We can use <code>Callback.First()</code> followed by <code>Then()</code>, <code>ThenThrow()</code> and <code>ThenKeepDoing()</code> to build chains of callbacks. We can also use <code>Always()</code> and <code>AlwaysThrow()</code> to specify callbacks called every time. Note that a callback set by an <code>Always()</code> method will be called even if other callbacks will throw an exception.</p>
 
 <!--
 ```requiredcode
@@ -177,10 +177,10 @@ public interface ISomething { void Something(); }
   <span class="p">.</span><span class="nf">When</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="nf">Something</span><span class="p">())</span>
   <span class="p">.</span><span class="nf">Do</span><span class="p">(</span>
     <span class="n">Callback</span><span class="p">.</span><span class="nf">First</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">calls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"1"</span><span class="p">))</span>
-	    <span class="p">.</span><span class="nf">Then</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">calls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"2"</span><span class="p">))</span>
-	    <span class="p">.</span><span class="nf">Then</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">calls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"3"</span><span class="p">))</span>
-	    <span class="p">.</span><span class="nf">ThenKeepDoing</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">calls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"+"</span><span class="p">))</span>
-	    <span class="p">.</span><span class="nf">AndAlways</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">counter</span><span class="p">++)</span>
+        <span class="p">.</span><span class="nf">Then</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">calls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"2"</span><span class="p">))</span>
+        <span class="p">.</span><span class="nf">Then</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">calls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"3"</span><span class="p">))</span>
+        <span class="p">.</span><span class="nf">ThenKeepDoing</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">calls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"+"</span><span class="p">))</span>
+        <span class="p">.</span><span class="nf">AndAlways</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">counter</span><span class="p">++)</span>
   <span class="p">);</span>
 
 <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="m">5</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
@@ -191,6 +191,10 @@ public interface ISomething { void Something(); }
 <span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">counter</span><span class="p">,</span> <span class="n">Is</span><span class="p">.</span><span class="nf">EqualTo</span><span class="p">(</span><span class="m">5</span><span class="p">));</span>
 </code></pre></div></div>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-05-01-callbacks.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

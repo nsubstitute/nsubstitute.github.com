@@ -123,7 +123,7 @@ int numberOfEvents;
 <span class="n">Assert</span><span class="p">.</span><span class="nf">True</span><span class="p">(</span><span class="n">wasCalled</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p>In the example above we don’t really mind what sender and <code class="highlighter-rouge">EventArgs</code> our event is raised with, just that it was called. In this case NSubstitute can make our life easier by creating the required arguments for our event handler:</p>
+<p>In the example above we don’t really mind what sender and <code>EventArgs</code> our event is raised with, just that it was called. In this case NSubstitute can make our life easier by creating the required arguments for our event handler:</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">engine</span><span class="p">.</span><span class="n">Idling</span> <span class="p">+=</span> <span class="n">Raise</span><span class="p">.</span><span class="nf">Event</span><span class="p">();</span>
 <span class="n">Assert</span><span class="p">.</span><span class="nf">True</span><span class="p">(</span><span class="n">wasCalled</span><span class="p">);</span>
@@ -132,7 +132,7 @@ int numberOfEvents;
 <a id="raising_events_when_arguments_do_not_have_a_default_constructor"></a>
 <h2 id="raising-events-when-arguments-do-not-have-a-default-constructor">Raising events when arguments do not have a default constructor</h2>
 
-<p>NSubstitute will not always be able to create the event arguments for you. If your event args do not have a default constructor you will have to provide them yourself using <code class="highlighter-rouge">Raise.EventWith&lt;TEventArgs&gt;(...)</code>, as is the case for the <code class="highlighter-rouge">LowFuelWarning</code> event. NSubstitute will still create the sender for you if you don’t provide it though.</p>
+<p>NSubstitute will not always be able to create the event arguments for you. If your event args do not have a default constructor you will have to provide them yourself using <code>Raise.EventWith&lt;TEventArgs&gt;(...)</code>, as is the case for the <code>LowFuelWarning</code> event. NSubstitute will still create the sender for you if you don’t provide it though.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">engine</span><span class="p">.</span><span class="n">LowFuelWarning</span> <span class="p">+=</span> <span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">numberOfEvents</span><span class="p">++;</span>
 
@@ -145,11 +145,11 @@ int numberOfEvents;
 </code></pre></div></div>
 
 <a id="raising_delegate_events"></a>
-<h2 id="raising-delegate-events">Raising <code class="highlighter-rouge">Delegate</code> events</h2>
+<h2 id="raising-delegate-events">Raising <code>Delegate</code> events</h2>
 
-<p>Sometimes events are declared with a <em>delegate</em> that does not inherit from <code class="highlighter-rouge">EventHandler&lt;T&gt;</code> or <code class="highlighter-rouge">EventHandler</code>. These events can be raised using <code class="highlighter-rouge">Raise.Event&lt;TypeOfEventHandlerDelegate&gt;(arguments)</code>. NSubsitute will try and guess the arguments required for the delegate, but if it can’t it will tell you what arguments you need to supply.</p>
+<p>Sometimes events are declared with a <em>delegate</em> that does not inherit from <code>EventHandler&lt;T&gt;</code> or <code>EventHandler</code>. These events can be raised using <code>Raise.Event&lt;TypeOfEventHandlerDelegate&gt;(arguments)</code>. NSubsitute will try and guess the arguments required for the delegate, but if it can’t it will tell you what arguments you need to supply.</p>
 
-<p>The following examples shows raising an <code class="highlighter-rouge">INotifyPropertyChanged</code> event, which uses a <code class="highlighter-rouge">PropertyChangedEventHandler</code> delegate and requires two parameters.</p>
+<p>The following examples shows raising an <code>INotifyPropertyChanged</code> event, which uses a <code>PropertyChangedEventHandler</code> delegate and requires two parameters.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">sub</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">INotifyPropertyChanged</span><span class="p">&gt;();</span>
 <span class="kt">bool</span> <span class="n">wasCalled</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
@@ -161,8 +161,8 @@ int numberOfEvents;
 </code></pre></div></div>
 
 <a id="raising_action_events"></a>
-<h2 id="raising-action-events">Raising <code class="highlighter-rouge">Action</code> events</h2>
-<p>In the <code class="highlighter-rouge">IEngine</code> example the <code class="highlighter-rouge">RevvedAt</code> event is declared as an <code class="highlighter-rouge">Action&lt;int&gt;</code>. This is another example of a delegate event, and we can use <code class="highlighter-rouge">Raise.Event&lt;Action&lt;int&gt;&gt;()</code> to raise our event.</p>
+<h2 id="raising-action-events">Raising <code>Action</code> events</h2>
+<p>In the <code>IEngine</code> example the <code>RevvedAt</code> event is declared as an <code>Action&lt;int&gt;</code>. This is another example of a delegate event, and we can use <code>Raise.Event&lt;Action&lt;int&gt;&gt;()</code> to raise our event.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">revvedAt</span> <span class="p">=</span> <span class="m">0</span><span class="p">;;</span>
 <span class="n">engine</span><span class="p">.</span><span class="n">RevvedAt</span> <span class="p">+=</span> <span class="n">rpm</span> <span class="p">=&gt;</span> <span class="n">revvedAt</span> <span class="p">=</span> <span class="n">rpm</span><span class="p">;</span>
@@ -172,6 +172,10 @@ int numberOfEvents;
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">123</span><span class="p">,</span> <span class="n">revvedAt</span><span class="p">);</span>
 </code></pre></div></div>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-06-01-raising-events.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

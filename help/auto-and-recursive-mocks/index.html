@@ -82,7 +82,7 @@
 
     <div id="post-content">
       <h1>Auto and recursive mocks</h1>
-      <p>Once a substitute has been created some properties and methods will automatically return non-null values. For example, any properties or methods that return an <em>interface</em>, <em>delegate</em>, or <em>purely virtual class</em>* will automatically return substitutes themselves. This is commonly referred to as <em>recursive mocking</em>, and can be useful because you can avoid explicitly creating each substitute, which means less code. Other types, like <code class="highlighter-rouge">String</code> and <code class="highlighter-rouge">Array</code>, will default to returning empty values rather than nulls.</p>
+      <p>Once a substitute has been created some properties and methods will automatically return non-null values. For example, any properties or methods that return an <em>interface</em>, <em>delegate</em>, or <em>purely virtual class</em>* will automatically return substitutes themselves. This is commonly referred to as <em>recursive mocking</em>, and can be useful because you can avoid explicitly creating each substitute, which means less code. Other types, like <code>String</code> and <code>Array</code>, will default to returning empty values rather than nulls.</p>
 
 <p><em>* Note:</em> A pure virtual class is defined as one with all its public methods and properties defined as <em>virtual</em> or <em>abstract</em> and with a default, parameterless constructor defined as <em>public</em> or <em>protected</em>.</p>
 
@@ -99,7 +99,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>We want to configure our <code class="highlighter-rouge">INumberParserFactory</code> to create a parser that will return a certain set of <code class="highlighter-rouge">int</code> for an <code class="highlighter-rouge">expresion</code>. We could manually create each substitute:</p>
+<p>We want to configure our <code>INumberParserFactory</code> to create a parser that will return a certain set of <code>int</code> for an <code>expresion</code>. We could manually create each substitute:</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">factory</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">INumberParserFactory</span><span class="p">&gt;();</span>
 <span class="kt">var</span> <span class="n">parser</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">INumberParser</span><span class="p">&gt;();</span>
@@ -111,7 +111,7 @@
     <span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">});</span>
 </code></pre></div></div>
 
-<p>Or we could use the fact that a substitute for type <code class="highlighter-rouge">INumberParser</code> will automatically be returned for <code class="highlighter-rouge">INumberParserFactory.Create()</code>:</p>
+<p>Or we could use the fact that a substitute for type <code>INumberParser</code> will automatically be returned for <code>INumberParserFactory.Create()</code>:</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">factory</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">INumberParserFactory</span><span class="p">&gt;();</span>
 <span class="n">factory</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="sc">','</span><span class="p">).</span><span class="nf">Parse</span><span class="p">(</span><span class="s">"an expression"</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">});</span>
@@ -158,7 +158,7 @@ INumberParserFactory factory;
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>To get the identity of the <code class="highlighter-rouge">CurrentRequest</code> to return a certain name, we could manually create substitutes for <code class="highlighter-rouge">IContext</code>, <code class="highlighter-rouge">IRequest</code>, and <code class="highlighter-rouge">IIdentity</code>, and then use <code class="highlighter-rouge">Returns()</code> to chain these substitutes together. Instead we can use the substitutes automatically created for each property and method:</p>
+<p>To get the identity of the <code>CurrentRequest</code> to return a certain name, we could manually create substitutes for <code>IContext</code>, <code>IRequest</code>, and <code>IIdentity</code>, and then use <code>Returns()</code> to chain these substitutes together. Instead we can use the substitutes automatically created for each property and method:</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IContext</span><span class="p">&gt;();</span>
 <span class="n">context</span><span class="p">.</span><span class="n">CurrentRequest</span><span class="p">.</span><span class="n">Identity</span><span class="p">.</span><span class="n">Name</span><span class="p">.</span><span class="nf">Returns</span><span class="p">(</span><span class="s">"My pet fish Eric"</span><span class="p">);</span>
@@ -167,19 +167,23 @@ INumberParserFactory factory;
     <span class="n">context</span><span class="p">.</span><span class="n">CurrentRequest</span><span class="p">.</span><span class="n">Identity</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p>Here <code class="highlighter-rouge">CurrentRequest</code> is automatically going to return a substitute for <code class="highlighter-rouge">IRequest</code>, and the <code class="highlighter-rouge">IRequest</code> substitute will automatically return a substitute for <code class="highlighter-rouge">IIdentity</code>.</p>
+<p>Here <code>CurrentRequest</code> is automatically going to return a substitute for <code>IRequest</code>, and the <code>IRequest</code> substitute will automatically return a substitute for <code>IIdentity</code>.</p>
 
 <p><em>Note:</em> Setting up long chains of substitutes this way is a code smell: we are breaking the <a href="https://en.wikipedia.org/wiki/Law_of_Demeter">Law of Demeter</a>, which says objects should only talk to their immediate neighbours, not reach into their neighbours’ neighbours. If you write your tests without recursive mocks this becomes quite obvious as the set up becomes quite complicated, so if you are going to use recursive mocking you’ll need to be extra vigilant to avoid this type of coupling.</p>
 
 <a id="auto_values"></a>
 <h2 id="auto-values">Auto values</h2>
-<p>Properties and methods returning types of <code class="highlighter-rouge">String</code> or <code class="highlighter-rouge">Array</code> will automatically get empty, non-null defaults. This can help avoid null reference exceptions in cases where you just need a reference returned but don’t care about its specific properties.</p>
+<p>Properties and methods returning types of <code>String</code> or <code>Array</code> will automatically get empty, non-null defaults. This can help avoid null reference exceptions in cases where you just need a reference returned but don’t care about its specific properties.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">identity</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IIdentity</span><span class="p">&gt;();</span>
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="n">String</span><span class="p">.</span><span class="n">Empty</span><span class="p">,</span> <span class="n">identity</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="n">identity</span><span class="p">.</span><span class="nf">Roles</span><span class="p">().</span><span class="n">Length</span><span class="p">);</span>
 </code></pre></div></div>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-10-01-auto-and-recursive-mocks.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

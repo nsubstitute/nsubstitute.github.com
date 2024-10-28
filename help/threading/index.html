@@ -86,8 +86,12 @@
 
 <p>Although this particular issue has been mitigated by work in <a href="https://github.com/nsubstitute/NSubstitute/pull/462">#452</a>, issue <a href="https://github.com/nsubstitute/NSubstitute/issues/256">#256</a> shows the types of problems that can occur if we’re not careful with threading.</p>
 
-<p>To avoid this sort of problem, make sure your test has finished configuring its substitutes before exercising the production code, then make sure the production code has completed before your test asserts on <code class="highlighter-rouge">Received()</code> calls.</p>
+<p>To avoid this sort of problem, make sure your test has finished configuring its substitutes before exercising the production code, then make sure the production code has completed before your test asserts on <code>Received()</code> calls.</p>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2013-04-01-threading.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

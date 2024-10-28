@@ -82,9 +82,9 @@
 
     <div id="post-content">
       <h1>Clearing received calls</h1>
-      <p>A substitute can forget all the calls previously made to it using the <code class="highlighter-rouge">ClearReceivedCalls()</code> extension method.</p>
+      <p>A substitute can forget all the calls previously made to it using the <code>ClearReceivedCalls()</code> extension method.</p>
 
-<p>Say we have an <code class="highlighter-rouge">ICommand</code> interface, and we want a <code class="highlighter-rouge">OnceOffCommandRunner</code> that will take an <code class="highlighter-rouge">ICommand</code> and only run it once.</p>
+<p>Say we have an <code>ICommand</code> interface, and we want a <code>OnceOffCommandRunner</code> that will take an <code>ICommand</code> and only run it once.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">interface</span> <span class="nc">ICommand</span> <span class="p">{</span>
     <span class="k">void</span> <span class="nf">Execute</span><span class="p">();</span>
@@ -103,7 +103,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>If we substitute for <code class="highlighter-rouge">ICommand</code> we can test it is called on the first run, then forget any previous calls made to it, and make sure it is not called again.</p>
+<p>If we substitute for <code>ICommand</code> we can test it is called on the first run, then forget any previous calls made to it, and make sure it is not called again.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
 <span class="kt">var</span> <span class="n">runner</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">OnceOffCommandRunner</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
@@ -120,8 +120,12 @@
 <span class="n">command</span><span class="p">.</span><span class="nf">DidNotReceive</span><span class="p">().</span><span class="nf">Execute</span><span class="p">();</span>
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">ClearReceivedCalls()</code> will not clear any results set up for the substitute using <code class="highlighter-rouge">Returns()</code>. If we need to this, we can <a href="/help/replacing-return-values">replace previously specified results</a> by calling <code class="highlighter-rouge">Returns()</code> again.</p>
+<p><code>ClearReceivedCalls()</code> will not clear any results set up for the substitute using <code>Returns()</code>. If we need to this, we can <a href="/help/replacing-return-values">replace previously specified results</a> by calling <code>Returns()</code> again.</p>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-03-10-clear-received-calls.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

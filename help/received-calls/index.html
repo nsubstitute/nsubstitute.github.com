@@ -82,7 +82,7 @@
 
     <div id="post-content">
       <h1>Checking received calls</h1>
-      <p>In some cases (particularly for <code class="highlighter-rouge">void</code> methods) it is useful to check that a specific call has been received by a substitute. This can be checked using the <code class="highlighter-rouge">Received()</code> extension method, followed by the call being checked.</p>
+      <p>In some cases (particularly for <code>void</code> methods) it is useful to check that a specific call has been received by a substitute. This can be checked using the <code>Received()</code> extension method, followed by the call being checked.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">interface</span> <span class="nc">ICommand</span> <span class="p">{</span>
     <span class="k">void</span> <span class="nf">Execute</span><span class="p">();</span>
@@ -98,7 +98,7 @@
     <span class="k">public</span> <span class="k">void</span> <span class="nf">DontDoAnything</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="na">[Test]</span>
+<span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">Should_execute_command</span><span class="p">()</span> <span class="p">{</span>
     <span class="c1">//Arrange</span>
     <span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
@@ -110,11 +110,11 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>In this case <code class="highlighter-rouge">command</code> did receive a call to <code class="highlighter-rouge">Execute()</code>, and so will complete successfully. If <code class="highlighter-rouge">Execute()</code> has not been received NSubstitute will throw a <code class="highlighter-rouge">ReceivedCallsException</code> and let you know what call was expected and with which arguments, as well as listing actual calls to that method and which the arguments differed.</p>
+<p>In this case <code>command</code> did receive a call to <code>Execute()</code>, and so will complete successfully. If <code>Execute()</code> has not been received NSubstitute will throw a <code>ReceivedCallsException</code> and let you know what call was expected and with which arguments, as well as listing actual calls to that method and which the arguments differed.</p>
 
 <a id="check_a_call_was_not_received"></a>
 <h2 id="check-a-call-was-not-received">Check a call was not received</h2>
-<p>NSubstitute can also make sure a call was not received using the <code class="highlighter-rouge">DidNotReceive()</code> extension method.</p>
+<p>NSubstitute can also make sure a call was not received using the <code>DidNotReceive()</code> extension method.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
 <span class="kt">var</span> <span class="n">something</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">SomethingThatNeedsACommand</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
@@ -127,7 +127,7 @@
 <a id="check_a_call_was_received_a_specific_number_of_times"></a>
 <h2 id="check-a-call-was-received-a-specific-number-of-times">Check a call was received a specific number of times</h2>
 
-<p>The <code class="highlighter-rouge">Received()</code> extension method will assert that at least one call was made to a member, and <code class="highlighter-rouge">DidNotReceive()</code> asserts that zero calls were made. NSubstitute also gives you the option of asserting a specific number of calls were received by passing an integer to <code class="highlighter-rouge">Received()</code>. This will throw if the substitute does not receive <em>exactly</em> that many matching calls. Too few, or too many, and the assertion will fail.</p>
+<p>The <code>Received()</code> extension method will assert that at least one call was made to a member, and <code>DidNotReceive()</code> asserts that zero calls were made. NSubstitute also gives you the option of asserting a specific number of calls were received by passing an integer to <code>Received()</code>. This will throw if the substitute does not receive <em>exactly</em> that many matching calls. Too few, or too many, and the assertion will fail.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">CommandRepeater</span> <span class="p">{</span>
     <span class="n">ICommand</span> <span class="n">command</span><span class="p">;</span>
@@ -142,7 +142,7 @@
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="na">[Test]</span>
+<span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">Should_execute_command_the_number_of_times_specified</span><span class="p">()</span> <span class="p">{</span>
   <span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
   <span class="kt">var</span> <span class="n">repeater</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">CommandRepeater</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span>
@@ -153,7 +153,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>We can also use <code class="highlighter-rouge">Received(1)</code> to check a call was received once and only once. This differs from the standard <code class="highlighter-rouge">Received()</code> call, which checks a call was received <em>at least</em> once. <code class="highlighter-rouge">Received(0)</code> behaves the same as <code class="highlighter-rouge">DidNotReceive()</code>.</p>
+<p>We can also use <code>Received(1)</code> to check a call was received once and only once. This differs from the standard <code>Received()</code> call, which checks a call was received <em>at least</em> once. <code>Received(0)</code> behaves the same as <code>DidNotReceive()</code>.</p>
 
 <a id="received_or_not_with_specific_arguments"></a>
 <h2 id="received-or-not-with-specific-arguments">Received (or not) with specific arguments</h2>
@@ -188,7 +188,7 @@ ICalculator calculator;
 <a id="ignoring_arguments"></a>
 <h2 id="ignoring-arguments">Ignoring arguments</h2>
 
-<p>NSubstitute can also check calls were received or not received but ignore the arguments used, just like we can for <a href="/help/return-for-any-args">setting returns for any arguments</a>. In this case we need <code class="highlighter-rouge">ReceivedWithAnyArgs()</code> and <code class="highlighter-rouge">DidNotReceiveWithAnyArgs()</code>.</p>
+<p>NSubstitute can also check calls were received or not received but ignore the arguments used, just like we can for <a href="/help/return-for-any-args">setting returns for any arguments</a>. In this case we need <code>ReceivedWithAnyArgs()</code> and <code>DidNotReceiveWithAnyArgs()</code>.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span>
 
@@ -232,13 +232,13 @@ ICalculator calculator;
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">CommandWatcher</span> <span class="p">{</span>
     <span class="n">ICommand</span> <span class="n">command</span><span class="p">;</span>
     <span class="k">public</span> <span class="nf">CommandWatcher</span><span class="p">(</span><span class="n">ICommand</span> <span class="n">command</span><span class="p">)</span> <span class="p">{</span> 
-    	<span class="n">command</span><span class="p">.</span><span class="n">Executed</span> <span class="p">+=</span> <span class="n">OnExecuted</span><span class="p">;</span>
+        <span class="n">command</span><span class="p">.</span><span class="n">Executed</span> <span class="p">+=</span> <span class="n">OnExecuted</span><span class="p">;</span>
     <span class="p">}</span>
     <span class="k">public</span> <span class="kt">bool</span> <span class="n">DidStuff</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">private</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
     <span class="k">public</span> <span class="k">void</span> <span class="nf">OnExecuted</span><span class="p">(</span><span class="kt">object</span> <span class="n">o</span><span class="p">,</span> <span class="n">EventArgs</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span> <span class="n">DidStuff</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span> <span class="p">}</span>
 <span class="p">}</span> 
 
-<span class="na">[Test]</span>
+<span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldDoStuffWhenCommandExecutes</span><span class="p">()</span> <span class="p">{</span>
   <span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
   <span class="kt">var</span> <span class="n">watcher</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">CommandWatcher</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
@@ -249,50 +249,50 @@ ICalculator calculator;
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>If required though, <code class="highlighter-rouge">Received</code> will let us assert that the subscription was received:</p>
+<p>If required though, <code>Received</code> will let us assert that the subscription was received:</p>
 
-<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">[Test]</span>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">MakeSureWatcherSubscribesToCommandExecuted</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
-  <span class="kt">var</span> <span class="n">watcher</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">CommandWatcher</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
+    <span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
+    <span class="kt">var</span> <span class="n">watcher</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">CommandWatcher</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
 
-  <span class="c1">// Not recommended. Favour testing behaviour over implementation specifics.</span>
-  <span class="c1">// Can check subscription:</span>
-  <span class="n">command</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="n">Executed</span> <span class="p">+=</span> <span class="n">watcher</span><span class="p">.</span><span class="n">OnExecuted</span><span class="p">;</span>
-  <span class="c1">// Or, if the handler is not accessible:</span>
-  <span class="n">command</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="n">Executed</span> <span class="p">+=</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">EventHandler</span><span class="p">&gt;();</span>
+    <span class="c1">// Not recommended. Favour testing behaviour over implementation specifics.</span>
+    <span class="c1">// Can check subscription:</span>
+    <span class="n">command</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="n">Executed</span> <span class="p">+=</span> <span class="n">watcher</span><span class="p">.</span><span class="n">OnExecuted</span><span class="p">;</span>
+    <span class="c1">// Or, if the handler is not accessible:</span>
+    <span class="n">command</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="n">Executed</span> <span class="p">+=</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">EventHandler</span><span class="p">&gt;();</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
 <a id="checking_event_invocation"></a>
 <h2 id="checking-event-invocation">Checking event invocation</h2>
 
-<p>We can also use substitutes for event handlers to confirm that a particular event was raised correctly. Often a simple lambda function will suffice, but if we want to use argument matchers we can use a substitute and <code class="highlighter-rouge">Received</code>. Both options are shown below:</p>
+<p>We can also use substitutes for event handlers to confirm that a particular event was raised correctly. Often a simple lambda function will suffice, but if we want to use argument matchers we can use a substitute and <code>Received</code>. Both options are shown below:</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">class</span> <span class="nc">LowFuelWarningEventArgs</span> <span class="p">:</span> <span class="n">EventArgs</span> <span class="p">{</span>
-	<span class="k">public</span> <span class="kt">int</span> <span class="n">PercentLeft</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-	<span class="k">public</span> <span class="nf">LowFuelWarningEventArgs</span><span class="p">(</span><span class="kt">int</span> <span class="n">percentLeft</span><span class="p">){</span>
-		<span class="n">PercentLeft</span> <span class="p">=</span> <span class="n">percentLeft</span><span class="p">;</span>
-	<span class="p">}</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">PercentLeft</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="nf">LowFuelWarningEventArgs</span><span class="p">(</span><span class="kt">int</span> <span class="n">percentLeft</span><span class="p">){</span>
+        <span class="n">PercentLeft</span> <span class="p">=</span> <span class="n">percentLeft</span><span class="p">;</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="k">public</span> <span class="k">class</span> <span class="nc">FuelManagement</span><span class="p">{</span>
-	<span class="k">public</span> <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">LowFuelWarningEventArgs</span><span class="p">&gt;</span> <span class="n">LowFuelDetected</span><span class="p">;</span>
-	<span class="k">public</span> <span class="k">void</span> <span class="nf">DoSomething</span><span class="p">(){</span>
-		<span class="n">LowFuelDetected</span><span class="p">?.</span><span class="nf">Invoke</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">new</span> <span class="nf">LowFuelWarningEventArgs</span><span class="p">(</span><span class="m">15</span><span class="p">));</span>
-	<span class="p">}</span>
+    <span class="k">public</span> <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">LowFuelWarningEventArgs</span><span class="p">&gt;</span> <span class="n">LowFuelDetected</span><span class="p">;</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">DoSomething</span><span class="p">(){</span>
+        <span class="n">LowFuelDetected</span><span class="p">?.</span><span class="nf">Invoke</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">new</span> <span class="nf">LowFuelWarningEventArgs</span><span class="p">(</span><span class="m">15</span><span class="p">));</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="c1">// Often it is easiest to use a lambda for this, as shown in the following test:</span>
-<span class="na">[Test]</span>
+<span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldRaiseLowFuel_WithoutNSub</span><span class="p">(){</span>
-	<span class="kt">var</span> <span class="n">fuelManagement</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">FuelManagement</span><span class="p">();</span>
-	<span class="kt">var</span> <span class="n">eventWasRaised</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
-	<span class="n">fuelManagement</span><span class="p">.</span><span class="n">LowFuelDetected</span> <span class="p">+=</span> <span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">eventWasRaised</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+    <span class="kt">var</span> <span class="n">fuelManagement</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">FuelManagement</span><span class="p">();</span>
+    <span class="kt">var</span> <span class="n">eventWasRaised</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+    <span class="n">fuelManagement</span><span class="p">.</span><span class="n">LowFuelDetected</span> <span class="p">+=</span> <span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="n">e</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">eventWasRaised</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
 
-	<span class="n">fuelManagement</span><span class="p">.</span><span class="nf">DoSomething</span><span class="p">();</span>
+    <span class="n">fuelManagement</span><span class="p">.</span><span class="nf">DoSomething</span><span class="p">();</span>
 
-	<span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">eventWasRaised</span><span class="p">);</span>
+    <span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">eventWasRaised</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="c1">// We can also use NSubstitute for this if we want more involved argument matching logic.</span>
@@ -302,20 +302,24 @@ ICalculator calculator;
 <span class="c1">//</span>
 <span class="c1">// Note we could still use lambdas and standard assertions for this, but a substitute may be worth considering</span>
 <span class="c1">// in some of these cases.</span>
-<span class="na">[Test]</span>
+<span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldRaiseLowFuel</span><span class="p">(){</span>
-	<span class="kt">var</span> <span class="n">fuelManagement</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">FuelManagement</span><span class="p">();</span>
-	<span class="kt">var</span> <span class="n">handler</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">LowFuelWarningEventArgs</span><span class="p">&gt;&gt;();</span>
-	<span class="n">fuelManagement</span><span class="p">.</span><span class="n">LowFuelDetected</span> <span class="p">+=</span> <span class="n">handler</span><span class="p">;</span>
+    <span class="kt">var</span> <span class="n">fuelManagement</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">FuelManagement</span><span class="p">();</span>
+    <span class="kt">var</span> <span class="n">handler</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">LowFuelWarningEventArgs</span><span class="p">&gt;&gt;();</span>
+    <span class="n">fuelManagement</span><span class="p">.</span><span class="n">LowFuelDetected</span> <span class="p">+=</span> <span class="n">handler</span><span class="p">;</span>
 
-	<span class="n">fuelManagement</span><span class="p">.</span><span class="nf">DoSomething</span><span class="p">();</span>
+    <span class="n">fuelManagement</span><span class="p">.</span><span class="nf">DoSomething</span><span class="p">();</span>
 
-	<span class="n">handler</span>
-	    <span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
-	    <span class="p">.</span><span class="nf">Invoke</span><span class="p">(</span><span class="n">fuelManagement</span><span class="p">,</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">LowFuelWarningEventArgs</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">PercentLeft</span> <span class="p">&lt;</span> <span class="m">20</span><span class="p">));</span>
+    <span class="n">handler</span>
+        <span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+        <span class="p">.</span><span class="nf">Invoke</span><span class="p">(</span><span class="n">fuelManagement</span><span class="p">,</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">LowFuelWarningEventArgs</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">PercentLeft</span> <span class="p">&lt;</span> <span class="m">20</span><span class="p">));</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-03-01-received-calls.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

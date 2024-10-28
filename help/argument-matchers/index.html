@@ -84,9 +84,9 @@
       <h1>Argument matchers</h1>
       <p>Argument matchers can be used when <a href="/help/return-for-args">setting return values</a> and when <a href="/help/received-calls">checking received calls</a>. They provide a way to <em>specify</em> a call or group of calls, so that a return value can be set for all matching calls, or to check a matching call has been received.</p>
 
-<p>The argument matchers syntax shown here depends on having C# 7.0 or later. If you are stuck on an earlier version (getting an error such as <code class="highlighter-rouge">CS7085: By-reference return type 'ref T' is not supported</code> while trying to use them) please use <a href="/help/compat-args">compatibility argument matchers</a> instead.</p>
+<p>The argument matchers syntax shown here depends on having C# 7.0 or later. If you are stuck on an earlier version (getting an error such as <code>CS7085: By-reference return type 'ref T' is not supported</code> while trying to use them) please use <a href="/help/compat-args">compatibility argument matchers</a> instead.</p>
 
-<p>⚠️ <strong>Note:</strong> Argument matchers should only be used when setting return values or checking received calls. Using <code class="highlighter-rouge">Arg.Is</code> or <code class="highlighter-rouge">Arg.Any</code> without a call to <code class="highlighter-rouge">Returns(...)</code> or <code class="highlighter-rouge">Received()</code> can cause your tests to behave in unexpected ways. See <a href="#how_not_to_use_argument_matchers">How NOT to use argument matchers</a> for more information.</p>
+<p>⚠️ <strong>Note:</strong> Argument matchers should only be used when setting return values or checking received calls. Using <code>Arg.Is</code> or <code>Arg.Any</code> without a call to <code>Returns(...)</code> or <code>Received()</code> can cause your tests to behave in unexpected ways. See <a href="#how_not_to_use_argument_matchers">How NOT to use argument matchers</a> for more information.</p>
 
 <!--
 ```requiredcode
@@ -124,7 +124,7 @@ string TestWidget = "test widget";
 
 <a id="ignoring_arguments"></a>
 <h2 id="ignoring-arguments">Ignoring arguments</h2>
-<p>An argument of type <code class="highlighter-rouge">T</code> can be ignored using <code class="highlighter-rouge">Arg.Any&lt;T&gt;()</code>.</p>
+<p>An argument of type <code>T</code> can be ignored using <code>Arg.Any&lt;T&gt;()</code>.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(),</span> <span class="m">5</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="m">7</span><span class="p">);</span>
 
@@ -133,7 +133,7 @@ string TestWidget = "test widget";
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreNotEqual</span><span class="p">(</span><span class="m">7</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">7</span><span class="p">));</span>
 </code></pre></div></div>
 
-<p>In this example we return <code class="highlighter-rouge">7</code> when adding any number to <code class="highlighter-rouge">5</code>. We use <code class="highlighter-rouge">Arg.Any&lt;int&gt;()</code> to tell NSubstitute to ignore the first argument.</p>
+<p>In this example we return <code>7</code> when adding any number to <code>5</code>. We use <code>Arg.Any&lt;int&gt;()</code> to tell NSubstitute to ignore the first argument.</p>
 
 <p>We can also use this to match any argument of a specific sub-type.</p>
 
@@ -147,7 +147,7 @@ string TestWidget = "test widget";
 
 <a id="conditionally_matching_an_argument"></a>
 <h2 id="conditionally-matching-an-argument">Conditionally matching an argument</h2>
-<p>An argument of type <code class="highlighter-rouge">T</code> can be conditionally matched using <code class="highlighter-rouge">Arg.Is&lt;T&gt;(Predicate&lt;T&gt; condition)</code>.</p>
+<p>An argument of type <code>T</code> can be conditionally matched using <code>Arg.Is&lt;T&gt;(Predicate&lt;T&gt; condition)</code>.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="p">-</span><span class="m">10</span><span class="p">);</span>
 
@@ -174,7 +174,7 @@ string TestWidget = "test widget";
 
 <a id="matching_a_specific_argument"></a>
 <h2 id="matching-a-specific-argument">Matching a specific argument</h2>
-<p>An argument of type <code class="highlighter-rouge">T</code> can be matched using <code class="highlighter-rouge">Arg.Is&lt;T&gt;(T value)</code>.</p>
+<p>An argument of type <code>T</code> can be matched using <code>Arg.Is&lt;T&gt;(T value)</code>.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">42</span><span class="p">);</span>
 
@@ -184,12 +184,12 @@ string TestWidget = "test widget";
 <span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="m">0</span><span class="p">),</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;());</span>
 </code></pre></div></div>
 
-<p>This matcher normally isn’t required; most of the time we can just use <code class="highlighter-rouge">0</code> instead of <code class="highlighter-rouge">Arg.Is(0)</code>. In some cases though, NSubstitute can’t work out which matcher applies to which argument (arg matchers are actually fuzzily matched; not passed directly to the function call). In these cases it will throw an <code class="highlighter-rouge">AmbiguousArgumentsException</code> and ask you to specify one or more additional argument matchers. In some cases you may have to explicitly use argument matchers for every argument.</p>
+<p>This matcher normally isn’t required; most of the time we can just use <code>0</code> instead of <code>Arg.Is(0)</code>. In some cases though, NSubstitute can’t work out which matcher applies to which argument (arg matchers are actually fuzzily matched; not passed directly to the function call). In these cases it will throw an <code>AmbiguousArgumentsException</code> and ask you to specify one or more additional argument matchers. In some cases you may have to explicitly use argument matchers for every argument.</p>
 
 <a id="matching_out_and_ref_args"></a>
-<h2 id="matching-out-and-ref-args">Matching <code class="highlighter-rouge">out</code> and <code class="highlighter-rouge">ref</code> args</h2>
+<h2 id="matching-out-and-ref-args">Matching <code>out</code> and <code>ref</code> args</h2>
 
-<p>Argument matchers can also be used with <code class="highlighter-rouge">out</code> and <code class="highlighter-rouge">ref</code> (NSubstitute 4.0 and later with C# 7.0 and later).</p>
+<p>Argument matchers can also be used with <code>out</code> and <code>ref</code> (NSubstitute 4.0 and later with C# 7.0 and later).</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span>
     <span class="p">.</span><span class="nf">LoadMemory</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="k">out</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;())</span>
@@ -203,7 +203,7 @@ string TestWidget = "test widget";
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">42</span><span class="p">,</span> <span class="n">memoryValue</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p>See <a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a> for more information on working with <code class="highlighter-rouge">out</code> and <code class="highlighter-rouge">ref</code>.</p>
+<p>See <a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a> for more information on working with <code>out</code> and <code>ref</code>.</p>
 
 <a id="how_not_to_use_argument_matchers"></a>
 <h2 id="how-not-to-use-argument-matchers">How NOT to use argument matchers</h2>
@@ -213,15 +213,15 @@ string TestWidget = "test widget";
 <a id="using_matchers_outside_of_stubbing_or_checking_received_calls"></a>
 <h3 id="using-matchers-outside-of-stubbing-or-checking-received-calls">Using matchers outside of stubbing or checking received calls</h3>
 
-<p>Argument matchers should only be used when specifying calls for the purposes of setting return values, checking received calls, or configuring callbacks (for example: with <code class="highlighter-rouge">Returns</code>, <code class="highlighter-rouge">Received</code> or <code class="highlighter-rouge">When</code>). Using <code class="highlighter-rouge">Arg.Is</code> or <code class="highlighter-rouge">Arg.Any</code> in other situations can cause your tests to behave in unexpected ways.</p>
+<p>Argument matchers should only be used when specifying calls for the purposes of setting return values, checking received calls, or configuring callbacks (for example: with <code>Returns</code>, <code>Received</code> or <code>When</code>). Using <code>Arg.Is</code> or <code>Arg.Any</code> in other situations can cause your tests to behave in unexpected ways.</p>
 
 <p>Argument matchers should only be used for:</p>
 
 <ul>
-  <li>Specifying a call when using <code class="highlighter-rouge">Returns</code> and <code class="highlighter-rouge">ReturnsForAnyArgs</code></li>
-  <li>Specifying a call within a <code class="highlighter-rouge">When</code> or <code class="highlighter-rouge">WhenForAnyArgs</code> block to configure a callback/call action</li>
-  <li>Specifying a call to check with <code class="highlighter-rouge">Received</code>, <code class="highlighter-rouge">DidNotReceive</code> and <code class="highlighter-rouge">Received.InOrder</code></li>
-  <li>Configuring a callback with <code class="highlighter-rouge">Arg.Do</code> or <code class="highlighter-rouge">Arg.Invoke</code></li>
+  <li>Specifying a call when using <code>Returns</code> and <code>ReturnsForAnyArgs</code></li>
+  <li>Specifying a call within a <code>When</code> or <code>WhenForAnyArgs</code> block to configure a callback/call action</li>
+  <li>Specifying a call to check with <code>Received</code>, <code>DidNotReceive</code> and <code>Received.InOrder</code></li>
+  <li>Configuring a callback with <code>Arg.Do</code> or <code>Arg.Invoke</code></li>
 </ul>
 
 <p>Using an argument matcher without one of these calls is most likely an error.</p>
@@ -250,9 +250,9 @@ string TestWidget = "test widget";
 <span class="n">widgetFactory</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Make</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">WidgetInfo</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Name</span> <span class="p">==</span> <span class="s">"Test"</span><span class="p">));</span>
 </code></pre></div></div>
 
-<p>In this example it would be an error to use an argument matcher in the <code class="highlighter-rouge">ACT</code> part of this test. Even if we don’t mind what specific argument we pass to our subject, <code class="highlighter-rouge">Arg.Any</code> is only for substitutes, and only for specifying a call while setting return values, checking received calls or for configuring callbacks; not for real calls.</p>
+<p>In this example it would be an error to use an argument matcher in the <code>ACT</code> part of this test. Even if we don’t mind what specific argument we pass to our subject, <code>Arg.Any</code> is only for substitutes, and only for specifying a call while setting return values, checking received calls or for configuring callbacks; not for real calls.</p>
 
-<p>(If you do want to indicate to readers that the precise argument used for a real call doesn’t matter you could use a variable such as <code class="highlighter-rouge">var someWidget = new WidgetInfo(); subject.StartWithWidget(someWidget);</code> or similar. Just stay clear of argument matchers for this!)</p>
+<p>(If you do want to indicate to readers that the precise argument used for a real call doesn’t matter you could use a variable such as <code>var someWidget = new WidgetInfo(); subject.StartWithWidget(someWidget);</code> or similar. Just stay clear of argument matchers for this!)</p>
 
 <p>Similarly, we should not use an arg matcher as a real value to return from a call (even a substituted one):</p>
 
@@ -307,7 +307,7 @@ public interface IPersonStructLookup {
     <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="na">[Test]</span>
+<span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">MutatingAMatchedArgument</span><span class="p">()</span> <span class="p">{</span>
     <span class="kt">var</span> <span class="n">person</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Person</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">"Carrot"</span> <span class="p">};</span>
     <span class="kt">var</span> <span class="n">lookup</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IPersonLookup</span><span class="p">&gt;();</span>
@@ -326,7 +326,7 @@ public interface IPersonStructLookup {
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>This looks confusing at first, but if we remember substitutes are pretty much forced to store references to arguments used then it makes sense. The alternative of storing deep-cloned snapshots of every argument to every call received is fairly impractical, especially if we consider objects with very complex hierarchies (e.g. tens of fields, each with an object with tens of fields of its own, etc.). Storing snapshots would also lead to the same confusion in the reverse situation, where we know a substitute was called with a particular reference but the <code class="highlighter-rouge">Arg.Is(person)</code> check fails due to a change in one of its fields.</p>
+<p>This looks confusing at first, but if we remember substitutes are pretty much forced to store references to arguments used then it makes sense. The alternative of storing deep-cloned snapshots of every argument to every call received is fairly impractical, especially if we consider objects with very complex hierarchies (e.g. tens of fields, each with an object with tens of fields of its own, etc.). Storing snapshots would also lead to the same confusion in the reverse situation, where we know a substitute was called with a particular reference but the <code>Arg.Is(person)</code> check fails due to a change in one of its fields.</p>
 
 <p>That said, there are times when snapshots like this are useful, and there are a few ways to enable this with NSubstitute.</p>
 
@@ -336,7 +336,7 @@ public interface IPersonStructLookup {
     <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="na">[Test]</span>
+<span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">MutatingAStruct</span><span class="p">()</span> <span class="p">{</span>
     <span class="kt">var</span> <span class="n">person</span> <span class="p">=</span> <span class="k">new</span> <span class="n">PersonStruct</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">"Carrot"</span> <span class="p">};</span>
     <span class="kt">var</span> <span class="n">lookup</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IPersonStructLookup</span><span class="p">&gt;();</span>
@@ -352,7 +352,7 @@ public interface IPersonStructLookup {
 
 <p>For cases where that is not possible or wanted then we can manually snapshot the values we are interested in.</p>
 
-<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">[Test]</span>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">ManualArgSnapshot</span><span class="p">()</span> <span class="p">{</span>
     <span class="kt">var</span> <span class="n">person</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Person</span> <span class="p">{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s">"Carrot"</span> <span class="p">};</span>
     <span class="kt">var</span> <span class="n">lookup</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IPersonLookup</span><span class="p">&gt;();</span>
@@ -370,6 +370,10 @@ public interface IPersonStructLookup {
 
 <p>We can then use our standard assertion library for checking the value. This approach can also be helpful for asserting on complex objects, as our assertions can be more detailed and provide more useful information than NSubstitute typically provides in these cases.</p>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-04-01-argument-matchers.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

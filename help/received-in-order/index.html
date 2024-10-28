@@ -84,7 +84,7 @@
       <h1>Checking call order</h1>
       <p>Sometimes calls need to be made in a specific order. Depending on the timing of calls like this is known as <em>temporal coupling</em>. Ideally we’d change our design to remove this coupling, but for times when we can’t NSubstitute lets us resort to asserting the order of calls.</p>
 
-<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">[Test]</span>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">TestCommandRunWhileConnectionIsOpen</span><span class="p">()</span> <span class="p">{</span>
   <span class="kt">var</span> <span class="n">connection</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IConnection</span><span class="p">&gt;();</span>
   <span class="kt">var</span> <span class="n">command</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommand</span><span class="p">&gt;();</span>
@@ -100,11 +100,11 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>If the calls were received in a different order then <code class="highlighter-rouge">Received.InOrder</code> will throw an exception and show the expected and actual calls.</p>
+<p>If the calls were received in a different order then <code>Received.InOrder</code> will throw an exception and show the expected and actual calls.</p>
 
 <p>We can use standard <a href="/help/argument-matchers/">argument matchers</a> to match calls, just as we would when <a href="/help/received-calls/">checking for a single received call</a>.</p>
 
-<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">[Test]</span>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">SubscribeToEventBeforeOpeningConnection</span><span class="p">()</span> <span class="p">{</span>
   <span class="kt">var</span> <span class="n">connection</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IConnection</span><span class="p">&gt;();</span>
   <span class="n">connection</span><span class="p">.</span><span class="n">SomethingHappened</span> <span class="p">+=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="cm">/* some event handler */</span> <span class="p">};</span>
@@ -144,6 +144,10 @@ public interface ICommand {
 ```
 -->
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2013-01-01-received-in-order.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

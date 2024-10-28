@@ -82,9 +82,9 @@
 
     <div id="post-content">
       <h1>Safe configuration and overlapping calls</h1>
-      <p><em><code class="highlighter-rouge">Configure()</code> is supported in NSubstitute 4.0 and above.</em></p>
+      <p><em><code>Configure()</code> is supported in NSubstitute 4.0 and above.</em></p>
 
-<p>Sometimes we want to configure a call that overlaps a more general call we have previously setup to run a <a href="/help/callbacks">callback</a> or throw an <a href="/help/throwing-exceptions/">exception</a>. Ideally we would modify the setups so they don’t overlap, but we can also prevent these callbacks from running while we setup the next call by calling <code class="highlighter-rouge">Configure()</code> before invoking the method we want to re-configure. <code class="highlighter-rouge">Configure()</code> tells NSubstitute we are configuring the following call so that it will not run any callbacks from previous configurations.</p>
+<p>Sometimes we want to configure a call that overlaps a more general call we have previously setup to run a <a href="/help/callbacks">callback</a> or throw an <a href="/help/throwing-exceptions/">exception</a>. Ideally we would modify the setups so they don’t overlap, but we can also prevent these callbacks from running while we setup the next call by calling <code>Configure()</code> before invoking the method we want to re-configure. <code>Configure()</code> tells NSubstitute we are configuring the following call so that it will not run any callbacks from previous configurations.</p>
 
 <!--
 ```requiredcode
@@ -108,10 +108,14 @@ ICalculator calculator;
 <span class="n">Assert</span><span class="p">.</span><span class="n">Throws</span><span class="p">&lt;</span><span class="n">Exception</span><span class="p">&gt;(()</span> <span class="p">=&gt;</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">2</span><span class="p">,</span> <span class="p">-</span><span class="m">2</span><span class="p">));</span>
 </code></pre></div></div>
 
-<p>NSubstitute will also assume we are configuring a call if we have an argument matcher in our call, such as <code class="highlighter-rouge">Arg.Is(1)</code> in <code class="highlighter-rouge">calculator.Add(Arg.Is(1), 2).Returns(3)</code>, but it is generally better to be more explicit by using <code class="highlighter-rouge">.Configure()</code>.</p>
+<p>NSubstitute will also assume we are configuring a call if we have an argument matcher in our call, such as <code>Arg.Is(1)</code> in <code>calculator.Add(Arg.Is(1), 2).Returns(3)</code>, but it is generally better to be more explicit by using <code>.Configure()</code>.</p>
 
 <p>This can be particularly useful with <a href="/help/partial-subs/">partial substitutes</a> to help avoid real code being executed when configuring calls that would otherwise call the base implementation.</p>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-05-10-configure.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

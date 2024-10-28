@@ -89,9 +89,9 @@
 <a id="invoking_callbacks"></a>
 <h2 id="invoking-callbacks">Invoking callbacks</h2>
 
-<p>Say our class under test needs to call a method on a dependency, and provide a callback so it can be notified when the dependent object has finished. We can use <code class="highlighter-rouge">Arg.Invoke()</code> to immediately invoke the callback argument as soon as the substitute is called.</p>
+<p>Say our class under test needs to call a method on a dependency, and provide a callback so it can be notified when the dependent object has finished. We can use <code>Arg.Invoke()</code> to immediately invoke the callback argument as soon as the substitute is called.</p>
 
-<p>Let’s look at a contrived example. Say we are testing an <code class="highlighter-rouge">OrderPlacedCommand</code>, which needs to use an <code class="highlighter-rouge">IOrderProcessor</code> to process the order, then raise and event using <code class="highlighter-rouge">IEvents</code> when this completes successfully.</p>
+<p>Let’s look at a contrived example. Say we are testing an <code>OrderPlacedCommand</code>, which needs to use an <code>IOrderProcessor</code> to process the order, then raise and event using <code>IEvents</code> when this completes successfully.</p>
 
 <!--
 ```requiredcode
@@ -120,9 +120,9 @@ public interface IEvents { void RaiseOrderProcessed(int orderId); }
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>In our test we can use <code class="highlighter-rouge">Arg.Invoke</code> to simulate the situation where the <code class="highlighter-rouge">IOrderProcessor</code> finishes processing the order and invokes the callback to tell the calling code it is finished.</p>
+<p>In our test we can use <code>Arg.Invoke</code> to simulate the situation where the <code>IOrderProcessor</code> finishes processing the order and invokes the callback to tell the calling code it is finished.</p>
 
-<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">[Test]</span>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">Placing_order_should_raise_order_processed_when_processing_is_successful</span><span class="p">()</span> <span class="p">{</span>
     <span class="c1">//Arrange</span>
     <span class="kt">var</span> <span class="n">cart</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICart</span><span class="p">&gt;();</span>
@@ -141,14 +141,14 @@ public interface IEvents { void RaiseOrderProcessed(int orderId); }
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Here we setup the <code class="highlighter-rouge">processor</code> to invoke the callback whenever processing an order with id 3. We set it up to pass <code class="highlighter-rouge">true</code> to this callback using <code class="highlighter-rouge">Arg.Invoke(true)</code>.</p>
+<p>Here we setup the <code>processor</code> to invoke the callback whenever processing an order with id 3. We set it up to pass <code>true</code> to this callback using <code>Arg.Invoke(true)</code>.</p>
 
-<p>There are several overloads to <code class="highlighter-rouge">Arg.Invoke</code> that let us invoke callbacks with varying numbers and types of arguments. We can also invoke custom delegate types (those that are not just simple <code class="highlighter-rouge">Action</code> delegates) using <code class="highlighter-rouge">Arg.InvokeDelegate</code>.</p>
+<p>There are several overloads to <code>Arg.Invoke</code> that let us invoke callbacks with varying numbers and types of arguments. We can also invoke custom delegate types (those that are not just simple <code>Action</code> delegates) using <code>Arg.InvokeDelegate</code>.</p>
 
 <a id="performing_actions_with_arguments"></a>
 <h2 id="performing-actions-with-arguments">Performing actions with arguments</h2>
 
-<p>Sometimes we may not want to invoke a callback immediately. Or maybe we want to store all instances of a particular argument passed to a method. Or even just capture a single argument for inspection later. We can use <code class="highlighter-rouge">Arg.Do</code> for these purposes. <code class="highlighter-rouge">Arg.Do</code> calls the action we give it with the argument used for each matching call.</p>
+<p>Sometimes we may not want to invoke a callback immediately. Or maybe we want to store all instances of a particular argument passed to a method. Or even just capture a single argument for inspection later. We can use <code>Arg.Do</code> for these purposes. <code>Arg.Do</code> calls the action we give it with the argument used for each matching call.</p>
 
 <!--
 ```requiredcode
@@ -166,7 +166,7 @@ ICalculator calculator;
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">42</span><span class="p">,</span> <span class="n">argumentUsed</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p>Here we specify that a call to <code class="highlighter-rouge">Multiply</code> with any first argument should pass the second argument and put it in the <code class="highlighter-rouge">argumentUsed</code> variable. This can be quite useful when we want to assert several properties on an argument (for types more complex than <code class="highlighter-rouge">int</code> that is).</p>
+<p>Here we specify that a call to <code>Multiply</code> with any first argument should pass the second argument and put it in the <code>argumentUsed</code> variable. This can be quite useful when we want to assert several properties on an argument (for types more complex than <code>int</code> that is).</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">firstArgsBeingMultiplied</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;();</span>
 <span class="n">calculator</span><span class="p">.</span><span class="nf">Multiply</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">firstArgsBeingMultiplied</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span> <span class="m">10</span><span class="p">);</span>
@@ -178,12 +178,12 @@ ICalculator calculator;
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="n">firstArgsBeingMultiplied</span><span class="p">,</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="m">2</span><span class="p">,</span> <span class="m">5</span> <span class="p">});</span>
 </code></pre></div></div>
 
-<p>Here our <code class="highlighter-rouge">Arg.Do</code> takes whatever <code class="highlighter-rouge">int</code> is passed as the first argument to <code class="highlighter-rouge">Multiply</code> and adds it to a list whenever the second argument is 10.</p>
+<p>Here our <code>Arg.Do</code> takes whatever <code>int</code> is passed as the first argument to <code>Multiply</code> and adds it to a list whenever the second argument is 10.</p>
 
 <a id="argument_actions_and_call_specification"></a>
 <h2 id="argument-actions-and-call-specification">Argument actions and call specification</h2>
 
-<p>Argument actions act just like the <a href="/help/argument-matchers"><code class="highlighter-rouge">Arg.Any&lt;T&gt;()</code> argument matcher</a> in that they specify a call where that argument is any type compatible with <code class="highlighter-rouge">T</code> (and so can be used for <a href="/help/return-for-args">setting return values</a> and <a href="/help/received-calls">checking received calls</a>). They just have the added element of interacting with a specific argument of any call that matches that specification.</p>
+<p>Argument actions act just like the <a href="/help/argument-matchers"><code>Arg.Any&lt;T&gt;()</code> argument matcher</a> in that they specify a call where that argument is any type compatible with <code>T</code> (and so can be used for <a href="/help/return-for-args">setting return values</a> and <a href="/help/received-calls">checking received calls</a>). They just have the added element of interacting with a specific argument of any call that matches that specification.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">var</span> <span class="n">numberOfCallsWhereFirstArgIsLessThan0</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
 <span class="c1">//Specify a call where the first arg is less than 0, and the second is any int.</span>
@@ -206,6 +206,10 @@ ICalculator calculator;
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="m">123</span><span class="p">,</span> <span class="m">123</span><span class="p">,</span> <span class="m">123</span><span class="p">,</span> <span class="m">0</span><span class="p">});</span> <span class="c1">//Last call returns 0, not 123</span>
 </code></pre></div></div>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-12-01-actions-with-arguments.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

@@ -85,30 +85,34 @@
       <!--
 ```requiredcode
 public interface ICalculator {
-	int Add(int a, int b);
-	string Mode { get; set; }
+    int Add(int a, int b);
+    string Mode { get; set; }
 }
 ICalculator calculator;
 [SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
 ```
 -->
 
-<p>A call can be configured to return a value regardless of the arguments passed using the <code class="highlighter-rouge">ReturnsForAnyArgs()</code> extension method.</p>
+<p>A call can be configured to return a value regardless of the arguments passed using the <code>ReturnsForAnyArgs()</code> extension method.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">).</span><span class="nf">ReturnsForAnyArgs</span><span class="p">(</span><span class="m">100</span><span class="p">);</span> 
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">100</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">));</span>
 <span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">100</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">7</span><span class="p">,</span> <span class="m">15</span><span class="p">));</span>
 </code></pre></div></div>
 
-<p><strong>Tip!</strong> You can also use the <code class="highlighter-rouge">default</code> C# keyword for better readability:</p>
+<p><strong>Tip!</strong> You can also use the <code>default</code> C# keyword for better readability:</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="k">default</span><span class="p">,</span> <span class="k">default</span><span class="p">).</span><span class="nf">ReturnsForAnyArgs</span><span class="p">(</span><span class="m">100</span><span class="p">);</span>
 </code></pre></div></div>
 
-<p>The same behaviour can also be achieved using <a href="/help/argument-matchers">argument matchers</a>: it is simply a shortcut for replacing each argument with <code class="highlighter-rouge">Arg.Any&lt;T&gt;()</code>.</p>
+<p>The same behaviour can also be achieved using <a href="/help/argument-matchers">argument matchers</a>: it is simply a shortcut for replacing each argument with <code>Arg.Any&lt;T&gt;()</code>.</p>
 
-<p><code class="highlighter-rouge">ReturnsForAnyArgs()</code> has the same overloads as <code class="highlighter-rouge">Returns()</code>, so you can also specify multiple return values or calculated return values using this approach.</p>
+<p><code>ReturnsForAnyArgs()</code> has the same overloads as <code>Returns()</code>, so you can also specify multiple return values or calculated return values using this approach.</p>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-02-03-return-for-any-args.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

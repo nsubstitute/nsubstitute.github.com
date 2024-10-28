@@ -84,7 +84,7 @@
       <h1>NSubstitute.Analyzers</h1>
       <p>The <a href="https://github.com/nsubstitute/NSubstitute.Analyzers">NSubstitute.Analyzers</a> project uses <a href="https://docs.microsoft.com/en-us/visualstudio/extensibility/dotnet-compiler-platform-roslyn-extensibility">Roslyn</a> to add code analysis during compilation to detect possible errors using the NSubstitute API.</p>
 
-<p>For example: as noted in the warning in <a href="/help/creating-a-substitute/">Creating a substitute</a>, non-virtual members of a class can not be intercepted by NSubstitute. This can cause our tests to behave unpredictably if we attempt to use <code class="highlighter-rouge">.Returns()</code> or <code class="highlighter-rouge">.Received()</code> with them. NSubstitute.Analyzers can detect attempts to substitute for non-virtual members and raise an <a href="https://github.com/nsubstitute/NSubstitute.Analyzers/blob/dev/documentation/rules/NS1000.md">NS1000</a> warning at compile-time, including suggestions on how to fix it. It’s much nicer to find these problems at compile-time than during test execution, or worse, not finding them until much later when we realise our tests were not doing exactly what we thought they were!</p>
+<p>For example: as noted in the warning in <a href="/help/creating-a-substitute/">Creating a substitute</a>, non-virtual members of a class can not be intercepted by NSubstitute. This can cause our tests to behave unpredictably if we attempt to use <code>.Returns()</code> or <code>.Received()</code> with them. NSubstitute.Analyzers can detect attempts to substitute for non-virtual members and raise an <a href="https://github.com/nsubstitute/NSubstitute.Analyzers/blob/dev/documentation/rules/NS1000.md">NS1000</a> warning at compile-time, including suggestions on how to fix it. It’s much nicer to find these problems at compile-time than during test execution, or worse, not finding them until much later when we realise our tests were not doing exactly what we thought they were!</p>
 
 <p>The NSubstitute NuGet package will work fine without any additional packages, but we highly recommend also adding the appropriate Analyzers package to your project (C# or VB):</p>
 
@@ -101,8 +101,12 @@
 <a id="spelling"></a>
 <h2 id="spelling">Spelling</h2>
 
-<p>The Australian members of our team would like to point out they would have preferred to use the English spelling <code class="highlighter-rouge">NSubstitute.Analysers</code> for this project, but have begrudgingly agreed to use the American (mis)spelling instead. :)</p>
+<p>The Australian members of our team would like to point out they would have preferred to use the English spelling <code>NSubstitute.Analysers</code> for this project, but have begrudgingly agreed to use the American (mis)spelling instead. :)</p>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2013-05-01-nsubstitute-analysers.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

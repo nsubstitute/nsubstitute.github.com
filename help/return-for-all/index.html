@@ -82,13 +82,13 @@
 
     <div id="post-content">
       <h1>Return for all calls of a type</h1>
-      <p>We can return a specific value for all calls to a substitute using <code class="highlighter-rouge">sub.ReturnsForAll&lt;T&gt;(T value)</code>. This will cause <code class="highlighter-rouge">sub</code> to return <code class="highlighter-rouge">value</code> for all calls that return something of type <code class="highlighter-rouge">T</code> and are <a href="#returns_vs_returnsforall">not already stubbed</a>.</p>
+      <p>We can return a specific value for all calls to a substitute using <code>sub.ReturnsForAll&lt;T&gt;(T value)</code>. This will cause <code>sub</code> to return <code>value</code> for all calls that return something of type <code>T</code> and are <a href="#returns_vs_returnsforall">not already stubbed</a>.</p>
 
-<p><strong>Note: we need <code class="highlighter-rouge">using NSubstitute.Extensions</code> to import the <code class="highlighter-rouge">.ReturnsForAll&lt;T&gt;()</code> extension method.</strong></p>
+<p><strong>Note: we need <code>using NSubstitute.Extensions</code> to import the <code>.ReturnsForAll&lt;T&gt;()</code> extension method.</strong></p>
 
-<p>The type must match exactly: <code class="highlighter-rouge">.ReturnsForAll&lt;Cat&gt;(cat)</code> will not set a return value for a call that returns <code class="highlighter-rouge">Animal</code>, even if <code class="highlighter-rouge">Cat</code> inherits from <code class="highlighter-rouge">Animal</code>. To return for the super-type, use <code class="highlighter-rouge">.ReturnsForAll&lt;Animal&gt;(cat)</code>. (If you’d like a change in this behaviour, please <a href="https://groups.google.com/forum/#!forum/nsubstitute">let us know</a>).</p>
+<p>The type must match exactly: <code>.ReturnsForAll&lt;Cat&gt;(cat)</code> will not set a return value for a call that returns <code>Animal</code>, even if <code>Cat</code> inherits from <code>Animal</code>. To return for the super-type, use <code>.ReturnsForAll&lt;Animal&gt;(cat)</code>. (If you’d like a change in this behaviour, please <a href="https://groups.google.com/forum/#!forum/nsubstitute">let us know</a>).</p>
 
-<p>There is also an overload that takes a <code class="highlighter-rouge">Func&lt;CallInfo,T&gt;</code> so the value to return will be calculated each time.</p>
+<p>There is also an overload that takes a <code>Func&lt;CallInfo,T&gt;</code> so the value to return will be calculated each time.</p>
 
 <a id="fluent_interface_example"></a>
 <h2 id="fluent-interface-example">Fluent interface example</h2>
@@ -124,7 +124,7 @@ public interface IWidgetContainer {}
   <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="na">[Test]</span>
+<span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">ShouldReturnWidgetsFromBuilder</span><span class="p">()</span> <span class="p">{</span>
   <span class="kt">var</span> <span class="n">builder</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IWidgetBuilder</span><span class="p">&gt;();</span>
   <span class="n">builder</span><span class="p">.</span><span class="n">ReturnsForAll</span><span class="p">&lt;</span><span class="n">IWidgetBuilder</span><span class="p">&gt;(</span><span class="n">builder</span><span class="p">);</span>
@@ -136,12 +136,12 @@ public interface IWidgetContainer {}
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>In this test <code class="highlighter-rouge">builder</code> will return a reference to itself whenever a call returns a value of type <code class="highlighter-rouge">IWidgetBuilder</code>, so the chained calls will all work on the same <code class="highlighter-rouge">builder</code> instance.</p>
+<p>In this test <code>builder</code> will return a reference to itself whenever a call returns a value of type <code>IWidgetBuilder</code>, so the chained calls will all work on the same <code>builder</code> instance.</p>
 
 <a id="returns_vs_returnsforall"></a>
 <h2 id="returns-vs-returnsforall">Returns vs. ReturnsForAll</h2>
 
-<p>Calls will only use <code class="highlighter-rouge">.ReturnsForAll</code> values when NSubstitute can’t find an explicitly stubbed value for the call. So if we set <code class="highlighter-rouge">sub.GetWidget().Returns(widget)</code>, that will take precendence over any values stubbed by <code class="highlighter-rouge">sub.ReturnsForAll&lt;Widget&gt;(otherWidget)</code>.</p>
+<p>Calls will only use <code>.ReturnsForAll</code> values when NSubstitute can’t find an explicitly stubbed value for the call. So if we set <code>sub.GetWidget().Returns(widget)</code>, that will take precendence over any values stubbed by <code>sub.ReturnsForAll&lt;Widget&gt;(otherWidget)</code>.</p>
 
 <!--
 ```requiredcode
@@ -152,7 +152,7 @@ public interface IWidgetExample {
 ```
 -->
 
-<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">[Test]</span>
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="n">Test</span><span class="p">]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">ReturnsTakesPrecedence</span><span class="p">()</span> <span class="p">{</span>
   <span class="kt">var</span> <span class="n">widget</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Widget</span><span class="p">();</span>
   <span class="kt">var</span> <span class="n">otherWidget</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Widget</span><span class="p">();</span>
@@ -165,6 +165,10 @@ public interface IWidgetExample {
 <span class="p">}</span>
 </code></pre></div></div>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2013-03-01-return-for-all.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         

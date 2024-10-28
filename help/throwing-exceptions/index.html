@@ -82,15 +82,32 @@
 
     <div id="post-content">
       <h1>Throwing exceptions</h1>
-      <p><a href="/help/callbacks">Callbacks</a> can be used to throw exceptions when a member is called.</p>
-
-<!--
+      <!--
 ```requiredcode
 public interface ICalculator { int Add(int a, int b); }
 ICalculator calculator;
 [SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
 ```
 -->
+
+<p>The <code>Throws</code> and <code>ThrowsAsync</code> helpers in the <code>NSubstitute.ExceptionExtensions</code> namespace can be used to throw exceptions when a member is called.</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//For non-voids:</span>
+<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">1</span><span class="p">,</span> <span class="p">-</span><span class="m">1</span><span class="p">).</span><span class="nf">Throws</span><span class="p">(</span><span class="k">new</span> <span class="nf">Exception</span><span class="p">());</span> <span class="c1">// Or .Throws&lt;Exception&gt;()</span>
+
+<span class="c1">//For voids and non-voids:</span>
+<span class="n">calculator</span>
+    <span class="p">.</span><span class="nf">When</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">2</span><span class="p">,</span> <span class="p">-</span><span class="m">2</span><span class="p">))</span>
+    <span class="p">.</span><span class="nf">Throw</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="nf">Exception</span><span class="p">());</span> <span class="c1">// Or .Throw&lt;Exception&gt;() -  - don't use .Throw*s* in this case</span>
+
+<span class="c1">//Both calls will now throw.</span>
+<span class="n">Assert</span><span class="p">.</span><span class="n">Throws</span><span class="p">&lt;</span><span class="n">Exception</span><span class="p">&gt;(()</span> <span class="p">=&gt;</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">1</span><span class="p">,</span> <span class="p">-</span><span class="m">1</span><span class="p">));</span>
+<span class="n">Assert</span><span class="p">.</span><span class="n">Throws</span><span class="p">&lt;</span><span class="n">Exception</span><span class="p">&gt;(()</span> <span class="p">=&gt;</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">2</span><span class="p">,</span> <span class="p">-</span><span class="m">2</span><span class="p">));</span>
+</code></pre></div></div>
+
+<a id="returns"></a>
+<h3 id="returns">Returns</h3>
+<p>Another way is to use the underlying method, <code>.Returns</code>. See also <a href="/help/callbacks">Callbacks</a>.</p>
 
 <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//For non-voids:</span>
 <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">1</span><span class="p">,</span> <span class="p">-</span><span class="m">1</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="k">throw</span> <span class="k">new</span> <span class="nf">Exception</span><span class="p">();</span> <span class="p">});</span>
@@ -105,6 +122,10 @@ ICalculator calculator;
 <span class="n">Assert</span><span class="p">.</span><span class="n">Throws</span><span class="p">&lt;</span><span class="n">Exception</span><span class="p">&gt;(()</span> <span class="p">=&gt;</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(-</span><span class="m">2</span><span class="p">,</span> <span class="p">-</span><span class="m">2</span><span class="p">));</span>
 </code></pre></div></div>
 
+      <a class="edit-link" href="https://github.com/nsubstitute/NSubstitute/tree/main/docs/help/_posts/2010-05-02-throwing-exceptions.markdown">
+        <div class="pencil"></div>
+        <span class="edit-text">Edit this page</span>
+      </a>
       <div id="page-navigation">
         <div class="previous">
         
