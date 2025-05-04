@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Checking received calls | NSubstitute </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Checking received calls | NSubstitute ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-03-01-received-calls.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/nsubstitute-32x32.png" alt="NSubstitute">
+            NSubstitute
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+
+<p>In some cases (particularly for <code>void</code> methods) it is useful to check that a specific call has been received by a substitute. This can be checked using the <code>Received()</code> extension method, followed by the call being checked.</p>
+<pre><code class="lang-csharp">public interface ICommand {
+    void Execute();
+    event EventHandler Executed;
+}
+
+public class SomethingThatNeedsACommand {
+    ICommand command;
+    public SomethingThatNeedsACommand(ICommand command) {
+        this.command = command;
+    }
+    public void DoSomething() { command.Execute(); }
+    public void DontDoAnything() { }
+}
+
+[Test]
+public void Should_execute_command() {
+    //Arrange
+    var command = Substitute.For&lt;ICommand&gt;();
+    var something = new SomethingThatNeedsACommand(command);
+    //Act
+    something.DoSomething();
+    //Assert
+    command.Received().Execute();
+}
+</code></pre>
+<p>In this case <code>command</code> did receive a call to <code>Execute()</code>, and so will complete successfully. If <code>Execute()</code> has not been received NSubstitute will throw a <code>ReceivedCallsException</code> and let you know what call was expected and with which arguments, as well as listing actual calls to that method and which the arguments differed.</p>
+<h2 id="check-a-call-was-not-received">Check a call was not received</h2>
+<p>NSubstitute can also make sure a call was not received using the <code>DidNotReceive()</code> extension method.</p>
+<pre><code class="lang-csharp">var command = Substitute.For&lt;ICommand&gt;();
+var something = new SomethingThatNeedsACommand(command);
+//Act
+something.DontDoAnything();
+//Assert
+command.DidNotReceive().Execute();
+</code></pre>
+<h2 id="check-a-call-was-received-a-specific-number-of-times">Check a call was received a specific number of times</h2>
+<p>The <code>Received()</code> extension method will assert that at least one call was made to a member, and <code>DidNotReceive()</code> asserts that zero calls were made. NSubstitute also gives you the option of asserting a specific number of calls were received by passing an integer to <code>Received()</code>. This will throw if the substitute does not receive <em>exactly</em> that many matching calls. Too few, or too many, and the assertion will fail.</p>
+<pre><code class="lang-csharp">public class CommandRepeater {
+    ICommand command;
+    int numberOfTimesToCall;
+    public CommandRepeater(ICommand command, int numberOfTimesToCall) {
+      this.command = command;
+      this.numberOfTimesToCall = numberOfTimesToCall;
+    }
+
+    public void Execute() {
+      for (var i=0; i&lt;numberOfTimesToCall; i++) command.Execute();
+    }
+}
+
+[Test]
+public void Should_execute_command_the_number_of_times_specified() {
+  var command = Substitute.For&lt;ICommand&gt;();
+  var repeater = new CommandRepeater(command, 3);
+  //Act
+  repeater.Execute();
+  //Assert
+  command.Received(3).Execute(); // &lt;&lt; This will fail if 2 or 4 calls were received
+}
+</code></pre>
+<p>We can also use <code>Received(1)</code> to check a call was received once and only once. This differs from the standard <code>Received()</code> call, which checks a call was received <em>at least</em> once. <code>Received(0)</code> behaves the same as <code>DidNotReceive()</code>.</p>
+<h2 id="received-or-not-with-specific-arguments">Received (or not) with specific arguments</h2>
+<!--
+```requiredcode
+public interface ICalculator {
+    int Add(int a, int b);
+    int Subtract(int a, int b);
+    string Mode { get; set; }
+}
+ICalculator calculator;
+[SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
+```
+-->
+<p>We can also use <a href="/help/argument-matchers">argument matchers</a> to check calls were received (or not) with particular arguments. This is covered in more detail in the <a href="/help/argument-matchers">argument matchers</a> topic, but the following examples show the general idea:</p>
+<pre><code class="lang-csharp">calculator.Add(1, 2);
+calculator.Add(-100, 100);
+
+//Check received with second arg of 2 and any first arg:
+calculator.Received().Add(Arg.Any&lt;int&gt;(), 2);
+//Check received with first arg less than 0, and second arg of 100:
+calculator.Received().Add(Arg.Is&lt;int&gt;(x =&gt; x &lt; 0), 100);
+//Check did not receive a call where second arg is &gt;= 500 and any first arg:
+calculator
+    .DidNotReceive()
+    .Add(Arg.Any&lt;int&gt;(), Arg.Is&lt;int&gt;(x =&gt; x &gt;= 500));
+</code></pre>
+<h2 id="ignoring-arguments">Ignoring arguments</h2>
+<p>NSubstitute can also check calls were received or not received but ignore the arguments used, just like we can for <a href="/help/return-for-any-args">setting returns for any arguments</a>. In this case we need <code>ReceivedWithAnyArgs()</code> and <code>DidNotReceiveWithAnyArgs()</code>.</p>
+<pre><code class="lang-csharp">calculator.Add(1, 3);
+
+calculator.ReceivedWithAnyArgs().Add(default, default);
+calculator.DidNotReceiveWithAnyArgs().Subtract(default, default);
+</code></pre>
+<h2 id="checking-calls-to-properties">Checking calls to properties</h2>
+<p>The same syntax can be used to check calls on properties. Normally we'd want to avoid this, as we're really more interested in testing the required behaviour rather than the precise implementation details (i.e. we would set the property to return a value and check that was used properly, rather than assert that the property getter was called). Still, there are probably times when checking getters and setters were called can come in handy, so here's how you do it:</p>
+<pre><code class="lang-csharp">var mode = calculator.Mode;
+calculator.Mode = &quot;TEST&quot;;
+
+//Check received call to property getter
+//We need to assign the result to a variable to keep
+//the compiler happy or use discards (since C# 7.0).
+_ = calculator.Received().Mode;
+
+//Check received call to property setter with arg of &quot;TEST&quot;
+calculator.Received().Mode = &quot;TEST&quot;;
+</code></pre>
+<h2 id="checking-calls-to-indexers">Checking calls to indexers</h2>
+<p>An indexer is really just another property, so we can use the same syntax to check calls to indexers.</p>
+<pre><code class="lang-csharp">var dictionary = Substitute.For&lt;IDictionary&lt;string, int&gt;&gt;();
+dictionary[&quot;test&quot;] = 1;
+
+dictionary.Received()[&quot;test&quot;] = 1;
+dictionary.Received()[&quot;test&quot;] = Arg.Is&lt;int&gt;(x =&gt; x &lt; 5);
+</code></pre>
+<h2 id="checking-event-subscriptions">Checking event subscriptions</h2>
+<p>As with properties, we'd normally favour testing the required behaviour over checking subscriptions to particular event handlers. We can do that by <a href="/help/raising-events/">raising an event on the substitute</a> and asserting our class performs the correct behaviour in response:</p>
+<pre><code class="lang-csharp">public class CommandWatcher {
+    ICommand command;
+    public CommandWatcher(ICommand command) {
+        command.Executed += OnExecuted;
+    }
+    public bool DidStuff { get; private set; }
+    public void OnExecuted(object o, EventArgs e) { DidStuff = true; }
+}
+
+[Test]
+public void ShouldDoStuffWhenCommandExecutes() {
+  var command = Substitute.For&lt;ICommand&gt;();
+  var watcher = new CommandWatcher(command);
+
+  command.Executed += Raise.Event();
+
+  Assert.That(watcher.DidStuff);
+}
+</code></pre>
+<p>If required though, <code>Received</code> will let us assert that the subscription was received:</p>
+<pre><code class="lang-csharp">[Test]
+public void MakeSureWatcherSubscribesToCommandExecuted() {
+    var command = Substitute.For&lt;ICommand&gt;();
+    var watcher = new CommandWatcher(command);
+
+    // Not recommended. Favour testing behaviour over implementation specifics.
+    // Can check subscription:
+    command.Received().Executed += watcher.OnExecuted;
+    // Or, if the handler is not accessible:
+    command.Received().Executed += Arg.Any&lt;EventHandler&gt;();
+}
+</code></pre>
+<h2 id="checking-event-invocation">Checking event invocation</h2>
+<p>We can also use substitutes for event handlers to confirm that a particular event was raised correctly. Often a simple lambda function will suffice, but if we want to use argument matchers we can use a substitute and <code>Received</code>. Both options are shown below:</p>
+<pre><code class="lang-csharp">public class LowFuelWarningEventArgs : EventArgs {
+    public int PercentLeft { get; }
+    public LowFuelWarningEventArgs(int percentLeft){
+        PercentLeft = percentLeft;
+    }
+}
+
+public class FuelManagement{
+    public event EventHandler&lt;LowFuelWarningEventArgs&gt; LowFuelDetected;
+    public void DoSomething(){
+        LowFuelDetected?.Invoke(this, new LowFuelWarningEventArgs(15));
+    }
+}
+
+// Often it is easiest to use a lambda for this, as shown in the following test:
+[Test]
+public void ShouldRaiseLowFuel_WithoutNSub(){
+    var fuelManagement = new FuelManagement();
+    var eventWasRaised = false;
+    fuelManagement.LowFuelDetected += (o,e) =&gt; eventWasRaised = true;
+
+    fuelManagement.DoSomething();
+
+    Assert.That(eventWasRaised);
+}
+
+// We can also use NSubstitute for this if we want more involved argument matching logic.
+// NSubstitute also gives us a descriptive message if the assertion fails which may be helpful in some cases.
+// (For example, if the call was not received with the expected arguments, we'll get a list of the non-matching
+// calls made to that member.)
+//
+// Note we could still use lambdas and standard assertions for this, but a substitute may be worth considering
+// in some of these cases.
+[Test]
+public void ShouldRaiseLowFuel(){
+    var fuelManagement = new FuelManagement();
+    var handler = Substitute.For&lt;EventHandler&lt;LowFuelWarningEventArgs&gt;&gt;();
+    fuelManagement.LowFuelDetected += handler;
+
+    fuelManagement.DoSomething();
+
+    handler
+        .Received()
+        .Invoke(fuelManagement, Arg.Is&lt;LowFuelWarningEventArgs&gt;(x =&gt; x.PercentLeft &lt; 20));
+}
+</code></pre>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-03-01-received-calls.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

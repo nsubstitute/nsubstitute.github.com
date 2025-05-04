@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Argument matchers | NSubstitute </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Argument matchers | NSubstitute ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-04-01-argument-matchers.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/nsubstitute-32x32.png" alt="NSubstitute">
+            NSubstitute
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+
+<p>Argument matchers can be used when <a href="/help/return-for-args">setting return values</a> and when <a href="/help/received-calls">checking received calls</a>. They provide a way to <em>specify</em> a call or group of calls, so that a return value can be set for all matching calls, or to check a matching call has been received.</p>
+<p>The argument matchers syntax shown here depends on having C# 7.0 or later. If you are stuck on an earlier version (getting an error such as <code>CS7085: By-reference return type 'ref T' is not supported</code> while trying to use them) please use <a href="/help/compat-args">compatibility argument matchers</a> instead.</p>
+<p>⚠️ <strong>Note:</strong> Argument matchers should only be used when setting return values or checking received calls. Using <code>Arg.Is</code> or <code>Arg.Any</code> without a call to <code>Returns(...)</code> or <code>Received()</code> can cause your tests to behave in unexpected ways. See <a href="#how-not-to-use-argument-matchers">How NOT to use argument matchers</a> for more information.</p>
+<!--
+```requiredcode
+public interface ICalculator {
+    int Add(int a, int b);
+    int Subtract(int a, int b);
+    void StoreMemory(int slot, int value);
+    bool LoadMemory(int slot, out int value);
+}
+public interface IFormatter {
+  string Format(object o);
+}
+public interface IWidgetFactory {
+  string Make(WidgetInfo info);
+  string MakeDefaultWidget();
+}
+public class WidgetInfo {
+  public string Name { get; set; }
+  public int Quantity { get; set; }
+}
+public class Sprocket {
+  IWidgetFactory wf;
+  public Sprocket(IWidgetFactory wf) { this.wf = wf; }
+  public void StartWithWidget(WidgetInfo info) { wf.Make(info); }
+}
+ICalculator calculator;
+IFormatter formatter;
+string TestWidget = "test widget";
+[SetUp] public void SetUp() {
+    calculator = Substitute.For<ICalculator>();
+    formatter = Substitute.For<IFormatter>();
+}
+```
+-->
+<h2 id="ignoring-arguments">Ignoring arguments</h2>
+<p>An argument of type <code>T</code> can be ignored using <code>Arg.Any&lt;T&gt;()</code>.</p>
+<pre><code class="lang-csharp">calculator.Add(Arg.Any&lt;int&gt;(), 5).Returns(7);
+
+Assert.AreEqual(7, calculator.Add(42, 5));
+Assert.AreEqual(7, calculator.Add(123, 5));
+Assert.AreNotEqual(7, calculator.Add(1, 7));
+</code></pre>
+<p>In this example we return <code>7</code> when adding any number to <code>5</code>. We use <code>Arg.Any&lt;int&gt;()</code> to tell NSubstitute to ignore the first argument.</p>
+<p>We can also use this to match any argument of a specific sub-type.</p>
+<pre><code class="lang-csharp">formatter.Format(new object());
+formatter.Format(&quot;some string&quot;);
+
+formatter.Received().Format(Arg.Any&lt;object&gt;());
+formatter.Received().Format(Arg.Any&lt;string&gt;());
+formatter.DidNotReceive().Format(Arg.Any&lt;int&gt;());
+</code></pre>
+<h2 id="conditionally-matching-an-argument">Conditionally matching an argument</h2>
+<p>An argument of type <code>T</code> can be conditionally matched using <code>Arg.Is&lt;T&gt;(Predicate&lt;T&gt; condition)</code>.</p>
+<pre><code class="lang-csharp">calculator.Add(1, -10);
+
+//Received call with first arg 1 and second arg less than 0:
+calculator.Received().Add(1, Arg.Is&lt;int&gt;(x =&gt; x &lt; 0));
+//Received call with first arg 1 and second arg of -2, -5, or -10:
+calculator
+    .Received()
+    .Add(1, Arg.Is&lt;int&gt;(x =&gt; new[] {-2,-5,-10}.Contains(x)));
+//Did not receive call with first arg greater than 10:
+calculator.DidNotReceive().Add(Arg.Is&lt;int&gt;(x =&gt; x &gt; 10), -10);
+</code></pre>
+<p>If the condition throws an exception for an argument, then it will be assumed that the argument does not match. The exception itself will be swallowed.</p>
+<pre><code class="lang-csharp">formatter.Format(Arg.Is&lt;string&gt;(x =&gt; x.Length &lt;= 10)).Returns(&quot;matched&quot;);
+
+Assert.AreEqual(&quot;matched&quot;, formatter.Format(&quot;short&quot;));
+Assert.AreNotEqual(&quot;matched&quot;, formatter.Format(&quot;not matched, too long&quot;));
+// Will not match because trying to access .Length on null will throw an exception when testing
+// our condition. NSubstitute will assume it does not match and swallow the exception.
+Assert.AreNotEqual(&quot;matched&quot;, formatter.Format(null));
+</code></pre>
+<h2 id="matching-a-specific-argument">Matching a specific argument</h2>
+<p>An argument of type <code>T</code> can be matched using <code>Arg.Is&lt;T&gt;(T value)</code>.</p>
+<pre><code class="lang-csharp">calculator.Add(0, 42);
+
+//This won't work; NSubstitute isn't sure which arg the matcher applies to:
+//calculator.Received().Add(0, Arg.Any&lt;int&gt;());
+
+calculator.Received().Add(Arg.Is(0), Arg.Any&lt;int&gt;());
+</code></pre>
+<p>This matcher normally isn't required; most of the time we can just use <code>0</code> instead of <code>Arg.Is(0)</code>. In some cases though, NSubstitute can't work out which matcher applies to which argument (arg matchers are actually fuzzily matched; not passed directly to the function call). In these cases it will throw an <code>AmbiguousArgumentsException</code> and ask you to specify one or more additional argument matchers. In some cases you may have to explicitly use argument matchers for every argument.</p>
+<h2 id="matching-out-and-ref-args">Matching <code>out</code> and <code>ref</code> args</h2>
+<p>Argument matchers can also be used with <code>out</code> and <code>ref</code> (NSubstitute 4.0 and later with C# 7.0 and later).</p>
+<pre><code class="lang-csharp">calculator
+    .LoadMemory(1, out Arg.Any&lt;int&gt;())
+    .Returns(x =&gt; {
+        x[1] = 42;
+        return true;
+    });
+
+var hasEntry = calculator.LoadMemory(1, out var memoryValue);
+Assert.AreEqual(true, hasEntry);
+Assert.AreEqual(42, memoryValue);
+</code></pre>
+<p>See <a href="/help/setting-out-and-ref-arguments/">Setting out and ref args</a> for more information on working with <code>out</code> and <code>ref</code>.</p>
+<h2 id="how-not-to-use-argument-matchers">How NOT to use argument matchers</h2>
+<p>Occasionally argument matchers get used in ways that cause unexpected results for people. Here are the most common ones.</p>
+<h3 id="using-matchers-outside-of-stubbing-or-checking-received-calls">Using matchers outside of stubbing or checking received calls</h3>
+<p>Argument matchers should only be used when specifying calls for the purposes of setting return values, checking received calls, or configuring callbacks (for example: with <code>Returns</code>, <code>Received</code> or <code>When</code>). Using <code>Arg.Is</code> or <code>Arg.Any</code> in other situations can cause your tests to behave in unexpected ways.</p>
+<p>Argument matchers should only be used for:</p>
+<ul>
+<li>Specifying a call when using <code>Returns</code> and <code>ReturnsForAnyArgs</code></li>
+<li>Specifying a call within a <code>When</code> or <code>WhenForAnyArgs</code> block to configure a callback/call action</li>
+<li>Specifying a call to check with <code>Received</code>, <code>DidNotReceive</code> and <code>Received.InOrder</code></li>
+<li>Configuring a callback with <code>Arg.Do</code> or <code>Arg.Invoke</code></li>
+</ul>
+<p>Using an argument matcher without one of these calls is most likely an error.</p>
+<p>For example:</p>
+<pre><code class="lang-csharp">/* ARRANGE */
+
+var widgetFactory = Substitute.For&lt;IWidgetFactory&gt;();
+var subject = new Sprocket(widgetFactory);
+
+// OK: Use arg matcher for a return value:
+widgetFactory.Make(Arg.Is&lt;WidgetInfo&gt;(x =&gt; x.Quantity &gt; 10)).Returns(TestWidget);
+
+/* ACT */
+
+// NOT OK: arg matcher used with a real call:
+//   subject.StartWithWidget(Arg.Any&lt;WidgetInfo&gt;());
+
+// Use a real argument instead:
+subject.StartWithWidget(new WidgetInfo { Name = &quot;Test&quot;, Quantity = 4 });
+
+/* ASSERT */
+
+// OK: Use arg matcher to check a call was received:
+widgetFactory.Received().Make(Arg.Is&lt;WidgetInfo&gt;(x =&gt; x.Name == &quot;Test&quot;));
+</code></pre>
+<p>In this example it would be an error to use an argument matcher in the <code>ACT</code> part of this test. Even if we don't mind what specific argument we pass to our subject, <code>Arg.Any</code> is only for substitutes, and only for specifying a call while setting return values, checking received calls or for configuring callbacks; not for real calls.</p>
+<p>(If you do want to indicate to readers that the precise argument used for a real call doesn't matter you could use a variable such as <code>var someWidget = new WidgetInfo(); subject.StartWithWidget(someWidget);</code> or similar. Just stay clear of argument matchers for this!)</p>
+<p>Similarly, we should not use an arg matcher as a real value to return from a call (even a substituted one):</p>
+<pre><code class="lang-csharp">var widgetFactory = Substitute.For&lt;IWidgetFactory&gt;();
+
+// NOT OK: using an arg matcher as a value, not to specify a call:
+//    widgetFactory.MakeDefaultWidget().Returns(Arg.Any&lt;string&gt;());
+
+// Instead use something like:
+widgetFactory.MakeDefaultWidget().Returns(&quot;any widget&quot;);
+</code></pre>
+<p>Another legal use of argument matchers is specifying calls when configuring callbacks:</p>
+<pre><code class="lang-csharp">/* ARRANGE */
+var widgetFactory = Substitute.For&lt;IWidgetFactory&gt;();
+var subject = new Sprocket(widgetFactory);
+
+// OK: Use arg matcher to configure a callback:
+var testLog = new List&lt;string&gt;();
+widgetFactory.When(x =&gt; x.Make(Arg.Any&lt;WidgetInfo&gt;())).Do(x =&gt; testLog.Add(x.Arg&lt;WidgetInfo&gt;().Name));
+
+// OK: Use Arg.Do to configure a callback:
+var testLog2 = new List&lt;string&gt;();
+widgetFactory.Make(Arg.Do&lt;WidgetInfo&gt;(info =&gt; testLog2.Add(info.Name)));
+
+/* ACT */
+subject.StartWithWidget(new WidgetInfo { Name = &quot;Test Widget&quot; });
+
+/* ASSERT */
+Assert.AreEqual(new[] { &quot;Test Widget&quot; }, testLog);
+Assert.AreEqual(new[] { &quot;Test Widget&quot; }, testLog2);
+</code></pre>
+<h3 id="modifying-values-being-matched">Modifying values being matched</h3>
+<p>When NSubstitute records calls, it keeps a reference to the arguments passed, not a deep clone of each argument at the time of the call. This means that if the properties of an argument change after the call assertions may not behave as expected.</p>
+<!--
+```requiredcode
+public interface IPersonLookup {
+    void Add(Person p);
+}
+public interface IPersonStructLookup {
+    void Add(PersonStruct p);
+}
+```
+-->
+<pre><code class="lang-csharp">public class Person {
+    public string Name { get; set; }
+}
+
+[Test]
+public void MutatingAMatchedArgument() {
+    var person = new Person { Name = &quot;Carrot&quot; };
+    var lookup = Substitute.For&lt;IPersonLookup&gt;();
+
+    // Called with a Person that has a .Name property of &quot;Carrot&quot;
+    lookup.Add(person);
+
+    // The Name in that person reference later gets updated ...
+    person.Name = &quot;Vimes&quot;;
+
+    // When the substitute is queried, it will check the fields of the person reference it was called with.
+    // This means the argument it was called with does NOT have a .Name of &quot;Carrot&quot; (it was changed!)
+    lookup.DidNotReceive().Add(Arg.Is&lt;Person&gt;(p =&gt; p.Name == &quot;Carrot&quot;));
+    // Instead, it now has the updated name:
+    lookup.Received().Add(Arg.Is&lt;Person&gt;(p =&gt; p.Name == &quot;Vimes&quot;));
+}
+</code></pre>
+<p>This looks confusing at first, but if we remember substitutes are pretty much forced to store references to arguments used then it makes sense. The alternative of storing deep-cloned snapshots of every argument to every call received is fairly impractical, especially if we consider objects with very complex hierarchies (e.g. tens of fields, each with an object with tens of fields of its own, etc.). Storing snapshots would also lead to the same confusion in the reverse situation, where we know a substitute was called with a particular reference but the <code>Arg.Is(person)</code> check fails due to a change in one of its fields.</p>
+<p>That said, there are times when snapshots like this are useful, and there are a few ways to enable this with NSubstitute.</p>
+<p>The first option is to use structs instead of classes for these cases. These are passed by value rather than by reference, so that value will be stored by substitutes and modifications made afterwards will not affect that value.</p>
+<pre><code class="lang-csharp">public struct PersonStruct {
+    public string Name { get; set; }
+}
+
+[Test]
+public void MutatingAStruct() {
+    var person = new PersonStruct { Name = &quot;Carrot&quot; };
+    var lookup = Substitute.For&lt;IPersonStructLookup&gt;();
+
+    lookup.Add(person);
+
+    person.Name = &quot;Vimes&quot;;
+
+    // `person` was passed by value, and that value still has the original Name
+    lookup.Received().Add(Arg.Is&lt;PersonStruct&gt;(p =&gt; p.Name == &quot;Carrot&quot;));
+}
+</code></pre>
+<p>For cases where that is not possible or wanted then we can manually snapshot the values we are interested in.</p>
+<pre><code class="lang-csharp">[Test]
+public void ManualArgSnapshot() {
+    var person = new Person { Name = &quot;Carrot&quot; };
+    var lookup = Substitute.For&lt;IPersonLookup&gt;();
+    var namesAdded = new List&lt;string&gt;();
+    // Manually snapshot the value or values we care about:
+    lookup.Add(Arg.Do&lt;Person&gt;(p =&gt; namesAdded.Add(p.Name)));
+
+
+    lookup.Add(person);
+    person.Name = &quot;Vimes&quot;;
+
+    Assert.AreEqual(&quot;Carrot&quot;, namesAdded[0]);
+}
+</code></pre>
+<p>We can then use our standard assertion library for checking the value. This approach can also be helpful for asserting on complex objects, as our assertions can be more detailed and provide more useful information than NSubstitute typically provides in these cases.</p>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-04-01-argument-matchers.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

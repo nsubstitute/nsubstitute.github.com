@@ -1,0 +1,415 @@
+{
+  "source_base_path": "D:/a/NSubstitute/NSubstitute/docs",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-01-01-getting-started.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-01-01-getting-started.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-01-02-creating-a-substitute.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-01-02-creating-a-substitute.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-02-01-set-return-value.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-02-01-set-return-value.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-02-02-return-for-args.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-02-02-return-for-args.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-02-03-return-for-any-args.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-02-03-return-for-any-args.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-02-03-return-from-function.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-02-03-return-from-function.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-02-04-multiple-returns.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-02-04-multiple-returns.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-02-10-replacing-return-values.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-02-10-replacing-return-values.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-03-01-received-calls.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-03-01-received-calls.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-03-10-clear-received-calls.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-03-10-clear-received-calls.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-04-01-argument-matchers.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-04-01-argument-matchers.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-05-01-callbacks.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-05-01-callbacks.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-05-02-throwing-exceptions.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-05-02-throwing-exceptions.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-05-10-configure.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-05-10-configure.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-06-01-raising-events.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-06-01-raising-events.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-10-01-auto-and-recursive-mocks.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-10-01-auto-and-recursive-mocks.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-11-01-setting-out-and-ref-arguments.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-11-01-setting-out-and-ref-arguments.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2010-12-01-actions-with-arguments.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2010-12-01-actions-with-arguments.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2013-01-01-received-in-order.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2013-01-01-received-in-order.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2013-02-01-partial-subs.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2013-02-01-partial-subs.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2013-03-01-return-for-all.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2013-03-01-return-for-all.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2013-04-01-threading.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2013-04-01-threading.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2013-04-15-compat-args.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2013-04-15-compat-args.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2013-05-01-nsubstitute-analysers.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2013-05-01-nsubstitute-analysers.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2015-01-01-how-nsub-works.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2015-01-01-how-nsub-works.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/2019-01-01-search.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/2019-01-01-search.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "docs/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "docs/toc.html"
+        },
+        ".json": {
+          "relative_path": "docs/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "favicon.ico",
+      "output": {
+        "resource": {
+          "relative_path": "favicon.ico"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "help.md",
+      "output": {
+        ".html": {
+          "relative_path": "help.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/NSubstitute.ai",
+      "output": {
+        "resource": {
+          "relative_path": "images/NSubstitute.ai"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/github-16x16.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/github-16x16.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/nsubstitute-100x100.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/nsubstitute-100x100.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/nsubstitute-16x16.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/nsubstitute-16x16.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/nsubstitute-32x32.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/nsubstitute-32x32.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/nuget-16x16.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/nuget-16x16.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/teamcity-16x16.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/teamcity-16x16.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/teamcity-32x32.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/teamcity-32x32.png"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

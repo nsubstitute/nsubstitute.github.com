@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Auto and recursive mocks | NSubstitute </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Auto and recursive mocks | NSubstitute ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-10-01-auto-and-recursive-mocks.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/nsubstitute-32x32.png" alt="NSubstitute">
+            NSubstitute
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+
+<p>Once a substitute has been created some properties and methods will automatically return non-null values. For example, any properties or methods that return an <em>interface</em>, <em>delegate</em>, or <em>purely virtual class</em>* will automatically return substitutes themselves. This is commonly referred to as <em>recursive mocking</em>, and can be useful because you can avoid explicitly creating each substitute, which means less code. Other types, like <code>String</code> and <code>Array</code>, will default to returning empty values rather than nulls.</p>
+<p><em>* Note:</em> A pure virtual class is defined as one with all its public methods and properties defined as <em>virtual</em> or <em>abstract</em> and with a default, parameterless constructor defined as <em>public</em> or <em>protected</em>.</p>
+<h2 id="recursive-mocks">Recursive mocks</h2>
+<p>Say we have the following types:</p>
+<pre><code class="lang-csharp">public interface INumberParser {
+    IEnumerable&lt;int&gt; Parse(string expression);
+}
+public interface INumberParserFactory {
+    INumberParser Create(char delimiter);
+}
+</code></pre>
+<p>We want to configure our <code>INumberParserFactory</code> to create a parser that will return a certain set of <code>int</code> for an <code>expresion</code>. We could manually create each substitute:</p>
+<pre><code class="lang-csharp">var factory = Substitute.For&lt;INumberParserFactory&gt;();
+var parser = Substitute.For&lt;INumberParser&gt;();
+factory.Create(',').Returns(parser);
+parser.Parse(&quot;an expression&quot;).Returns(new[] {1,2,3});
+
+Assert.AreEqual(
+    factory.Create(',').Parse(&quot;an expression&quot;),
+    new[] {1,2,3});
+</code></pre>
+<p>Or we could use the fact that a substitute for type <code>INumberParser</code> will automatically be returned for <code>INumberParserFactory.Create()</code>:</p>
+<pre><code class="lang-csharp">var factory = Substitute.For&lt;INumberParserFactory&gt;();
+factory.Create(',').Parse(&quot;an expression&quot;).Returns(new[] {1,2,3});
+
+Assert.AreEqual(
+    factory.Create(',').Parse(&quot;an expression&quot;),
+    new[] {1,2,3});
+</code></pre>
+<p>Each time a recursively-subbed property or method is called with the same arguments it will return the same substitute. If a method is called with different arguments a new substitute will be returned.</p>
+<!--
+```requiredcode
+INumberParserFactory factory;
+[SetUp] public void SetUp() { factory = Substitute.For<INumberParserFactory>(); }
+```
+-->
+<pre><code class="lang-csharp">var firstCall = factory.Create(',');
+var secondCall = factory.Create(',');
+var thirdCallWithDiffArg = factory.Create('x');
+
+Assert.AreSame(firstCall, secondCall);
+Assert.AreNotSame(firstCall, thirdCallWithDiffArg);
+</code></pre>
+<p><em>Note:</em> Recursive substitutes will not be created for  non-purely virtual classes, as creating and using classes can have potentially unwanted side-effects. You'll therefore need to create and return these explicitly.</p>
+<h3 id="substitute-chains">Substitute chains</h3>
+<p>It is not really an ideal practice, but when required we can also use recursive mocks to make it easier to set up chains of substitutes. For example:</p>
+<pre><code class="lang-csharp">public interface IContext {
+    IRequest CurrentRequest { get; }
+}
+public interface IRequest {
+    IIdentity Identity { get; }
+    IIdentity NewIdentity(string name);
+}
+public interface IIdentity {
+    string Name { get; }
+    string[] Roles();
+}
+</code></pre>
+<p>To get the identity of the <code>CurrentRequest</code> to return a certain name, we could manually create substitutes for <code>IContext</code>, <code>IRequest</code>, and <code>IIdentity</code>, and then use <code>Returns()</code> to chain these substitutes together. Instead we can use the substitutes automatically created for each property and method:</p>
+<pre><code class="lang-csharp">var context = Substitute.For&lt;IContext&gt;();
+context.CurrentRequest.Identity.Name.Returns(&quot;My pet fish Eric&quot;);
+Assert.AreEqual(
+    &quot;My pet fish Eric&quot;,
+    context.CurrentRequest.Identity.Name);
+</code></pre>
+<p>Here <code>CurrentRequest</code> is automatically going to return a substitute for <code>IRequest</code>, and the <code>IRequest</code> substitute will automatically return a substitute for <code>IIdentity</code>.</p>
+<p><em>Note:</em> Setting up long chains of substitutes this way is a code smell: we are breaking the <a href="https://en.wikipedia.org/wiki/Law_of_Demeter">Law of Demeter</a>, which says objects should only talk to their immediate neighbours, not reach into their neighbours' neighbours. If you write your tests without recursive mocks this becomes quite obvious as the set up becomes quite complicated, so if you are going to use recursive mocking you'll need to be extra vigilant to avoid this type of coupling.</p>
+<h2 id="auto-values">Auto values</h2>
+<p>Properties and methods returning types of <code>String</code> or <code>Array</code> will automatically get empty, non-null defaults. This can help avoid null reference exceptions in cases where you just need a reference returned but don't care about its specific properties.</p>
+<pre><code class="lang-csharp">var identity = Substitute.For&lt;IIdentity&gt;();
+Assert.AreEqual(String.Empty, identity.Name);
+Assert.AreEqual(0, identity.Roles().Length);
+</code></pre>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-10-01-auto-and-recursive-mocks.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

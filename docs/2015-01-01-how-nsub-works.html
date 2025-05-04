@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>How NSubstitute works | NSubstitute </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="How NSubstitute works | NSubstitute ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2015-01-01-how-nsub-works.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/nsubstitute-32x32.png" alt="NSubstitute">
+            NSubstitute
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+
+<p>When we substitute for a class or interface, NSubstitute uses the wonderful <a href="https://github.com/castleproject/Core">Castle DynamicProxy library</a> to generate a new class that inherits from that class or implements that interface. This allows us to use that substitute in place of the original type.</p>
+<p>You can think of it working a bit like this:</p>
+<!--
+```requiredcode
+public static void handle_call_invocation() {}
+public static int configured_value_for_call() => 42;
+```
+-->
+<pre><code class="lang-csharp">public class Original {
+    public virtual int DoStuffWith(string s) =&gt; s.Length;
+}
+
+// Now if we do:
+//      var sub = Substitute.For&lt;Original&gt;();
+//
+// This is a bit like doing:
+public class SubstituteForOriginal : Original {
+    public override int DoStuffWith(string s) {
+        // Tell NSubstitute to record the call, run when..do actions etc,
+        // then return the value configured for this call.
+        handle_call_invocation();
+        return configured_value_for_call();
+    }
+}
+Original sub = new SubstituteForOriginal();
+</code></pre>
+<h2 id="calamities-with-classes">Calamities with classes</h2>
+<p>For the case when <code>Original</code> is an interface this works perfectly; every member in the interface will be intercepted by NSubstitute's logic for recording calls and returning configured values.</p>
+<p>There are some caveats when <code>Original</code> is a class though (hence all the <a href="/help/creating-a-substitute#substituting-infrequently-and-carefully-for-classes">warnings about them in the documentation</a>).</p>
+<h3 id="non-virtual-members">Non-virtual members</h3>
+<p>If <code>DoStuffWith(string s)</code> is not <code>virtual</code>, the <code>SubstituteForOriginal</code> class will not be able to override it, so when it is called NSubstitute will not know about it. It is effectively invisible to NSubstitute; it can't record calls to it, it can't configure values using <code>Returns</code>, it can't run actions via <code>When..Do</code>, it can't verify the call was received. Instead, the real base implementation of the member will run.</p>
+<p>This can cause all sorts of problems if we accidentally attempt to configure a non-virtual call, because NSubstitute will get confused about which call you're talking about. Usually this will result in a run-time error, but in the worst case it can affect the outcome of your test, or even the following test in the suite, in non-obvious ways. Thankfully we have <a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a> to detect these cases at compile time.</p>
+<h3 id="internal-members-and-types">Internal members and types</h3>
+<p>Similar limitations apply to <code>internal</code> members and types. Because <code>SubstituteForOriginal</code> gets generated in a separate assembly, they are invisible to NSubstitute and your test-assembly by default. There are two ways to solve this:</p>
+<p>The first possibility is to change the visibility of the member or type that shall be substituted. If you change the visibility of members to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/protected-internal"><code>protected internal</code></a>, they get <em>visible</em> for types that derive from it. The visibility of <code>internal</code> types must be set to <a href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/public"><code>public</code></a>. However, keep in mind that changing visibilities should be well considered. The next alternative has less side effects on the maintainability of your project.</p>
+<p>The second possibility is to make the <code>internal</code> members and types visible to your test-assembly and to the library that NSubstitute uses under the hood. For this you need to <em>allow</em> specific assemblies to accesss the <code>internal</code>s. You can do this by either adding an attribute to the assembly that contains the <code>internal</code>s or add an annotation to your project file.</p>
+<h4 id="option-1-use-an-assembly-attribute">Option 1. Use an assembly attribute</h4>
+<p>Add the following code to an arbitrary <code>.cs</code>-file of the project that contains the <code>internal</code> types.</p>
+<pre><code>[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;DynamicProxyGenAssembly2&quot;)]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;name of the assembly that contains your tests&quot;)]
+</code></pre>
+<h4 id="option-2-use-a-tag-in-the-project-file-works-with-net-5-and-above">Option 2. Use a tag in the project file (works with .NET 5 and above)</h4>
+<p>Add an <code>ItemGroup</code> that contains the <code>InternalsVisibleTo</code>-element beneath the <code>Project</code>-element in your <code>.csproj</code>-file.</p>
+<pre><code class="lang-xml">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+  ...
+  &lt;ItemGroup&gt;
+    &lt;InternalsVisibleTo Include=&quot;DynamicProxyGenAssembly2&quot; /&gt;
+    &lt;InternalsVisibleTo Include=&quot;name of the assembly that contains your tests&quot; /&gt;
+  &lt;/ItemGroup&gt;
+&lt;/Project&gt;
+</code></pre>
+<p>Remember that if members are non-virtual, NSubstitute will not be able to intercept it regardless of whether it is <code>internal</code> or <code>InternalsVisibleTo</code> has been added.</p>
+<p>The good news is that <a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a> will also detect attempts to use <code>internal</code> members at compile time, and will suggest fixes for these cases.</p>
+<h3 id="real-code">Real code</h3>
+<p>The final thing to notice here is that there is the potential for real logic from the <code>Original</code> class to execute. We've already seen how this is possible for non-virtual members, but it can also happen if <code>Original</code> has code in its constructor. If the constructor calls <code>FileSystem.DeleteAllMyStuff()</code>, then constructing <code>SubstituteForOriginal</code> will also run this when the base constructor gets called.</p>
+<h3 id="class-conclusion">Class conclusion</h3>
+<ul>
+<li>Be careful substituting for classes!</li>
+<li>Where possible use interfaces instead.</li>
+<li>Remember NSubstitute works by inheriting from (or implementing) your original type. If you can't override a member by manually writing a sub-class, then NSubstitute won't be able to either!</li>
+<li>Install <a href="/help/nsubstitute-analysers">NSubstitute.Analyzers</a> where ever you install NSubstitute. This will help you avoid these (and other) pitfalls.</li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2015-01-01-how-nsub-works.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

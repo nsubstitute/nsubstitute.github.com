@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Setting a return value | NSubstitute </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Setting a return value | NSubstitute ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-02-01-set-return-value.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/nsubstitute-32x32.png" alt="NSubstitute">
+            NSubstitute
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+
+<p>The following examples relate to substituting for the following interface:</p>
+<pre><code class="lang-csharp">public interface ICalculator {
+    int Add(int a, int b);
+    string Mode { get; set; }
+}
+</code></pre>
+<!--
+```requiredcode
+ICalculator calculator;
+[SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
+```
+-->
+<h2 id="for-methods">For methods</h2>
+<p>To set a return value for a method call on a substitute, call the method as normal, then follow it with a call to NSubstitute's <code>Returns()</code> extension method.</p>
+<pre><code class="lang-csharp">var calculator = Substitute.For&lt;ICalculator&gt;();
+calculator.Add(1, 2).Returns(3);
+</code></pre>
+<p>This value will be returned every time this call is made. <code>Returns()</code> will only apply to this combination of arguments, so other calls to this method will return a default value instead.</p>
+<pre><code class="lang-csharp">//Make a call return 3:
+calculator.Add(1, 2).Returns(3);
+Assert.AreEqual(calculator.Add(1, 2), 3);
+Assert.AreEqual(calculator.Add(1, 2), 3);
+
+//Call with different arguments does not return 3
+Assert.AreNotEqual(calculator.Add(3, 6), 3);
+</code></pre>
+<h2 id="for-properties">For properties</h2>
+<p>The return value for a property can be set in the same way as for a method, using <code>Returns()</code>. You can also just use plain old property setters for read/write properties; they'll behave just the way you expect them to.</p>
+<pre><code class="lang-csharp">calculator.Mode.Returns(&quot;DEC&quot;);
+Assert.AreEqual(calculator.Mode, &quot;DEC&quot;);
+
+calculator.Mode = &quot;HEX&quot;;
+Assert.AreEqual(calculator.Mode, &quot;HEX&quot;);
+</code></pre>
+<h2 id="more-ways-of-setting-return-values">More ways of setting return values</h2>
+<p>This covers the very basics of setting a return value, but NSubstitute can do much more. Read on for other approachs, including <a href="/help/return-for-args">matching specific arguments</a>, <a href="/help/return-for-any-args">ignoring arguments</a>, using <a href="/help/return-from-function">functions to calculate return values</a> and returning <a href="/help/multiple-returns">multiple results</a>.</p>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-02-01-set-return-value.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

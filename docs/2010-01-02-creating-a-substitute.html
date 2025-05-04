@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Creating a substitute | NSubstitute </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Creating a substitute | NSubstitute ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-01-02-creating-a-substitute.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/nsubstitute-32x32.png" alt="NSubstitute">
+            NSubstitute
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+
+<p>The basic syntax for creating a substitute is:</p>
+<pre><code class="lang-csharp">var substitute = Substitute.For&lt;ISomeInterface&gt;();
+</code></pre>
+<p>This is how you'll normally create substitutes for types. Generally this type will be an interface, but you can also substitute classes in cases of emergency.</p>
+<h2 id="substituting-infrequently-and-carefully-for-classes">Substituting (infrequently and carefully) for classes</h2>
+<p>⚠️ <strong>Warning:</strong> Substituting for classes can have some nasty side-effects!</p>
+<p>For starters, <strong>NSubstitute can only work with <em>virtual</em> members of the class</strong> that are overridable in the test assembly, so any non-virtual code in the class will actually execute! If you try to substitute for a class that formats your hard drive in the constructor or in a non-virtual property setter then you're asking for trouble. By overridable we mean <code>public virtual</code>, <code>protected virtual</code>, <code>protected internal virtual</code>, or <code>internal virtual</code> with <code>InternalsVisibleTo</code> attribute applied (although to configure or assert on calls members will also need to be callable from the test assembly, so <code>public virtual</code> or <code>internal virtual</code> with <code>InternalsVisibleTo</code>). See <a href="/help/how-nsub-works">How NSubstitute works</a> for more information.</p>
+<p>It also means features like <code>Received()</code>, <code>Returns()</code>, <code>Arg.Is()</code>, <code>Arg.Any()</code> and <code>When()..Do()</code> <strong>will not work with these non-overridable members</strong>. For example: <code>subClass.Received().NonVirtualCall()</code> will not actually run an assertion (it will always pass, even if there are no calls to <code>NonVirtualCall()</code>), and can even cause confusing problems with later tests. These features will work correctly with virtual members of the class, but we have to be careful to avoid the non-virtual ones.</p>
+<p>For these reasons we strongly recommend using <a href="/help/nsubstitute-analysers/">NSubstitute.Analyzers</a> to detect these cases, and sticking to substituting for interfaces as much as possible. (Interfaces are always safe to substitute and do not suffer from any of the limitations that class substitutes do.)</p>
+<p>With the knowledge that we're not going to be substituting for classes, here is how you create a substitute for a class that has constructor arguments:</p>
+<pre><code class="lang-csharp">var someClass = Substitute.For&lt;SomeClassWithCtorArgs&gt;(5, &quot;hello world&quot;);
+</code></pre>
+<p>For classes that have default constructors the syntax is the same as substituting for interfaces.</p>
+<h2 id="substituting-for-multiple-interfaces">Substituting for multiple interfaces</h2>
+<p>There are times when you want to substitute for multiple types. The best example of this is when you have code that works with a type, then checks whether it implements <code>IDisposable</code> and disposes of it if it doesn't.</p>
+<pre><code class="lang-csharp">var command = Substitute.For&lt;ICommand, IDisposable&gt;();
+var runner = new CommandRunner(command);
+
+runner.RunCommand();
+
+command.Received().Execute();
+((IDisposable)command).Received().Dispose();
+</code></pre>
+<p>Your substitute can implement several types this way, but remember you can only implement a maximum of one class. You can specify as many interfaces as you like, but only one of these can be a class. The most flexible way of creating substitutes for multiple types is using this overload:</p>
+<pre><code class="lang-csharp">var substitute = Substitute.For(
+    new[] { typeof(ICommand), typeof(ISomeInterface), typeof(SomeClassWithCtorArgs) },
+    new object[] { 5, &quot;hello world&quot; }
+);
+Assert.IsInstanceOf&lt;ICommand&gt;(substitute);
+Assert.IsInstanceOf&lt;ISomeInterface&gt;(substitute);
+Assert.IsInstanceOf&lt;SomeClassWithCtorArgs&gt;(substitute);
+</code></pre>
+<!--
+```requiredcode
+public interface ISomeInterface { }
+public abstract class SomeClassWithCtorArgs
+{
+    protected SomeClassWithCtorArgs(int anInt, string aString) { }
+}
+
+public interface ICommand
+{
+    void Execute();
+}
+
+public class CommandRunner
+{
+    private readonly ICommand _command;
+    public CommandRunner(ICommand command)
+    {
+        _command = command;
+    }
+
+    public void RunCommand()
+    {
+        _command.Execute();
+        if (_command is IDisposable) ((IDisposable)_command).Dispose();
+    }
+}
+```
+-->
+<h2 id="substituting-for-delegates">Substituting for delegates</h2>
+<p>NSubstitute can also substitute for delegate types by using <code>Substiute.For&lt;T&gt;()</code>. When substituting for delegate types you will not be able to get the substitute to implement additional interfaces or classes.</p>
+<pre><code class="lang-csharp">var func = Substitute.For&lt;Func&lt;string&gt;&gt;();
+
+func().Returns(&quot;hello&quot;);
+Assert.AreEqual(&quot;hello&quot;, func());
+</code></pre>
+<h2 id="partial-substitutes-and-test-spies">Partial substitutes and test spies</h2>
+<p>When required we can also create substitutes that run real code by default, letting us replace <a href="/help/partial-subs/">specific parts of a class with substitute behaviour</a>.</p>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-01-02-creating-a-substitute.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

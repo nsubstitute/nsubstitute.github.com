@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Compatibility argument matchers | NSubstitute </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Compatibility argument matchers | NSubstitute ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2013-04-15-compat-args.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/nsubstitute-32x32.png" alt="NSubstitute">
+            NSubstitute
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+
+<p>NSubstitute <a href="/help/argument-matchers">argument matchers</a> depend on having C# 7.0 or later (as of NSubstitute 4.0). This lets them be used with <code>out</code> and <code>ref</code> parameters, but it also means that if you are stuck on an earlier version of C# you may get an error like the following when trying to use a matcher like <code>Arg.Is(123)</code>:</p>
+<blockquote>
+<p><code>CS7085: By-reference return type 'ref T' is not supported.</code></p>
+</blockquote>
+<p>If you have C# 7.0-compatible tooling installed you can <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/configure-language-version">set <code>&lt;LangVersion /&gt;</code> in your test csproj file</a> to <code>7</code> or higher, or to <code>latest</code> or <code>default</code>.</p>
+<p>Stuck with pre-7.0 tooling? Then use <code>Arg.Compat</code> instead of <code>Arg</code>, or use <code>CompatArg</code> in the <code>NSubstitute.Compatibility</code> namespace. <code>Arg.Compat</code> will work everywhere <code>Arg</code> does, with the exception of matching <code>out</code> and <code>ref</code> args. For example, if the documentation mentions <code>Arg.Is(42)</code>, you can instead use <code>Arg.Compat.Is(42)</code>. <code>CompatArg</code> is a bit trickier to setup, but may make migrating between <code>Arg</code> and <code>Arg.Compat</code> easier in some cases. Both options are described below.</p>
+<!--
+```requiredcode
+public interface ICalculator {
+    int Add(int a, int b);
+}
+ICalculator calculator;
+[SetUp] public void SetUp() {
+    calculator = Substitute.For<ICalculator>();
+}
+```
+-->
+<h2 id="using-argcompat">Using <code>Arg.Compat</code></h2>
+<p>The simplest work-around if you are stuck on pre-C#7 is to use <code>Arg.Compat.</code> wherever you would normally use <code>Arg.</code>. To migrate existing code, replace all instances of <code>Arg.</code> with <code>Arg.Compat.</code>.</p>
+<pre><code class="lang-csharp">calculator.Add(1, -10);
+
+// Instead of `Arg.Is&lt;int&gt;(x =&gt; x &lt; 0)`, use:
+calculator.Received().Add(1, Arg.Compat.Is&lt;int&gt;(x =&gt; x &lt; 0));
+
+// Instead of `Arg.Any&lt;int&gt;()`, use:
+calculator
+    .Received()
+    .Add(1, Arg.Compat.Any&lt;int&gt;());
+
+// Same for Returns and DidNotReceive:
+calculator.Add(Arg.Compat.Any&lt;int&gt;(), Arg.Compat.Is(42)).Returns(123);
+calculator.DidNotReceive().Add(Arg.Compat.Is&lt;int&gt;(x =&gt; x &gt; 10), -10);
+</code></pre>
+<h2 id="using-nsubstitutecompatibilitycompatarg">Using <code>NSubstitute.Compatibility.CompatArg</code></h2>
+<p>If you have a project with lots of existing arg matchers then migrating to <code>Arg.Compat</code> can require a lot of code changes. A smaller change is to instead use an instance of the <code>CompatArg</code> class in the <code>NSubstitute.Compatibility</code> namespace. This approach may also make it easier to upgrade to the newer <code>Arg</code> matchers in future.</p>
+<pre><code class="lang-csharp">[TestFixture]
+public class SampleCompatArgFixture {
+
+    // Declare Arg field. Any existing `Arg` references will now go via `CompatArg`, instead
+    // of the new `Arg` type that is incompatible with older C# compilers.
+    private static readonly NSubstitute.Compatibility.CompatArg Arg = NSubstitute.Compatibility.CompatArg.Instance;
+
+    [Test]
+    public void DemonstrationOfCompatArgs() {
+        var calculator = Substitute.For&lt;ICalculator&gt;();
+
+        calculator.Add(1, -10);
+
+        // Arg.Is will now go via CompatArg. It is equivalent to Arg.Compat.Is.
+        calculator.Received().Add(1, Arg.Is&lt;int&gt;(x =&gt; x &lt; 0));
+    }
+}
+</code></pre>
+<p>This works particularly well if a common test base class is used.</p>
+<pre><code class="lang-csharp">public class BaseTestFixture {
+
+    // Declare Arg field. Any existing `Arg` references will now go via `CompatArg`, instead
+    // of the new `Arg` type that is incompatible with older C# compilers.
+    protected static readonly NSubstitute.Compatibility.CompatArg Arg = NSubstitute.Compatibility.CompatArg.Instance;
+
+}
+</code></pre>
+<p>If you are later able to update the C# compiler your project is using, you can remove the <code>CompatArg</code> field and all <code>Arg</code> references will go through standard arg matchers (and you'll now be able to use them with <code>out</code> and <code>ref</code> parameters!).</p>
+<h2 id="argument-matchers-in-expression-trees">Argument matchers in expression trees</h2>
+<p>As of NSubstitute 4.0 argument matchers can no longer be used in expression trees. Doing so will cause a compilation error:</p>
+<blockquote>
+<p>CS8153: An expression tree lambda may not contain a call to a method, property, or indexer that returns by reference</p>
+</blockquote>
+<p>The <code>Arg.Compat</code> matchers can be used to work around this issue. They do not return by reference so they are fine to use in expression trees.</p>
+<!--
+```requiredcode
+// Pretending this takes an Expression<Action> arg (rather than adding a reference to
+// System.Linq.Expression).
+protected void specify(Action expectation) {
+    expectation();
+}
+```
+-->
+<pre><code class="lang-csharp">public interface IFoo { void DoStuff(int i); }
+
+[Test]
+public void Sample() {
+    var sub = Substitute.For&lt;IFoo&gt;();
+    sub.DoStuff(42);
+    // If `specify` takes an `Expression&lt;Action&gt;` argument, this will fail with CS8153:
+    //   specify(() =&gt; sub.Received().DoStuff(Arg.Any&lt;int&gt;()));
+
+    // Instead use compat matcher:
+    specify(() =&gt; sub.Received().DoStuff(Arg.Compat.Any&lt;int&gt;()));
+
+    // Or re-write without expression tree if possible:
+    sub.Received().DoStuff(Arg.Any&lt;int&gt;());
+}
+</code></pre>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2013-04-15-compat-args.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

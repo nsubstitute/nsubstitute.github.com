@@ -1,48 +1,95 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <title>NSubstitute: A friendly substitute for .NET mocking libraries</title>
-  <link rel="stylesheet" href="/css/style.css" type="text/css" />
-  <script src="/js/scripts.js"></script>
-</head>
-<body>
-  <div id="header">
-    <a href="/" alt="NSubstitute">
-      <img src="/images/nsubstitute-100x100.png" style="float: left; margin-right: 15px; width: 100px; height: 100px;" />
-      <h1 class="copy-disabled" style="display: inline"> NSubstitute </h1> <br />
-      <span><i>A friendly substitute for .NET mocking libraries</i></span>
-    </a>
-  </div>
-  <div id="nav">
-    <a href="/help/getting-started">Get started</a> |
-    <a href="/help.html">Docs and getting help</a> |
-    <a href="https://github.com/nsubstitute/NSubstitute">NSub on GitHub</a>  
-  </div>
+  <head>
+    <meta charset="utf-8">
+      <title>A friendly substitute for .NET mocking libraries | NSubstitute </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="A friendly substitute for .NET mocking libraries | NSubstitute ">
+      
+      
+      <link rel="icon" href="favicon.ico">
+      <link rel="stylesheet" href="public/docfx.min.css">
+      <link rel="stylesheet" href="public/main.css">
+      <meta name="docfx:navrel" content="toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/nsubstitute/NSubstitute/blob/main/docs/index.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
 
-  <div id="content">
-      <div id="features">
-<div class="feature">
+      <script type="module" src="./public/docfx.min.js"></script>
 
-    <a id="simple_succinct_pleasant_to_use"></a>
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="landing" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="index.html">
+            <img id="logo" class="svg" src="images/nsubstitute-32x32.png" alt="NSubstitute">
+            NSubstitute
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+<div id="features">
+<div class="feature" markdown="1">
 <h2 id="simple-succinct-pleasant-to-use">Simple, succinct, pleasant to use</h2>
+<pre><code class="lang-csharp">//Create:
+var calculator = Substitute.For&lt;ICalculator&gt;();
 
-    <div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//Create:</span>
-<span class="kt">var</span> <span class="n">calculator</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICalculator</span><span class="p">&gt;();</span>
+//Set a return value:
+calculator.Add(1, 2).Returns(3);
+Assert.AreEqual(3, calculator.Add(1, 2));
 
-<span class="c1">//Set a return value:</span>
-<span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">).</span><span class="nf">Returns</span><span class="p">(</span><span class="m">3</span><span class="p">);</span>
-<span class="n">Assert</span><span class="p">.</span><span class="nf">AreEqual</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="n">calculator</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">));</span>
+//Check received calls:
+calculator.Received().Add(1, Arg.Any&lt;int&gt;());
+calculator.DidNotReceive().Add(2, 2);
 
-<span class="c1">//Check received calls:</span>
-<span class="n">calculator</span><span class="p">.</span><span class="nf">Received</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;());</span>
-<span class="n">calculator</span><span class="p">.</span><span class="nf">DidNotReceive</span><span class="p">().</span><span class="nf">Add</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">);</span>
-
-<span class="c1">//Raise events</span>
-<span class="n">calculator</span><span class="p">.</span><span class="n">PoweringUp</span> <span class="p">+=</span> <span class="n">Raise</span><span class="p">.</span><span class="nf">Event</span><span class="p">();</span>
-</code></pre></div>    </div>
-
-    <!--
+//Raise events
+calculator.PoweringUp += Raise.Event();
+</code></pre>
+<!--
 ```requiredcode
     public interface ICalculator
     {
@@ -52,74 +99,73 @@
     }
 ```
 -->
-  </div>
-
-<div class="feature">
-
-    <a id="helpful_exceptions"></a>
+</div>
+<div class="feature" markdown="1">
 <h2 id="helpful-exceptions">Helpful exceptions</h2>
-
-    <div class="highlight">
-<pre>
-ReceivedCallsException : Expected to receive a call matching:
+<div class="highlight">
+<pre><code class="lang-text">ReceivedCallsException : Expected to receive a call matching:
     Add(1, 2)
 Actually received no matching calls.
 Received 2 non-matching calls (non-matching arguments indicated with '*' characters):
     Add(*4*, *7*)
-    Add(1, *5*)</pre>
+    Add(1, *5*)
+</code></pre>
 </div>
-  </div>
-
-<div class="feature">
-
-    <a id="dont_sweat_the_small_stuff"></a>
-<h2 id="dont-sweat-the-small-stuff">Don’t sweat the small stuff</h2>
-
-    <p>Mock, stub, fake, spy, test double? Strict or loose? Nah, just substitute for the type you need!</p>
-    <p>NSubstitute is designed for Arrange-Act-Assert (AAA) testing, so you just need to arrange how it should work, then assert it received the calls you expected once you're done. Because you've got more important code to write than whether you need a mock or a stub.</p>
-  </div>
-
 </div>
-
+<div class="feature" markdown="1">
+<h2 id="dont-sweat-the-small-stuff">Don't sweat the small stuff</h2>
+<p>Mock, stub, fake, spy, test double? Strict or loose? Nah, just substitute for the type you need!</p>
+<p>NSubstitute is designed for Arrange-Act-Assert (AAA) testing, so you just need to arrange how it should work, then assert it received the calls you expected once you're done. Because you've got more important code to write than whether you need a mock or a stub.</p>
+</div>
+</div>
 <div id="downloads" class="sidebar download">
 <ul>
 <li class="nuget">
 <a href="https://nuget.org/List/Packages/NSubstitute">Install via NuGet:</a> <code>Install-Package NSubstitute</code>
 </li>
 <li class="nuget"><a href="/help/nsubstitute-analysers/">Optional analysers for C#:</a>
-<code>Install-Package NSubstitute.<wbr />Analyzers.<wbr />CSharp</code>
+<code>Install-Package NSubstitute.<wbr>Analyzers.<wbr>CSharp</code>
 </li>
 <li class="nuget"><a href="/help/nsubstitute-analysers/">Optional analysers for VB:</a>
-<code>Install-Package NSubstitute.<wbr />Analyzers.<wbr />VisualBasic</code>
+<code>Install-Package NSubstitute.<wbr>Analyzers.<wbr>VisualBasic</code>
 </li>
 <li class="github">
 <a href="https://github.com/nsubstitute/nsubstitute">Source</a>
 </li>
 </ul>
 </div>
-
 <div class="sidebar">
-<div id="why-use-it">
-
-    <a id="another_library"></a>
+<div id="why-use-it" markdown="1">
 <h3 id="another-library">Another library?</h3>
-
-    <p>There are already some great mocking libraries around for .NET, so why create another? We found that for all their great features, none of the existing libraries had the succinct syntax we were craving &mdash; the code required to configure test doubles quickly obscured the intention behind our tests.</p>
-
-    <p>We've attempted to make the most frequently required operations obvious and easy to use, keeping less usual scenarios discoverable and accessible, and all the while maintaining as much natural language as possible.</p>
-
-    <p>Perfect for those new to testing, and for others who would just like to to get their tests written with less noise and fewer lambdas.</p>
-
-  </div>
+<p>There are already some great mocking libraries around for .NET, so why create another? We found that for all their great features, none of the existing libraries had the succinct syntax we were craving &mdash; the code required to configure test doubles quickly obscured the intention behind our tests.</p>
+<p>We've attempted to make the most frequently required operations obvious and easy to use, keeping less usual scenarios discoverable and accessible, and all the while maintaining as much natural language as possible.</p>
+<p>Perfect for those new to testing, and for others who would just like to to get their tests written with less noise and fewer lambdas.</p>
+</div>
 </div>
 
-  </div>
+</article>
 
-  <div id="footer">
-  NSubstitute is open source software, licensed under the <a href="https://www.opensource.org/licenses/bsd-license.php">BSD License</a>.<br />
-The NSubstitute project is possible <a href="https://github.com/nsubstitute/NSubstitute/blob/master/acknowledgements.md">thanks to a number of other software projects</a>. We acknowledge their awesomeness.<br />
-  NSubstitute logo donated by <a href="https://troyhunt.com">Troy Hunt</a>.
-  </div>
+        <div class="contribution d-print-none">
+          <a href="https://github.com/nsubstitute/NSubstitute/blob/main/docs/index.md/#L1" class="edit-link">Edit this page</a>
+        </div>
 
-</body>
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
 </html>

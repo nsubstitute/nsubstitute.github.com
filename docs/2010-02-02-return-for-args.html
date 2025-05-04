@@ -2,21 +2,21 @@
 <html>
   <head>
     <meta charset="utf-8">
-      <title>Docs and getting help | NSubstitute </title>
+      <title>Return for specific args | NSubstitute </title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Docs and getting help | NSubstitute ">
+      <meta name="title" content="Return for specific args | NSubstitute ">
       
       
-      <link rel="icon" href="favicon.ico">
-      <link rel="stylesheet" href="public/docfx.min.css">
-      <link rel="stylesheet" href="public/main.css">
-      <meta name="docfx:navrel" content="toc.html">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
       <meta name="docfx:tocrel" content="toc.html">
       
-      <meta name="docfx:rel" content="">
+      <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/nsubstitute/NSubstitute/blob/main/docs/help.md/#L1">
+      <meta name="docfx:docurl" content="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-02-02-return-for-args.md/#L1">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -30,7 +30,7 @@
       <meta name="loc:copy" content="Copy">
       <meta name="loc:downloadPdf" content="Download PDF">
 
-      <script type="module" src="./public/docfx.min.js"></script>
+      <script type="module" src="./../public/docfx.min.js"></script>
 
       <script>
         const theme = localStorage.getItem('theme') || 'auto'
@@ -43,8 +43,8 @@
     <header class="bg-body border-bottom">
       <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
         <div class="container-xxl flex-nowrap">
-          <a class="navbar-brand" href="index.html">
-            <img id="logo" class="svg" src="images/nsubstitute-32x32.png" alt="NSubstitute">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/nsubstitute-32x32.png" alt="NSubstitute">
             NSubstitute
           </a>
           <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,23 +63,60 @@
     </header>
 
     <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
 
       <div class="content">
         <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
 
           <nav id="breadcrumb"></nav>
         </div>
 
         <article data-uid="">
 
-<p>Read <a href="/docs/2010-01-01-getting-started.html">Getting started</a> for a quick tour of NSubstitute.</p>
-<p>For more in depth information start with <a href="/docs/2010-01-02-creating-a-substitute.html">Creating a substitute</a>.</p>
-<p>If you can't find the answer you're looking for, or if you have feature requests or feedback on NSubstitute, please <a href="https://github.com/nsubstitute/NSubstitute/issues">raise an issue</a> on our project site. All questions are welcome via our project site, but for "how-to"-style questions you can also try <a href="https://stackoverflow.com/tags/nsubstitute">StackOverflow with the [nsubstitute] tag</a>, which often leads to very good answers from the larger programming community. StackOverflow is especially useful if your question also relates to other libraries that our team may not be as familiar with (e.g. NSubstitute with Entity Framework).</p>
+<!--
+```requiredcode
+public interface ICalculator {
+    int Add(int a, int b);
+    string Mode { get; set; }
+}
+ICalculator calculator;
+[SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
+```
+-->
+<p>Return values can be configured for different combinations of arguments passed to calls using <a href="/help/argument-matchers">argument matchers</a>. This topic is covered in more detail in the <a href="/help/argument-matchers">Argument matchers</a> entry, but the following examples show the general idea.</p>
+<pre><code class="lang-csharp">//Return when first arg is anything and second arg is 5:
+calculator.Add(Arg.Any&lt;int&gt;(), 5).Returns(10);
+Assert.AreEqual(10, calculator.Add(123, 5));
+Assert.AreEqual(10, calculator.Add(-9, 5));
+Assert.AreNotEqual(10, calculator.Add(-9, -9));
+
+//Return when first arg is 1 and second arg less than 0:
+calculator.Add(1, Arg.Is&lt;int&gt;(x =&gt; x &lt; 0)).Returns(345);
+Assert.AreEqual(345, calculator.Add(1, -2));
+Assert.AreNotEqual(345, calculator.Add(1, 2));
+
+//Return when both args equal to 0:
+calculator.Add(Arg.Is(0), Arg.Is(0)).Returns(99);
+Assert.AreEqual(99, calculator.Add(0, 0));
+</code></pre>
 
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/nsubstitute/NSubstitute/blob/main/docs/help.md/#L1" class="edit-link">Edit this page</a>
+          <a href="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-02-02-return-for-args.md/#L1" class="edit-link">Edit this page</a>
         </div>
 
         <div class="next-article d-print-none border-top" id="nextArticle"></div>

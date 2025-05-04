@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Return from a function | NSubstitute </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Return from a function | NSubstitute ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-02-03-return-from-function.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/nsubstitute-32x32.png" alt="NSubstitute">
+            NSubstitute
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+<!--
+```requiredcode
+public interface ICalculator {
+    int Add(int a, int b);
+    string Mode { get; set; }
+}
+ICalculator calculator;
+[SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
+```
+-->
+<p>The return value for a call to a property or method can be set to the result of a function. This allows more complex logic to be put into the substitute. Although this is normally a bad practice, there are some situations in which it is useful.</p>
+<pre><code class="lang-csharp">calculator
+    .Add(Arg.Any&lt;int&gt;(), Arg.Any&lt;int&gt;())
+    .Returns(x =&gt; (int)x[0] + (int)x[1]);
+
+Assert.That(calculator.Add(1, 1), Is.EqualTo(2));
+Assert.That(calculator.Add(20, 30), Is.EqualTo(50));
+Assert.That(calculator.Add(-73, 9348), Is.EqualTo(9275));
+</code></pre>
+<p>In this example <a href="/help/argument-matchers">argument matchers</a> are used to match all calls to <code>Add()</code>, and a lambda function is used to return the sum of the first and second arguments passed to the call.</p>
+<h3 id="call-information">Call information</h3>
+<p>The function we provide to <code>Returns()</code> and <code>ReturnsForAnyArgs()</code> is of type <code>Func&lt;CallInfo,T&gt;</code>, where <code>T</code> is the type the call is returning, and <code>CallInfo</code> is a type which provides access to the arguments used for the call. In the previous example we accessed these arguments using an indexer (<code>x[1]</code> for the second argument). <code>CallInfo</code> also has a couple of convenience methods to pick arguments in a strongly typed way:</p>
+<ul>
+<li><code>T Arg&lt;T&gt;()</code>: Gets the argument of type <code>T</code> passed to this call.</li>
+<li><code>T ArgAt&lt;T&gt;(int position)</code>: Gets the argument passed to this call at the specified zero-based position, converted to type <code>T</code>.</li>
+</ul>
+<pre><code class="lang-csharp">public interface IFoo {
+    string Bar(int a, string b);
+}
+</code></pre>
+<pre><code class="lang-csharp">var foo = Substitute.For&lt;IFoo&gt;();
+foo.Bar(default, default).ReturnsForAnyArgs(x =&gt; &quot;Hello &quot; + x.Arg&lt;string&gt;());
+Assert.That(foo.Bar(1, &quot;World&quot;), Is.EqualTo(&quot;Hello World&quot;));
+</code></pre>
+<p>Here <code>x.Arg&lt;string&gt;()</code> will return the <code>string</code> argument passed to the call, rather than having to use <code>(string) x[1]</code>. If there are two <code>string</code> arguments to a call, NSubstitute will throw an exception and let you know that it can't work out which argument you mean.</p>
+<h3 id="callbacks">Callbacks</h3>
+<p>This technique can also be used to get a callback whenever a call is made:</p>
+<pre><code class="lang-csharp">var counter = 0;
+calculator
+    .Add(default, default)
+    .ReturnsForAnyArgs(x =&gt; {
+        counter++;
+        return 0;
+    });
+
+calculator.Add(7,3);
+calculator.Add(2,2);
+calculator.Add(11,-3);
+Assert.AreEqual(counter, 3);
+</code></pre>
+<p>Alternatively the callback can be specified after the <code>Returns</code> using <code>AndDoes</code>:</p>
+<pre><code class="lang-csharp">var counter = 0;
+calculator
+    .Add(default, default)
+    .ReturnsForAnyArgs(x =&gt; 0)
+    .AndDoes(x =&gt; counter++);
+
+calculator.Add(7,3);
+calculator.Add(2,2);
+Assert.AreEqual(counter, 2);
+</code></pre>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-02-03-return-from-function.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

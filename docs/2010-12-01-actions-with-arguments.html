@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Actions with argument matchers | NSubstitute </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Actions with argument matchers | NSubstitute ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-12-01-actions-with-arguments.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../images/nsubstitute-32x32.png" alt="NSubstitute">
+            NSubstitute
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+
+<p>In addition to <a href="/help/argument-matchers">specifying calls</a>, matchers can also be used to perform a specific action with an argument whenever a matching call is made to a substitute. This is a fairly rare requirement, but can make test setup a little simpler in some cases.</p>
+<p><em>Warning:</em> Once we start adding non-trivial behaviour to our substitutes we run the risk of over-specifying or tightly coupling our tests and code. It may be better to pick a different abstraction that better encapsulates this behaviour, or even use a real collaborator and switch to coarser grained tests for the class being tested.</p>
+<h2 id="invoking-callbacks">Invoking callbacks</h2>
+<p>Say our class under test needs to call a method on a dependency, and provide a callback so it can be notified when the dependent object has finished. We can use <code>Arg.Invoke()</code> to immediately invoke the callback argument as soon as the substitute is called.</p>
+<p>Let's look at a contrived example. Say we are testing an <code>OrderPlacedCommand</code>, which needs to use an <code>IOrderProcessor</code> to process the order, then raise and event using <code>IEvents</code> when this completes successfully.</p>
+<!--
+```requiredcode
+public interface ICart { int OrderId { get; set; } }
+public interface IEvents { void RaiseOrderProcessed(int orderId); }
+```
+-->
+<pre><code class="lang-csharp">public interface IOrderProcessor {
+    void ProcessOrder(int orderId, Action&lt;bool&gt; orderProcessed);
+}
+
+public class OrderPlacedCommand {
+    IOrderProcessor orderProcessor;
+    IEvents events;
+    public OrderPlacedCommand(IOrderProcessor orderProcessor, IEvents events) {
+        this.orderProcessor = orderProcessor;
+        this.events = events;
+    }
+    public void Execute(ICart cart) {
+        orderProcessor.ProcessOrder(
+            cart.OrderId,
+            wasOk =&gt; { if (wasOk) events.RaiseOrderProcessed(cart.OrderId); }
+        );
+    }
+}
+</code></pre>
+<p>In our test we can use <code>Arg.Invoke</code> to simulate the situation where the <code>IOrderProcessor</code> finishes processing the order and invokes the callback to tell the calling code it is finished.</p>
+<pre><code class="lang-csharp">[Test]
+public void Placing_order_should_raise_order_processed_when_processing_is_successful() {
+    //Arrange
+    var cart = Substitute.For&lt;ICart&gt;();
+    var events = Substitute.For&lt;IEvents&gt;();
+    var processor = Substitute.For&lt;IOrderProcessor&gt;();
+    cart.OrderId = 3;
+    //Arrange for processor to invoke the callback arg with `true` whenever processing order id 3
+    processor.ProcessOrder(3, Arg.Invoke(true));
+
+    //Act
+    var command = new OrderPlacedCommand(processor, events);
+    command.Execute(cart);
+
+    //Assert
+    events.Received().RaiseOrderProcessed(3);
+}
+</code></pre>
+<p>Here we setup the <code>processor</code> to invoke the callback whenever processing an order with id 3. We set it up to pass <code>true</code> to this callback using <code>Arg.Invoke(true)</code>.</p>
+<p>There are several overloads to <code>Arg.Invoke</code> that let us invoke callbacks with varying numbers and types of arguments. We can also invoke custom delegate types (those that are not just simple <code>Action</code> delegates) using <code>Arg.InvokeDelegate</code>.</p>
+<h2 id="performing-actions-with-arguments">Performing actions with arguments</h2>
+<p>Sometimes we may not want to invoke a callback immediately. Or maybe we want to store all instances of a particular argument passed to a method. Or even just capture a single argument for inspection later. We can use <code>Arg.Do</code> for these purposes. <code>Arg.Do</code> calls the action we give it with the argument used for each matching call.</p>
+<!--
+```requiredcode
+public interface ICalculator { int Multiply(int a, int b); }
+ICalculator calculator;
+[SetUp] public void SetUp() { calculator = Substitute.For<ICalculator>(); }
+```
+-->
+<pre><code class="lang-csharp">var argumentUsed = 0;
+calculator.Multiply(Arg.Any&lt;int&gt;(), Arg.Do&lt;int&gt;(x =&gt; argumentUsed = x));
+
+calculator.Multiply(123, 42);
+
+Assert.AreEqual(42, argumentUsed);
+</code></pre>
+<p>Here we specify that a call to <code>Multiply</code> with any first argument should pass the second argument and put it in the <code>argumentUsed</code> variable. This can be quite useful when we want to assert several properties on an argument (for types more complex than <code>int</code> that is).</p>
+<pre><code class="lang-csharp">var firstArgsBeingMultiplied = new List&lt;int&gt;();
+calculator.Multiply(Arg.Do&lt;int&gt;(x =&gt; firstArgsBeingMultiplied.Add(x)), 10);
+
+calculator.Multiply(2, 10);
+calculator.Multiply(5, 10);
+calculator.Multiply(7, 4567); //Will not match our Arg.Do as second arg is not 10
+
+Assert.AreEqual(firstArgsBeingMultiplied, new[] { 2, 5 });
+</code></pre>
+<p>Here our <code>Arg.Do</code> takes whatever <code>int</code> is passed as the first argument to <code>Multiply</code> and adds it to a list whenever the second argument is 10.</p>
+<h2 id="argument-actions-and-call-specification">Argument actions and call specification</h2>
+<p>Argument actions act just like the <a href="/help/argument-matchers"><code>Arg.Any&lt;T&gt;()</code> argument matcher</a> in that they specify a call where that argument is any type compatible with <code>T</code> (and so can be used for <a href="/help/return-for-args">setting return values</a> and <a href="/help/received-calls">checking received calls</a>). They just have the added element of interacting with a specific argument of any call that matches that specification.</p>
+<pre><code class="lang-csharp">var numberOfCallsWhereFirstArgIsLessThan0 = 0;
+//Specify a call where the first arg is less than 0, and the second is any int.
+//When this specification is met we'll increment a counter in the Arg.Do action for
+//the second argument that was used for the call, and we'll also make it return 123.
+calculator
+    .Multiply(
+        Arg.Is&lt;int&gt;(x =&gt; x &lt; 0),
+        Arg.Do&lt;int&gt;(x =&gt; numberOfCallsWhereFirstArgIsLessThan0++)
+    ).Returns(123);
+
+var results = new[] {
+    calculator.Multiply(-4, 3),
+    calculator.Multiply(-27, 88),
+    calculator.Multiply(-7, 8),
+    calculator.Multiply(123, 2) //First arg greater than 0, so spec won't be met.
+};
+
+Assert.AreEqual(3, numberOfCallsWhereFirstArgIsLessThan0); //3 of 4 calls have first arg &lt; 0
+Assert.AreEqual(results, new[] {123, 123, 123, 0}); //Last call returns 0, not 123
+</code></pre>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/nsubstitute/NSubstitute/blob/main/docs/docs/2010-12-01-actions-with-arguments.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>Made with <a href="https://dotnet.github.io/docfx">docfx</a></span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
